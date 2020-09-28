@@ -1,4 +1,7 @@
 Vagrant.configure("2") do |config|
+  #Lisätään /src jaettuihin kansioihin
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.synced_folder "../src", "/vagrant/src"
   #Käteetään yksinkertaista virtuaalilaatikkoa
 	config.vm.box = "ubuntu/bionic64"
   #Luetaan tarvittavat lisät seuraavasta tiedostosta
