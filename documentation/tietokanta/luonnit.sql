@@ -1,5 +1,15 @@
+CREATE TABLE Segmentit (
+    ID SERIAL PRIMARY KEY ,
+    Nimi VARCHAR(30),
+    Koordinaatit VARCHAR(30),
+    Maasto VARCHAR(20),
+    Lumivyöryvaara VARCHAR(20),
+    On_Alasegmentti BIGINT UNSIGNED,
+    FOREIGN KEY(On_Alasegmentti) REFERENCES Segmentit(ID)
+);
+
 CREATE TABLE Kayttajat (
-    ID serial,
+    ID SERIAL PRIMARY KEY,
     Etunimi VARCHAR(20),
     Sukunimi VARCHAR(30),
     Rooli VARCHAR(20),
@@ -7,17 +17,12 @@ CREATE TABLE Kayttajat (
     Salasana VARCHAR(30)
 );
 
-CREATE TABLE Segmentit (
-    ID SERIAL,
-    Nimi VARCHAR(30),
-    Koordinaatit VARCHAR(30),
-    Lumilaatu VARCHAR(20)
-);
-
-CREATE TABLE Alasegmentit (
-    ID SERIAL,
-    Nimi VARCHAR(30),
-    Koordinaatit VARCHAR(30),
+CREATE TABLE Paivitykset (
+    Tekija BIGINT UNSIGNED,
+    Segmentti BIGINT UNSIGNED,
+    Aika DATETIME,
     Lumilaatu VARCHAR(20),
-    Lumivyöryvaara  BOOLEAN
+    FOREIGN KEY(Tekija) references Kayttajat(ID),
+    FOREIGN KEY(Segmentti) references Segmentit(ID),
+    CONSTRAINT tunniste PRIMARY KEY (Tekija, Segmentti)
 );
