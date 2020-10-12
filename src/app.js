@@ -1,9 +1,15 @@
 var express = require('express');
 var app = express();
 var path = require('path');
+var db = require('./database');
+
 
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
+    db.query('SELECT * FROM Kayttajat', function (err, result, fields) {
+      if (err) throw err;
+      console.log(result);
+  });
 });
 
 console.log("listening to 3000")
