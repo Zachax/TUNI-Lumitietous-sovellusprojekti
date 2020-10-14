@@ -5,10 +5,14 @@ var db = require('./database');
 
 
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/index.html'));
-    db.query('SELECT * FROM Kayttajat', function (err, result, fields) {
+    res.sendFile(path.join(__dirname + '/index.html'));    
+});
+
+app.get('/users', function(req, res) {
+  db.query('SELECT * FROM Kayttajat', function (err, result, fields) {
       if (err) throw err;
       console.log(result);
+      res.json(result);
   });
 });
 
