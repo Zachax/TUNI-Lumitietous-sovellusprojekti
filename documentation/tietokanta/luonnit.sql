@@ -26,3 +26,11 @@ CREATE TABLE Paivitykset (
     FOREIGN KEY(Segmentti) references Segmentit(ID),
     CONSTRAINT tunniste PRIMARY KEY (Tekija, Segmentti)
 );
+
+CREATE TABLE Koordinaatit(
+    Segmentti BIGINT UNSIGNED,
+    Jarjestys BIGINT UNSIGNED,
+    Sijainti Point,
+    FOREIGN KEY(Segmentti) references Segmentit(ID),
+    CONSTRAINT tunniste PRIMARY KEY(Jarjestys, Segmentti)
+);
