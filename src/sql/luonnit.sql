@@ -1,9 +1,8 @@
 CREATE TABLE Segmentit (
-    ID SERIAL PRIMARY KEY ,
+    ID SERIAL PRIMARY KEY,
     Nimi VARCHAR(30),
-    Koordinaatit VARCHAR(30),
     Maasto VARCHAR(20),
-    Lumivyöryvaara VARCHAR(20),
+    Lumivyöryvaara BOOL,
     On_Alasegmentti BIGINT UNSIGNED,
     FOREIGN KEY(On_Alasegmentti) REFERENCES Segmentit(ID)
 );
