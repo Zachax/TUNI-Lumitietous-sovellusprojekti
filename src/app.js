@@ -16,5 +16,13 @@ app.get('/users', function(req, res) {
   });
 });
 
+app.get('/points', function(req, res) {
+  db.query('SELECT * FROM Koordinaatit WHERE Segmentti = 1', function (err, result, fields) {
+      if (err) throw err;
+      console.log(result);
+      res.json(result);
+  });
+});
+
 console.log("listening to 3000")
 app.listen(3000);
