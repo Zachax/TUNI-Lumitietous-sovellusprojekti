@@ -1,9 +1,8 @@
 CREATE TABLE Segmentit (
     ID SERIAL PRIMARY KEY ,
     Nimi VARCHAR(30),
-    Koordinaatit VARCHAR(30),
     Maasto VARCHAR(20),
-    Lumivyöryvaara VARCHAR(20),
+    Lumivyöryvaara BOOL,
     On_Alasegmentti BIGINT UNSIGNED,
     FOREIGN KEY(On_Alasegmentti) REFERENCES Segmentit(ID)
 );
@@ -25,4 +24,12 @@ CREATE TABLE Paivitykset (
     FOREIGN KEY(Tekija) references Kayttajat(ID),
     FOREIGN KEY(Segmentti) references Segmentit(ID),
     CONSTRAINT tunniste PRIMARY KEY (Tekija, Segmentti)
+);
+
+CREATE TABLE Koordinaatit(
+    Segmentti BIGINT UNSIGNED,
+    Jarjestys BIGINT UNSIGNED,
+    Sijainti Point,
+    FOREIGN KEY(Segmentti) references Segmentit(ID),
+    CONSTRAINT tunniste PRIMARY KEY(Jarjestys, Segmentti)
 );
