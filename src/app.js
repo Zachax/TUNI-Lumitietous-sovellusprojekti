@@ -4,9 +4,11 @@ var path = require('path');
 var db = require('./database');
 
 
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/index.html'));    
-});
+// app.get('/', function(req, res) {
+//     res.sendFile(path.join(__dirname + '/index.html'));    
+// });
+
+app.use('/', express.static('public'));
 
 app.get('/users', function(req, res) {
   db.query('SELECT * FROM Kayttajat', function (err, result, fields) {
@@ -24,5 +26,5 @@ app.get('/points', function(req, res) {
   });
 });
 
-console.log("listening to 3000")
+console.log("listening to port 3000")
 app.listen(3000);
