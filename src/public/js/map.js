@@ -48,4 +48,30 @@ function initMap() {
     });
     segment2Triangle.setMap(map);
 
+    segment1Triangle.addListener("mouseover", () => {
+        segment1Triangle.setOptions({fillOpacity: 0.8});
+    });
+
+    segment1Triangle.addListener("mouseout", () => {
+        segment1Triangle.setOptions({fillOpacity: 0.15});
+    });
+
+    segment1Triangle.addListener("click", () => {
+        infoDiv = document.getElementById("segment_info");
+        infoDiv.innerHTML = "<p>Segmentin 1 tietoja</p>";
+    });
+
+    segment2Triangle.addListener("mouseover", () => {
+        segment2Triangle.setOptions({fillOpacity: 0.8});
+    });
+
+    segment2Triangle.addListener("mouseout", () => {
+        segment2Triangle.setOptions({fillOpacity: 0.15});
+    });
+
+    segment2Triangle.addListener("click", () => {
+        infoDiv = document.getElementById("segment_info");
+        infoDiv.innerHTML = "<p>Segmentin 2 tietoja</p>";
+    });
+
 }
