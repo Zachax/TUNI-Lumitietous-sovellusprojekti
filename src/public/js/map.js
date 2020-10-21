@@ -4,14 +4,10 @@
  *
  */
 function segmentDataToArray(data) {
-    console.log(data);
 
     const coordsForSegments = data.map((item) => {
         return [item.Segmentti, item.Sijainti];
     });
-
-    console.log(coordsForSegments);
-    console.log(coordsForSegments[0][1]);
 
     let dataArray = [];
     let coordsArray = [];
@@ -20,7 +16,6 @@ function segmentDataToArray(data) {
         if (i < coordsForSegments.length - 1) {
             if (coordsForSegments[i][0] == coordsForSegments[i+1][0]) {
                 coordsArray.push({lat: coordsForSegments[i][1].x, lng: coordsForSegments[i][1].y});
-                console.log(coordsArray);
             } else {
                 coordsArray.push({lat: coordsForSegments[i][1].x, lng: coordsForSegments[i][1].y});
                 segment = coordsForSegments[i][0]
@@ -31,12 +26,9 @@ function segmentDataToArray(data) {
             coordsArray.push({lat: coordsForSegments[i][1].x, lng: coordsForSegments[i][1].y});
             segment = coordsForSegments[i][0]
             dataArray.push([{segment}, {coordsArray}]);
-            console.log(coordsArray);
             coordsArray = [];    
         }
     }
-
-    console.log(dataArray);
     return dataArray;
 }
 
@@ -45,7 +37,6 @@ function getSegments() {
     return fetch('http://localhost:3000/points')
         .then((response) => { 
             return response.json().then((data) => {
-                console.log(data);
                 return data;
             }).catch((err) => {
                 console.log(err);
