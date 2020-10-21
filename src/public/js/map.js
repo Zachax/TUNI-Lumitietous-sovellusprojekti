@@ -1,77 +1,103 @@
 
+/*
+ * Kannasta saatu data käsitellään taulukoksi, jossa alkioina segmentin id ja koordinaatit sisältävä taulukko
+ *
+ */
+function segmentDataToArray(data) {
+    console.log(data);
+
+    const coordsForSegments = data.map((item) => {
+        return [item.Segmentti, item.Sijainti];
+    });
+
+    console.log(coordsForSegments);
+    console.log(coordsForSegments[0][1]);
+
+    let dataArray = [];
+    let coordsArray = [];
+    let segment;
+    for (let i = 0; i < coordsForSegments.length; i++) {
+        if (i < coordsForSegments.length - 1) {
+            if (coordsForSegments[i][0] == coordsForSegments[i+1][0]) {
+                coordsArray.push({lat: coordsForSegments[i][1].x, lng: coordsForSegments[i][1].y});
+                console.log(coordsArray);
+            } else {
+                coordsArray.push({lat: coordsForSegments[i][1].x, lng: coordsForSegments[i][1].y});
+                segment = coordsForSegments[i][0]
+                dataArray.push([{segment}, {coordsArray}]);
+                coordsArray = [];
+            }     
+        } else {
+            coordsArray.push({lat: coordsForSegments[i][1].x, lng: coordsForSegments[i][1].y});
+            segment = coordsForSegments[i][0]
+            dataArray.push([{segment}, {coordsArray}]);
+            console.log(coordsArray);
+            coordsArray = [];    
+        }
+    }
+
+    console.log(dataArray);
+    return dataArray;
+}
+
+// Segmenttien tiedot json-muodossa kannasta
+function getSegments() {
+    return fetch('http://localhost:3000/points')
+        .then((response) => { 
+            return response.json().then((data) => {
+                console.log(data);
+                return data;
+            }).catch((err) => {
+                console.log(err);
+            }) 
+        });
+}
+
 function initMap() {
-    // The location of Pallas
-    const pallas = { lat: 68.089608, lng: 24.013561 };
-    // The map, centered at Pallas
+    // Pallakesen keskuksen koordinaatit
+    const pallas = { lat: 68.045721, lng: 24.062813 };
+    // Kartta, keskitetty pallakselle
     const map = new google.maps.Map(document.getElementById("map"), {
       zoom: 13,
       center: pallas,
       mapTypeId: "terrain",
     });
-    // The marker, positioned at Pallas
-    // const marker = new google.maps.Marker({
-    //   position: pallas,
-    //   map: map,
-    // });
 
-    const triangle1Coords = [
-        { lat: 68.089608, lng: 24.013561 },
-        { lat: 68.081471, lng: 24.018539 },
-        { lat: 68.084355, lng: 24.037594 },
-        { lat: 68.089608, lng: 24.013561 },
-    ];
+    // Piirtää segmentin kannasta haettujen koordinaattien mukaisesti.
+    function drawSegmentsFromData(map) {
+        let coordsJson;
+        getSegments().then((data) => {
+            coordsJson = data;
 
-    const triangle2Coords = [
-        { lat: 68.079974, lng: 24.062758 },
-        { lat: 68.079654, lng: 24.084902 },
-        { lat: 68.072027, lng: 24.069453 },
-        { lat: 68.079974, lng: 24.062758 },
-    ];
+            const dataArray = segmentDataToArray(coordsJson);
+
+            for (let i = 0; i < dataArray.length; i++) {
+                let segment;
+                segment = new google.maps.Polygon({
+                    paths: dataArray[i][1].coordsArray,
+                    strokeColor: "#0000FF",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#0000FF",
+                    fillOpacity: 0.15,
+                });
+
+                segment.setMap(map);
     
-    const segment1Triangle = new google.maps.Polygon({
-        paths: triangle1Coords,
-        strokeColor: "#FF0000",
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: "#FF0000",
-        fillOpacity: 0.15,
-    });
-    segment1Triangle.setMap(map);
-
-    const segment2Triangle = new google.maps.Polygon({
-        paths: triangle2Coords,
-        strokeColor: "#00FF00",
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: "#00FF00",
-        fillOpacity: 0.15,
-    });
-    segment2Triangle.setMap(map);
-
-    segment1Triangle.addListener("mouseover", () => {
-        segment1Triangle.setOptions({fillOpacity: 0.8});
-    });
-
-    segment1Triangle.addListener("mouseout", () => {
-        segment1Triangle.setOptions({fillOpacity: 0.15});
-    });
-
-    segment1Triangle.addListener("click", () => {
-        infoDiv = document.getElementById("segment_info");
-        infoDiv.innerHTML = "<p>Segmentin 1 tietoja</p>";
-    });
-
-    segment2Triangle.addListener("mouseover", () => {
-        segment2Triangle.setOptions({fillOpacity: 0.8});
-    });
-
-    segment2Triangle.addListener("mouseout", () => {
-        segment2Triangle.setOptions({fillOpacity: 0.15});
-    });
-
-    segment2Triangle.addListener("click", () => {
-        infoDiv = document.getElementById("segment_info");
-        infoDiv.innerHTML = "<p>Segmentin 2 tietoja</p>";
-    });
-
+                segment.addListener("mouseover", () => {
+                    segment.setOptions({fillOpacity: 0.8});
+                });
+            
+                segment.addListener("mouseout", () => {
+                    segment.setOptions({fillOpacity: 0.15});
+                });
+            
+                segment.addListener("click", () => {
+                    infoDiv = document.getElementById("segment_info");
+                    infoDiv.innerHTML = "<p>Segmentin " + dataArray[i][0].segment + " tietoja</p>";
+                });
+            }     
+        });   
+    };
+    drawSegmentsFromData(map);
 }
