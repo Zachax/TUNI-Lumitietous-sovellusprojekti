@@ -34,7 +34,7 @@ function segmentDataToArray(data) {
 
 // Segmenttien tiedot json-muodossa kannasta
 function getSegments() {
-    return fetch('http://localhost:3000/points')
+    return fetch('http://localhost:3000/db/points')
         .then((response) => { 
             return response.json().then((data) => {
                 return data;

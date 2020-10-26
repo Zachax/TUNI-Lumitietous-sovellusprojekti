@@ -1,7 +1,14 @@
-var express = require('express');
-var app = express();
-var path = require('path');
-var db = require('./database');
+const express = require('express');
+const app = express();
+const path = require('path');
+const db = require('./routers/db');
+const session = require('express-session');
+
+app.use(session({
+  secret: 'Lumimies',
+  resave: false,
+  saveUninitialized: false
+}));
 
 
 // app.get('/', function(req, res) {
@@ -10,21 +17,9 @@ var db = require('./database');
 
 app.use('/', express.static('public'));
 
-app.get('/users', function(req, res) {
-  db.query('SELECT * FROM Kayttajat', function (err, result, fields) {
-      if (err) throw err;
-      console.log(result);
-      res.json(result);
-  });
-});
+//router for payments
+app.use('/db/', db);
 
-app.get('/points', function(req, res) {
-  db.query('SELECT * FROM Koordinaatit ORDER BY Segmentti', function (err, result, fields) {
-      if (err) throw err;
-      console.log(result);
-      res.json(result);
-  });
-});
 
 console.log("listening to port 3000")
 app.listen(3000);

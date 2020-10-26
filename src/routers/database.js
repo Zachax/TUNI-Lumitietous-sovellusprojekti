@@ -1,6 +1,7 @@
-var mysql = require('mysql2');
+const mysql = require('mysql2');
 
-var con = mysql.createConnection({
+//modify if database changes
+const con = mysql.createConnection({
   host: "localhost",
   user: "testi",
   password: "testpass",
