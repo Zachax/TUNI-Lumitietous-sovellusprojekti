@@ -16,11 +16,27 @@
 
    <body>
 
-    <p>
-      Hei meillähän on jo kartta
-    </p>
+    <div id="popupbox"> 
+      <form name="login" action="" method="get">
+      <center>Username:</center>
+      <center><input name="username" size="14" /></center>
+      <center>Password:</center>
+      <center><input name="password" type="password" size="14" /></center>
+      <center><input type="submit" name="submit" value="login" /></center>
+      </form>
+      <br />
+      <center><p id="closelink">close</p></center> 
+    </div> 
+    <div id="top_bar">
+      <p>
+        Pallaksen lumet 
+      </p>
+      <div id="loginlink">Login</div>
+    </div>
     <div id="map"></div>
+    <div id="guide"></div>
     <div id="segment_info"></div>
+    <script src="js/login.js"></script>
    </body>
 
 </html>

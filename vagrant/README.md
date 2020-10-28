@@ -3,7 +3,7 @@ Snow information application for Software Project course in University of Tamper
 
 # Serverin käynnistys ja yhteydenotto
 1.Lataa ja asenna Vagrant ja Virtual Box(tai jokin muu virtualisaatio ohjelma)
-2.Siirry TUNI-Lumitietous-sovellusprojekti kansioon ja anna komento "vagrant up"
+2.Siirry TUNI-Lumitietous-sovellusprojekti kansioon, siirry siellä vagrant -kansioon ja anna komento "vagrant up"
 3.Kun virtuaalikone on käynnistynyt kirjaudu siihen sisälle "vagrant ssh"
 4.navigoi jaettuun kansioo. (kaksi kansiotasoa sisääntuloa ylempänä sijaitseva vagrant kansio)
 5.Navigoi src kansioon
