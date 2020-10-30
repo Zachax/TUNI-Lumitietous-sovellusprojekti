@@ -26,7 +26,7 @@ router.get('/segments', function(req, res) {
       //transfere needed data to array
       const coordsForSegments = points.map((item) => {
         item.Sijainti.lat = item.Sijainti.x;
-        item.Sijainti.lon = item.Sijainti.y;
+        item.Sijainti.lng = item.Sijainti.y;
         delete item.Sijainti.x;
         delete item.Sijainti.y;
         return [item.Segmentti, item.Sijainti];
@@ -42,7 +42,7 @@ router.get('/segments', function(req, res) {
         coordsForSegments.forEach(obj =>{
           pointsDict[obj[0]].push(obj[1]);
         });
-        //add array as object property to result
+        //add arrays from dict to result as object properties
         result.forEach(obj =>{
           obj.Points = pointsDict[obj.ID];
         });
@@ -50,6 +50,11 @@ router.get('/segments', function(req, res) {
         res.json(result);   
       });
   });
+});
+
+router.get('/user/login', function(req, res) {
+
+
 });
 
 module.exports = router;

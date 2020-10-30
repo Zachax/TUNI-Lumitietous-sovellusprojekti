@@ -3,6 +3,12 @@
  * Kannasta saatu data käsitellään taulukoksi, jossa alkioina segmentin id ja koordinaatit sisältävä taulukko
  *
  */
+
+
+/* THIS fucntion is redundatn now
+
+
+
 function segmentDataToArray(data) {
 
     const coordsForSegments = data.map((item) => {
@@ -31,10 +37,11 @@ function segmentDataToArray(data) {
     }
     return dataArray;
 }
+*/
 
 // Segmenttien tiedot json-muodossa kannasta
 function getSegments() {
-    return fetch('http://localhost:3000/db/points')
+    return fetch('http://localhost:3000/db/segments')
         .then((response) => { 
             return response.json().then((data) => {
                 return data;
@@ -58,14 +65,13 @@ function initMap() {
     function drawSegmentsFromData(map) {
         let coordsJson;
         getSegments().then((data) => {
-            coordsJson = data;
+            const segmentArray = data;
 
-            const dataArray = segmentDataToArray(coordsJson);
-
-            for (let i = 0; i < dataArray.length; i++) {
+            console.log(segmentArray);
+            for (let i = 0; i < segmentArray.length; i++) {
                 let segment;
                 segment = new google.maps.Polygon({
-                    paths: dataArray[i][1].coordsArray,
+                    paths: segmentArray[i].Points,
                     strokeColor: "#0000FF",
                     strokeOpacity: 0.8,
                     strokeWeight: 2,
