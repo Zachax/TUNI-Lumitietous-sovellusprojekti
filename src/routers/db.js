@@ -1,7 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const database = require('./database');
+const jwt = require('jsonwebtoken');
+//const bcrypt = require('bcryptjs');  KÄYTÄ TÄTÄ PERUS BCRYPT EI TOIMI
 
+const saltRounds = 15;
+const secret = "Lumihiriv0"
+
+router.post('/user/login', function(req, res) {
+  database.query('SELECT * FROM Kayttajat WHERE Etunimi = ?',[req.body.Etunimi], function (err, result, fields) {
+      if (err) throw err;
+      if(result.length == 1){
+        user = result[0];
+        if(user.Salasana == req.body.Salasana){
+          jwt.sign({ id: user.ID, Sahkoposti: user.Sähköposti }, secret, { algorithm: 'HS256' }, function(err, token) {
+            console.log(token);
+            res.json({ token: token }); 
+          });
+        }
+        else{
+          res.json("incorrect password");
+        }
+      }
+      else
+      {
+        res.json("No User Found");
+      }
+  });
+  
+  //res.json(req.body);
+});
 
 router.get('/users', function(req, res) {
   database.query('SELECT * FROM Kayttajat', function (err, result, fields) {
@@ -10,7 +38,7 @@ router.get('/users', function(req, res) {
       res.json(result);
   });
 });
-
+/*
 router.get('/points', function(req, res) {
   database.query('SELECT * FROM Koordinaatit ORDER BY Segmentti', function (err, result, fields) {
       if (err) throw err;
@@ -18,6 +46,7 @@ router.get('/points', function(req, res) {
       res.json(result);
   });
 });
+*/
 
 router.get('/segments', function(req, res) {
   //get points from database
@@ -52,9 +81,6 @@ router.get('/segments', function(req, res) {
   });
 });
 
-router.get('/user/login', function(req, res) {
 
-
-});
 
 module.exports = router;
