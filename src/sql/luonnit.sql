@@ -13,7 +13,8 @@ CREATE TABLE Kayttajat (
     Sukunimi VARCHAR(30),
     Rooli VARCHAR(20),
     Sähköposti VARCHAR(30),
-    Salasana VARCHAR(30)
+    Salasana VARCHAR(100),
+    UNIQUE (Sähköposti)
 );
 
 CREATE TABLE Paivitykset (
