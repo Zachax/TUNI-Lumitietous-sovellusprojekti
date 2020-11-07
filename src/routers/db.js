@@ -117,7 +117,7 @@ router.get('/segments', function(req, res) {
         result.forEach(obj =>{
           obj.Points = pointsDict[obj.ID];
         });
-        
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3002');
         res.json(result);   
       });
   });
