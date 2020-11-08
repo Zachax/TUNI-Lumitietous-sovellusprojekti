@@ -36,7 +36,9 @@ function App() {
     setShownSegment(choice);
   }
 
-  
+  function updateToken(token) {
+    setToken(token);
+  }
 
   return (
     <div className="App">
@@ -44,7 +46,7 @@ function App() {
         <p>
             Pallaksen lumet {(isMobile ? "mobiili" : "desktop")} 
         </p>
-        <div id="loginlink"><Login /></div>
+        <div id="loginlink"><Login updateToken={updateToken} /></div>
         </div>
         <div id="map">
           <Map segments={segments} onClick={chooseSegment} loaded={loaded} isMobile={isMobile} />
