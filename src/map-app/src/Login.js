@@ -68,7 +68,9 @@ function Login(props) {
       const res = await response.json();
       //console.log(res);
       //console.log(res.token);
+
       props.updateToken(res.token);
+
     };
     fetchLogin();
     closeLogin();

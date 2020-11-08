@@ -5,13 +5,14 @@ import './style.css';
 import Map from './Map';
 import Info from './Info';
 import Login from './Login';
+import Logout from './Logout';
 import { useMediaQuery } from 'react-responsive';
 
 
 function App() {
 
   // Use state hooks
-  const [token, setToken] = React.useState("");
+  const [token, setToken] = React.useState(null);
   const [loaded, setLoaded] = React.useState(false);
   const [segments, setSegments] = React.useState([]);
   const [shownSegment, setShownSegment] = React.useState(null);
@@ -46,14 +47,15 @@ function App() {
         <p>
             Pallaksen lumet {(isMobile ? "mobiili" : "desktop")} 
         </p>
-        <div id="loginlink"><Login updateToken={updateToken} /></div>
+        <div id="loginlink">{(token === null || token === undefined ? <Login updateToken={updateToken} /> : <Logout updateToken={updateToken}/>)}
+        </div>
         </div>
         <div id="map">
           <Map segments={segments} onClick={chooseSegment} loaded={loaded} isMobile={isMobile} />
         </div>
         <div className="guide"></div>
         <div className="segment_info">
-          <Info segmentdata={segments[shownSegment-1]} />
+          <Info segmentdata={segments[shownSegment-1]} token={token} />
         </div>
     </div>
   );
