@@ -8,7 +8,11 @@ Snow information application for Software Project course in University of Tamper
 4.navigoi jaettuun kansioo. (kaksi kansiotasoa sisääntuloa ylempänä sijaitseva vagrant kansio)
 5.Navigoi src kansioon
 6.Asenna pakkaukset komennolla "npm install"
-7.Käynnistä serveri komennolla "node app.js"
-8.Mikäli ruudulla lukee "listening to 3000" voit ottaa yhteyden serveriin selaimella( http://localhost:3000/)
+SUOSITUS: npm:n asentaminen omalle koneelle ja kohtien 7-8 tekeminen toisessa konsolissa ilman yhteyttä virtuaalikoneeseen saattaa toimia paremmin
+7. Navigoi kansioon TUNI-Lumitietous-sovellusprojekti\src\map-app
+8. Suorita "npm install" sekä "npm run build" 
+
+9. Käynnistä serveri komennolla "node app.js"
+10. Mikäli ruudulla lukee "listening to 3000" voit ottaa yhteyden serveriin selaimella( http://localhost:3000/)
 
 Olkaa ongelmien tapauksessa yhteydessä virtualisaatio on joskus mutkikasta
