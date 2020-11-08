@@ -71,14 +71,6 @@ router.post('/user',
   }
 });
 
-
-router.get('/users', function(req, res) {
-  database.query('SELECT * FROM Kayttajat', function (err, result, fields) {
-      if (err) throw err;
-      console.log(result);
-      res.json(result);
-  });
-});
 /*
 router.get('/points', function(req, res) {
   database.query('SELECT * FROM Koordinaatit ORDER BY Segmentti', function (err, result, fields) {
@@ -123,6 +115,84 @@ router.get('/segments', function(req, res) {
   });
 });
 
+
+router.get('/segments/update', function(req, res) {
+  database.query(
+  `SELECT Tekija, Segmentti, Lumilaatu, Teksti, Aika 
+  FROM Paivitykset
+  WHERE (Segmentti, Aika)
+  IN
+  (SELECT Segmentti, MAX(Aika)
+    FROM Paivitykset
+    GROUP BY(Segmentti)
+   )
+   ORDER BY(Segmentti)`,
+  function (err, result, fields) {
+      if (err) throw err;
+      console.log(result)
+      res.json(result);
+  });
+});
+
+router.use(function(req, res, next) {
+
+  if (req.headers.authorization) {
+    if (req.headers.authorization.startsWith('Bearer ')) {
+      var token = req.headers.authorization.slice(7, req.headers.authorization.length);
+      jwt.verify(token, secret, function(err, decoded) {
+        if(err) res.sendStatus(401);
+        else {
+          //jos kirjautuminen onnistuu kirjataan jääneet tiedot muistiin
+          req.decoded = decoded;
+          next();
+        }
+      });
+    } else {
+      res.sendStatus(401);
+    }
+  } else {
+    res.sendStatus(401);
+  }
+
+});
+
+
+router.get('/users', function(req, res) {
+  database.query('SELECT * FROM Kayttajat', function (err, result, fields) {
+      if (err) throw err;
+      res.json(result);
+  });
+});
+
+router.get('/user', function(req, res) {
+  database.query('SELECT * FROM Kayttajat WHERE ID = ?',
+  [
+    req.decoded.id
+  ],
+  function (err, result, fields) {
+      if (err) throw err;
+      res.json(result);
+  });
+});
+
+router.post('/segments/update/:id', function(req, res) {
+
+  if(req.body.Segmentti != req.params.id)
+  {
+    res.json("Segmentti numerot eivät täsmää");
+  }
+  database.query('INSERT INTO Paivitykset(Tekija, Segmentti, Lumilaatu, Teksti, Aika) VALUES(?, ?, ?, ?, NOW())',
+  [
+    req.decoded.id,
+    req.body.Segmentti,
+    req.body.Lumilaatu,
+    req.body.Teksti
+  ],
+  function (err, points, fields) {
+    if (err) throw err;
+    return res.json("Insert was succesfull");
+  });
+});
 
 
 module.exports = router;
