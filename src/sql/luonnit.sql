@@ -21,10 +21,11 @@ CREATE TABLE Paivitykset (
     Tekija BIGINT UNSIGNED,
     Segmentti BIGINT UNSIGNED,
     Aika DATETIME,
-    Lumilaatu VARCHAR(20),
+    Lumilaatu INT,
+    Teksti VARCHAR(500),
     FOREIGN KEY(Tekija) references Kayttajat(ID),
     FOREIGN KEY(Segmentti) references Segmentit(ID),
-    CONSTRAINT tunniste PRIMARY KEY (Tekija, Segmentti)
+    CONSTRAINT tunniste PRIMARY KEY (Aika, Segmentti)
 );
 
 CREATE TABLE Koordinaatit(
