@@ -14,26 +14,24 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 
-function Login() {
+function Login(props) {
 
   const [showPassword, setShowPassword] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [anchorElLogin, setAnchorElLogin] = React.useState(null);
   const [loginOpen, setLoginOpen] = React.useState(false);
 
   // Event handlers
 
   const openLogin = (event) => {
     setLoginOpen(true);
-    setAnchorElLogin(event.currentTarget);
   }
 
   const closeLogin = (event) => {
     setLoginOpen(false);
-    setAnchorElLogin(null);
     setEmail("");
     setPassword("");
+    setShowPassword(false);
   }
 
   const handleClickShowPassword = () => {
@@ -54,11 +52,26 @@ function Login() {
 
   const sendForm = (event) => {
     const data = {
-      email: email,
-      password: password,
+      Sähköposti: email,
+      Salasana: password,
     }
-    alert(`sending following ${data.email}`);
-    
+    const fetchLogin = async () => {
+      const response = await fetch('api/user/login',
+      {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+      });
+      const res = await response.json();
+      //console.log(res);
+      //console.log(res.token);
+      props.updateToken(res.token);
+    };
+    fetchLogin();
+    closeLogin();
   }
   
   //console.log(props);
@@ -76,16 +89,6 @@ function Login() {
       <Dialog 
         onClose={closeLogin} 
         open={loginOpen}
-        anchorEl={anchorElLogin}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        keepMounted
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
       >
         <DialogTitle id="simple-dialog-title">Login</DialogTitle>
           <TextField id="euros" label="email" value={email} onChange={updateEmail} />
