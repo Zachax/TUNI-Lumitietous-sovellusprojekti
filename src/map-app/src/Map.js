@@ -2,10 +2,10 @@ import * as React from "react";
 import { useGoogleMaps } from "react-hook-google-maps";
  
 function Map(props) {
-  const [origin, setOrigin] = React.useState({ lat: 68.045721, lng: 24.062813 });
+  const origin = { lat: 68.045721, lng: 24.062813 };
   const [drawn, setDrawn] = React.useState(false);
   // console.log(props);
-  const zoom = (props.isMobile ? 11 : 13)
+  const zoom = (props.isMobile ? 11 : 12);
 
   const { ref, map, google } = useGoogleMaps(
     // Use your own API key, you can get one from Google (https://console.cloud.google.com/google/maps-apis/overview)

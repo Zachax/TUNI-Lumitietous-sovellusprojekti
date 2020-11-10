@@ -4,11 +4,8 @@ import './App.css';
 import './style.css';
 import Map from './Map';
 import Info from './Info';
-import Login from './Login';
-import Logout from './Logout';
+import TopBar from './TopBar';
 import { useMediaQuery } from 'react-responsive';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 
 
 function App() {
@@ -46,22 +43,22 @@ function App() {
   return (
     <div className="App">
         <div className="top_bar">
-          <Typography variant="h6">
-            Pallaksen lumet {(isMobile ? "mobiili" : "desktop")}
-          </Typography>
-          <div className="admin">
-            {(token === null || token === undefined ? <div /> : <Button color="inherit">Hallitse</Button>)}
-          </div>
-          <div id="loginlink">
-            {(token === null || token === undefined ? <Login updateToken={updateToken} /> : <Logout updateToken={updateToken} />)}
-          </div>     
+          <TopBar isMobile={isMobile} token={token} updateToken={updateToken} />   
         </div>
         <div id="map">
-          <Map segments={segments} onClick={chooseSegment} loaded={loaded} isMobile={isMobile} />
+          <Map 
+            segments={segments} 
+            onClick={chooseSegment} 
+            loaded={loaded} 
+            isMobile={isMobile} 
+          />
         </div>
         <div className="guide"></div>
         <div className="segment_info">
-          <Info segmentdata={segments[shownSegment-1]} token={token} />
+          <Info 
+            segmentdata={segments[shownSegment-1]} 
+            token={token} 
+          />
         </div>
     </div>
   );

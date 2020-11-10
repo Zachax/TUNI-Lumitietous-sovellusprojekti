@@ -12,10 +12,13 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 function Login(props) {
 
+  const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -56,6 +59,7 @@ function Login(props) {
       Salasana: password,
     }
     const fetchLogin = async () => {
+      setLoading(true);
       const response = await fetch('api/user/login',
       {
         method: "POST",
@@ -69,8 +73,9 @@ function Login(props) {
       //console.log(res);
       //console.log(res.token);
 
+      
       props.updateToken(res.token);
-
+      setLoading(false);
     };
     fetchLogin();
     closeLogin();
@@ -81,12 +86,13 @@ function Login(props) {
   return (
     <div className="login">
       <IconButton 
-        edge="start" 
+        //edge="start" 
         //className={styledClasses.editButton} 
         color="inherit" 
         onClick={openLogin}
       >
-        <VpnKeyIcon />
+        <Typography>{(loading ? "Logging in" : "Login")}</Typography>
+        {(loading ? <CircularProgress color="secondary" size={20} /> : <VpnKeyIcon />)}
       </IconButton>
       <Dialog 
         onClose={closeLogin} 
