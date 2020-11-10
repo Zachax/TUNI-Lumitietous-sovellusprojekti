@@ -7,6 +7,8 @@ import Info from './Info';
 import Login from './Login';
 import Logout from './Logout';
 import { useMediaQuery } from 'react-responsive';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 
 
 function App() {
@@ -44,11 +46,15 @@ function App() {
   return (
     <div className="App">
         <div className="top_bar">
-        <p>
-            Pallaksen lumet {(isMobile ? "mobiili" : "desktop")} 
-        </p>
-        <div id="loginlink">{(token === null || token === undefined ? <Login updateToken={updateToken} /> : <Logout updateToken={updateToken}/>)}
-        </div>
+          <Typography variant="h6">
+            Pallaksen lumet {(isMobile ? "mobiili" : "desktop")}
+          </Typography>
+          <div className="admin">
+            {(token === null || token === undefined ? <div /> : <Button color="inherit">Hallitse</Button>)}
+          </div>
+          <div id="loginlink">
+            {(token === null || token === undefined ? <Login updateToken={updateToken} /> : <Logout updateToken={updateToken} />)}
+          </div>     
         </div>
         <div id="map">
           <Map segments={segments} onClick={chooseSegment} loaded={loaded} isMobile={isMobile} />
