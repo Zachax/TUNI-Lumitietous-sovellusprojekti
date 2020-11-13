@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const database = require('./database');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');  //KÄYTÄ TÄTÄ PERUS BCRYPT EI TOIMI
+const bcrypt = require('bcryptjs');
 //alusta salaukset
 const saltRounds = 15;
 const secret = "Lumihiriv0"
@@ -20,16 +20,21 @@ router.post('/user/login', function(req, res) {
           jwt.sign({ id: user.ID, Sahkoposti: user.Sähköposti }, secret, { algorithm: 'HS256' }, function(err, token) {
             console.log(token);
             res.json({ token: token }); 
+            res.status(200);
           });
           }
           else{
+            console.log("incorrect password");
             res.json("incorrect password");
+            res.status(401);
           }
         });
       }
       else
       {
+        console.log("user not found");
         res.json("No User Found");
+        res.status(401);
       }
   });
   
@@ -50,7 +55,8 @@ router.post('/user',
   ,function(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.json({ errors: errors.array() });
+    res.json({ errors: errors.array() });
+    res.status(400);
   }
   
   else{
@@ -65,7 +71,8 @@ router.post('/user',
       ],
       function (err, points, fields) {
         if (err) throw err;
-        return res.json("Insert was succesfull");
+        res.json("Insert was succesfull");
+        res.status(200);
       });
     });
   }
@@ -110,10 +117,36 @@ router.get('/segments', function(req, res) {
           obj.Points = pointsDict[obj.ID];
         });
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3002');
-        res.json(result);   
+        res.json(result);
+        res.status(200);        
       });
   });
 });
+
+
+router.get('/segments/update/:id', function(req, res) {
+  database.query(
+  `SELECT Tekija, Segmentti, Lumilaatu, Teksti, Aika 
+  FROM Paivitykset
+  WHERE (Segmentti, Aika)
+  IN
+  (SELECT Segmentti, MAX(Aika)
+    FROM Paivitykset
+    WHERE Segmentti = ?
+    GROUP BY(Segmentti)
+   )
+   ORDER BY(Segmentti)`,
+  [
+  req.params.id
+  ],
+  function (err, result, fields) {
+      if (err) throw err;
+      console.log(result)
+      res.json(result);
+      res.status(200);
+  });
+});
+
 
 
 router.get('/segments/update', function(req, res) {
@@ -131,6 +164,7 @@ router.get('/segments/update', function(req, res) {
       if (err) throw err;
       console.log(result)
       res.json(result);
+      res.status(200);
   });
 });
 
@@ -161,6 +195,7 @@ router.get('/users', function(req, res) {
   database.query('SELECT * FROM Kayttajat', function (err, result, fields) {
       if (err) throw err;
       res.json(result);
+      res.status(200);
   });
 });
 
@@ -172,6 +207,7 @@ router.get('/user', function(req, res) {
   function (err, result, fields) {
       if (err) throw err;
       res.json(result);
+      res.status(200);
   });
 });
 
@@ -180,6 +216,7 @@ router.post('/segments/update/:id', function(req, res) {
   if(req.body.Segmentti != req.params.id)
   {
     res.json("Segmentti numerot eivät täsmää");
+    res.status(400);
   }
   database.query('INSERT INTO Paivitykset(Tekija, Segmentti, Lumilaatu, Teksti, Aika) VALUES(?, ?, ?, ?, NOW())',
   [
@@ -190,7 +227,8 @@ router.post('/segments/update/:id', function(req, res) {
   ],
   function (err, points, fields) {
     if (err) throw err;
-    return res.json("Insert was succesfull");
+    res.json("Insert was succesfull");
+    res.status(200);
   });
 });
 
