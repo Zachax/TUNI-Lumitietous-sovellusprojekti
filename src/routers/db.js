@@ -1,3 +1,9 @@
+/**
+API kutsut tietokannalle
+
+Päivityshistoria
+Arttu Lakkala 15.11 Lisätty segmentit delete
+*/
 const express = require('express');
 const router = express.Router();
 const database = require('./database');
@@ -37,8 +43,6 @@ router.post('/user/login', function(req, res) {
         res.status(401);
       }
   });
-  
-  //res.json(req.body);
 });
 
 router.post('/user',
@@ -72,7 +76,7 @@ router.post('/user',
       function (err, points, fields) {
         if (err) throw err;
         res.json("Insert was succesfull");
-        res.status(200);
+        res.status(204);
       });
     });
   }
@@ -168,6 +172,7 @@ router.get('/segments/update', function(req, res) {
   });
 });
 
+//Salasanan tarkistus
 router.use(function(req, res, next) {
 
   if (req.headers.authorization) {
@@ -211,6 +216,49 @@ router.get('/user', function(req, res) {
   });
 });
 
+router.put('/user/:id', function(req, res) {
+  bcrypt.hash(req.body.Salasana, saltRounds, function(err, hash) {
+    database.query(
+    `UPDATE Kayttajat
+     SET 
+     Etunimi=?,
+     Sukunimi=?,
+     Sähköposti=?,
+     Salasana=?
+     WHERE ID = ?
+    `,
+    [
+      req.body.Etunimi,
+      req.body.Sukunimi,
+      req.body.Sähköposti,
+      hash,
+      req.params.id
+    ],
+    function (err, result, fields) {
+        if (err) throw err;
+        res.json(result);
+        res.status(200);
+    });
+  });
+});
+
+
+
+router.delete('/user/:id', function(req, res) {
+  database.query(
+  `DELETE FROM Kayttajat
+   WHERE ID = ?
+  `,
+  [
+    req.params.id
+  ],
+  function (err, result, fields) {
+      if (err) throw err;
+      res.json(result);
+      res.status(200);
+  });
+});
+
 router.post('/segments/update/:id', function(req, res) {
 
   if(req.body.Segmentti != req.params.id)
@@ -228,7 +276,22 @@ router.post('/segments/update/:id', function(req, res) {
   function (err, points, fields) {
     if (err) throw err;
     res.json("Insert was succesfull");
-    res.status(200);
+    res.status(204);
+  });
+});
+
+router.delete('/segments/:id', function(req, res) {
+  database.query(
+  `DELETE FROM Segmentit
+   WHERE ID = ?
+  `,
+  [
+    req.params.id
+  ],
+  function (err, result, fields) {
+      if (err) throw err;
+      res.json(result);
+      res.status(200);
   });
 });
 
