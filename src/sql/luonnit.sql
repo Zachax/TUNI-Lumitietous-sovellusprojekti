@@ -17,6 +17,11 @@ CREATE TABLE Kayttajat (
     UNIQUE (Sähköposti)
 );
 
+CREATE TABLE Lumilaadut (
+    ID SERIAL PRIMARY KEY,
+    Nimi VARCHAR(50)
+);
+
 CREATE TABLE Paivitykset (
     Tekija BIGINT UNSIGNED,
     Segmentti BIGINT UNSIGNED,
