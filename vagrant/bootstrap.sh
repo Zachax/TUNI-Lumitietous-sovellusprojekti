@@ -27,6 +27,7 @@ mysql -uroot -p$DBPASSWD -e "GRANT ALL PRIVILEGES ON $DBNAME.* TO '$DBUSER'@'loc
 mysql -uroot -p$DBPASSWD -e "CREATE USER '$DBUSER'@'10.0.2.2' IDENTIFIED BY '$DBPASSWD'"
 mysql -uroot -p$DBPASSWD -e "GRANT ALL PRIVILEGES ON $DBNAME.* TO '$DBUSER'@'10.0.2.2'"
 mysql Pallas< ../../vagrant/src/sql/luonnit.sql -uroot -p$DBPASSWD
+mysql Pallas< ../../vagrant/src/sql/Lumilaadut.sql -uroot -p$DBPASSWD
 mysql Pallas< ../../vagrant/src/sql/Segmentit.sql -uroot -p$DBPASSWD
 mysql Pallas< ../../vagrant/src/sql/Koordinaatit.sql -uroot -p$DBPASSWD
 
