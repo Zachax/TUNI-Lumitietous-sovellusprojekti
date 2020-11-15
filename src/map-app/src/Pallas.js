@@ -1,3 +1,9 @@
+/**Pää javascript react appiin
+Päivityshistoria
+Arttu Lakkala 15.11 Lisätty päivityksen lisäys segmenttiin.
+
+**/
+
 import * as React from "react";
 import { useEffect } from 'react';
 import './App.css';
@@ -35,6 +41,15 @@ function App() {
       setUpdates(updateData);
       const response = await fetch('api/segments');
       const data = await response.json();
+      data.forEach(segment => {
+        segment.update = null;
+        updateData.forEach(update => {
+          if (update.Segmentti === segment.ID) {
+            segment.update = update;
+          }
+        });
+      });
+      console.log(data)
       setSegments(data);
       //setLoaded(true);
     };

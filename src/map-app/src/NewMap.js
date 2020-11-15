@@ -1,3 +1,9 @@
+/**
+Kartan piirto käyttöliittymään
+Viimeisin päivitys
+Arttu Lakkala 15.11
+Lisätty päivitys värin valintaan
+**/
 import { GoogleMap, LoadScript, Polygon } from '@react-google-maps/api';
 import * as React from "react";
 
@@ -38,16 +44,20 @@ function Map(props) {
           >
             {
               props.segments.map(item => {
+                var vari=0
+                if(item.update !== null){
+                  vari = item.update.Lumilaatu;
+                }
                 return (
                   <Polygon 
                     key={item.ID}
                     path={item.Points}
                     options={
                       {
-                        strokeColor: colors[item.ID % 3],
+                        strokeColor: colors[vari % 3],
                         strokeOpacity: 0.8,
                         strokeWeight: 2,
-                        fillColor: colors[item.ID % 3],
+                        fillColor: colors[vari % 3],
                         fillOpacity: mouseover === item.ID || selectedSegment.ID === item.ID ? 0.8 : 0.15,
                         polygonKey: item.ID
                       }
