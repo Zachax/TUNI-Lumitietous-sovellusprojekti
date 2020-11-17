@@ -1,3 +1,12 @@
+/**
+Applikaation yläpalkki
+
+Luonut: Markku Nirkkonen
+
+Viimeisin päivitys
+
+**/
+
 import * as React from "react";
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -9,6 +18,7 @@ import Logout from './Logout';
 import MobileMenu from './MobileMenu';
 import { makeStyles } from '@material-ui/core/styles';
 
+// Styles for App-Bar
 const useStyles = makeStyles((theme) => ({
   barheader: {
     flexGrow: 1,
@@ -21,9 +31,10 @@ const useStyles = makeStyles((theme) => ({
  
 function TopBar(props) {
 
+  // Use styles
   const styledClasses = useStyles();
   
-  //console.log(props);
+  // Returs different views for logged in user than for regular user
   if (!props.isMobile) {
     return (
       <AppBar>

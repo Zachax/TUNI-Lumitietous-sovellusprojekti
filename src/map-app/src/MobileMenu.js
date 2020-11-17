@@ -1,3 +1,12 @@
+/**
+Piirtää pienellä näytöllä valikon kirjautuneelle käyttäjälle
+
+Luonut: Markku Nirkkonen
+
+Viimeisin päivitys
+
+**/
+
 import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
@@ -12,8 +21,8 @@ import Logout from './Logout';
 function MobileMenu(props) {
   // Hooks
 	const [anchorElMenu, setAnchorElMenu] = React.useState(null); 
-	const menuOpen = Boolean(anchorElMenu);
-    
+	
+	const menuOpen = Boolean(anchorElMenu);  
 
   // Event handlers
 	const handleMenu = event => {
@@ -24,6 +33,7 @@ function MobileMenu(props) {
 		setAnchorElMenu(null);
 	};
 
+	// TODO: Name of the signed in user to be shown
 	return (
 		<div className="mobilemenu">
 			<IconButton 
@@ -31,11 +41,11 @@ function MobileMenu(props) {
 				color="inherit" 
 				onClick={handleMenu}
 			>
-				<Typography>"NIMI"</Typography>
+				<Typography>"NAME"</Typography>
 				<AccountCircleIcon />
 			</IconButton>
 			<Menu
-				id="help-appbar"
+				id="menu-appbar"
 				anchorEl={anchorElMenu}
 				anchorOrigin={{
 					vertical: 'top',

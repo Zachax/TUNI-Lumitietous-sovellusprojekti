@@ -1,5 +1,10 @@
-/**Pää javascript react appiin
+/**
+Pää javascript react appiin
+
+Luonut: Markku Nirkkonen
+
 Päivityshistoria
+
 Arttu Lakkala 15.11 Lisätty päivityksen lisäys segmenttiin.
 
 **/
@@ -22,9 +27,8 @@ function App() {
 
   // Use state hooks
   const [token, setToken] = React.useState(null);
-  //const [loaded, setLoaded] = React.useState(false);
   const [segments, setSegments] = React.useState([]);
-  const [updates, setUpdates] = React.useState([]);
+  //const [updates, setUpdates] = React.useState([]);
   const [shownSegment, setShownSegment] = React.useState(null);
 
   //imported hooks
@@ -37,8 +41,8 @@ function App() {
     const fetchData = async () => {
       const updates = await fetch('api/segments/update');
       const updateData = await updates.json();
-      console.log(updateData);
-      setUpdates(updateData);
+      //console.log(updateData);
+      //setUpdates(updateData);
       const response = await fetch('api/segments');
       const data = await response.json();
       data.forEach(segment => {
@@ -50,14 +54,14 @@ function App() {
         });
       });
       console.log(data)
-      setSegments(data);
-      //setLoaded(true);
+      updateSegments(data);
     };
     fetchData();
   }, []);
 
   // Event handler function for updating shown segment
   function chooseSegment(choice) {
+    console.log(choice);
     setShownSegment(choice);
   }
 
@@ -65,6 +69,12 @@ function App() {
     setToken(token);
   }
 
+  function updateSegments(data) {
+    setSegments(data);
+  }
+
+  // TODO: Styles of each component
+  // TODO: Guide for segment colours
   return (
     <div className="App">
         <div className="top_bar">
@@ -76,7 +86,6 @@ function App() {
             <Map 
               segments={segments} 
               onClick={chooseSegment} 
-              //loaded={loaded} 
               isMobile={isMobile} 
             />
 
@@ -86,14 +95,15 @@ function App() {
           <div className={styledClasses.toolbar} />
           {(shownSegment !== null ? 
             <Info
-              updates={updates}
+              //segments={segments}
               segmentdata={shownSegment} 
-              token={token} 
+              token={token}
+              updateSegments={updateSegments}
+              onUpdate={chooseSegment}
             />
             :
             <div />
-          )}
-          
+          )} 
         </div>
     </div>
   );

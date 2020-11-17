@@ -1,3 +1,15 @@
+/**
+Kirjautumistoimintojen piirto yläpalkkiin
+
+Luonut: Markku Nirkkonen
+
+Viimeisin päivitys
+
+Markku Nirkkonen 17.11.
+Pieniä muotoiluseikkoja säädetty
+
+**/
+
 import * as React from "react";
 import IconButton from '@material-ui/core/IconButton';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
@@ -15,17 +27,32 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+// Styles
+const useStyles = makeStyles((theme) => ({
+  password: {
+    padding: theme.spacing(2),
+  }, 
+  email: {
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  }
+}));
+
 
 function Login(props) {
 
+  // Hooks
   const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loginOpen, setLoginOpen] = React.useState(false);
 
-  // Event handlers
-
+  /*
+   * Event handlers
+   */
   const openLogin = (event) => {
     setLoginOpen(true);
   }
@@ -53,6 +80,7 @@ function Login(props) {
     setPassword(event.target.value);
   }
 
+  // When form is sent, POST method api call to /user/login
   const sendForm = (event) => {
     const data = {
       Sähköposti: email,
@@ -70,9 +98,6 @@ function Login(props) {
         body: JSON.stringify(data),
       });
       const res = await response.json();
-      //console.log(res);
-      //console.log(res.token);
-
       
       props.updateToken(res.token);
       setLoading(false);
@@ -80,14 +105,13 @@ function Login(props) {
     fetchLogin();
     closeLogin();
   }
-  
-  //console.log(props);
+
+  const styledClasses = useStyles();
 
   return (
     <div className="login">
       <IconButton 
         //edge="start" 
-        //className={styledClasses.editButton} 
         color="inherit" 
         onClick={openLogin}
       >
@@ -97,11 +121,12 @@ function Login(props) {
       <Dialog 
         onClose={closeLogin} 
         open={loginOpen}
+        className={styledClasses.input}
       >
         <DialogTitle id="simple-dialog-title">Login</DialogTitle>
-          <TextField id="euros" label="email" value={email} onChange={updateEmail} />
-          <FormControl >
-            <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
+          <TextField id="email" label="email" value={email} onChange={updateEmail} className={styledClasses.email}/>
+            <FormControl className={styledClasses.password}>
+            <InputLabel htmlFor="standard-adornment-password" className={styledClasses.password}>Password</InputLabel>
             <Input
               id="standard-adornment-password"
               type={showPassword ? 'text' : 'password'}
@@ -122,8 +147,8 @@ function Login(props) {
           </FormControl>
         <DialogActions>
           <Divider />
-          <Button variant="contained" id={"dialogOK"} onClick={closeLogin}>Close</Button>
-          <Button variant="contained" id={"dialogOK"} onClick={sendForm}>Login</Button>
+          <Button id={"dialogClose"} onClick={closeLogin}>Close</Button>
+          <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm}>Login</Button>
         </DialogActions>
       
       </Dialog>
