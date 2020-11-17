@@ -1,5 +1,6 @@
 /**
 Segmenttien tiedot piirtävä komponentti
+Sisältää myös segmenttien tietojen päivitystoiminnot kirjautuneille käyttäjille
 
 Luonut: Markku Nirkkonen
 
@@ -78,10 +79,10 @@ function Info(props) {
         body: JSON.stringify(data),
       });
       const res = await response.json();
-      
-      setLoading(false);
     };
     fetchUpdate();
+    
+    // getting new segmentdata to view update immediately
     const fetchData = async () => {
       const updates = await fetch('api/segments/update');
       const updateData = await updates.json();
@@ -91,19 +92,21 @@ function Info(props) {
         segment.update = null;
         updateData.forEach(update => {
           if (update.Segmentti === segment.ID) {
-            segment.update = update;
+            segment.update = update;           
+          }
+          // update shown segment
+          if (segment.ID === props.segmentdata.ID) {
+            props.onUpdate(segment);
           }
         });
       });
       props.updateSegments(data);
+      setLoading(false);
     };
     fetchData();
+    
     closeUpdate();
     
-    // Not sure if this is right way to do, but it works: text updates immediately
-    props.segmentdata.update.Teksti = text;
-    
-    props.onUpdate(props.segmentdata);
   }
 
   if (props.segmentdata !== undefined) {

@@ -48,7 +48,7 @@ function Map(props) {
   const zoom = (props.isMobile ? 11 : 12);
   
   // TODO: real colors should be implemented at some point
-  const colors = ["#4B5654", "#FFFFFF", "#5EFFDA", "#A7FF5E", "#FFC300", "#0000FF"];
+  const colors = ["#2D3534", "#00FF00", "#FFC300", "#FF5733", "#C70039", "#900C3F"];
 
   // map styles as %-size of it's ancestor
   const mapStyles = {        
@@ -85,8 +85,7 @@ function Map(props) {
         <FormControlLabel
           className={styledClasses.checkbox}
           control={
-            <Checkbox
-            
+            <Checkbox            
               checked={subsOnly}
               onChange={updateSubsOnly}
               name="Subsegments_only"
@@ -110,6 +109,7 @@ function Map(props) {
                 if(item.update !== null){
                   vari = item.update.Lumilaatu;
                 }
+                // Drawing of segment polygons
                 return (
                   <Polygon 
                     key={item.ID}
