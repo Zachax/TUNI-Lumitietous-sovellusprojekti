@@ -1,3 +1,5 @@
+--22.11 Lisättiin cascade on delete käyttäjiin ja segmenteiin
+
 CREATE TABLE Segmentit (
     ID SERIAL PRIMARY KEY,
     Nimi VARCHAR(30),
@@ -28,8 +30,8 @@ CREATE TABLE Paivitykset (
     Aika DATETIME,
     Lumilaatu INT,
     Teksti VARCHAR(500),
-    FOREIGN KEY(Tekija) references Kayttajat(ID),
-    FOREIGN KEY(Segmentti) references Segmentit(ID),
+    FOREIGN KEY(Tekija) references Kayttajat(ID) ON DELETE CASCADE,
+    FOREIGN KEY(Segmentti) references Segmentit(ID) ON DELETE CASCADE,
     CONSTRAINT tunniste PRIMARY KEY (Aika, Segmentti)
 );
 
@@ -37,6 +39,6 @@ CREATE TABLE Koordinaatit(
     Segmentti BIGINT UNSIGNED,
     Jarjestys BIGINT UNSIGNED,
     Sijainti Point,
-    FOREIGN KEY(Segmentti) references Segmentit(ID),
+    FOREIGN KEY(Segmentti) references Segmentit(ID) ON DELETE CASCADE,
     CONSTRAINT tunniste PRIMARY KEY(Jarjestys, Segmentti)
 );

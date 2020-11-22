@@ -8,8 +8,4 @@ const con = mysql.createConnection({
   database: "Pallas"
 });
 
-con.connect(function(err) {
-  if (err) throw err;
-});
-
 module.exports = con;
