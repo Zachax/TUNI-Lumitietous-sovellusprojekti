@@ -61,7 +61,6 @@ function App() {
 
   // Event handler function for updating shown segment
   function chooseSegment(choice) {
-    console.log(choice);
     setShownSegment(choice);
   }
 
@@ -84,6 +83,7 @@ function App() {
           <div className={styledClasses.toolbar} />
 
             <Map 
+              shownSegment={shownSegment}
               segments={segments} 
               onClick={chooseSegment} 
               isMobile={isMobile} 
@@ -100,6 +100,7 @@ function App() {
               token={token}
               updateSegments={updateSegments}
               onUpdate={chooseSegment}
+              onClose={chooseSegment}
             />
             :
             <div />
