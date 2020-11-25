@@ -6,7 +6,12 @@ Luonut: Markku Nirkkonen
 
 Päivityshistoria
 
-17.11. Ensimmäinen versio segmenttien päivittämisestä
+25.11. Markku Nirkkonen
+Muotoiltu segmentin tiedot korttimaisemmaksi
+Segmentin tiedot näyttävän kortin voi sulkea
+
+17.11. Markku Nirkkonen 
+Ensimmäinen versio segmenttien päivittämisestä
 
 **/
 
@@ -25,6 +30,27 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
+import Avatar from "@material-ui/core/Avatar";
+import { red } from "@material-ui/core/colors";
+import CloseIcon from "@material-ui/icons/Close";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    maxWidth: 500,
+    margin: "auto"
+  },
+  media: {
+    height: 0,
+    paddingTop: "56.25%" // 16:9
+  },
+  avatar: {
+    backgroundColor: red[500]
+  }
+}));
  
 function Info(props) {
 
@@ -32,9 +58,9 @@ function Info(props) {
   const [loading, setLoading] = React.useState(false);
   const [snowtype, setSnowtype] = React.useState(0);
   const [text, setText] = React.useState("Ei tietoa");
+  const classes = useStyles();
 
-
-  // TODO: finalize, not even close to ready yet
+  // TODO: still things to finalize. Styles etc.
 
   /*
    * Event handlers
@@ -57,6 +83,10 @@ function Info(props) {
 
   const updateSnowtype = (event) => {
     setSnowtype(event.target.value);
+  }
+
+  function closeShownSegment() {
+    props.onClose(null);
   }
 
   // When form is sent, POST method api call to /user/login
@@ -111,18 +141,56 @@ function Info(props) {
 
   if (props.segmentdata !== undefined) {
     if (props.token !== null && props.token !== undefined) {
+      
+      // These render when there is user logged in
       return (
         <div className="info">
-          <p>Segmentin nimi: {props.segmentdata.Nimi}</p>
-          <p>Segmentin maasto: {props.segmentdata.Maasto}</p>
-          <p>Segmentin uusimmat tiedot: {props.segmentdata.update === null ? "Ei tietoja" : props.segmentdata.update.Teksti}</p>
-          <IconButton 
-            edge="start" 
-            color="inherit" 
-            onClick={openUpdate}
-          >
-            <EditIcon />
-          </IconButton>
+          <Card className={classes.root}>
+            <CardHeader
+              avatar={
+                <Avatar aria-label="recipe" className={classes.avatar}>
+                  {props.segmentdata.Nimi.charAt(0).toUpperCase()}
+                </Avatar>
+              }
+              action={
+                <IconButton aria-label="close" onClick={() => closeShownSegment()}>
+                  <CloseIcon />
+                </IconButton>
+              }
+              title={props.segmentdata.Nimi}
+              subheader={props.segmentdata.Maasto}
+              titleTypographyProps={
+                {
+                  align: 'left'
+                }
+              }
+              subheaderTypographyProps={
+                {
+                  align: 'left'
+                }
+              }
+            />
+
+            <CardContent>
+              <Typography variant="body1" color="textSecondary" align="left" component="p">
+                Lumilaatu
+              </Typography>
+              <Typography variant="body2" color="textSecondary" align="left" component="p">
+                {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
+              </Typography>
+            </CardContent>
+            <CardActions disableSpacing>
+              <IconButton 
+                edge="start" 
+                color="inherit" 
+                onClick={openUpdate}
+              >
+                <EditIcon />
+                <Typography variant="button">Päivitä</Typography>
+              </IconButton>
+            </CardActions>
+          </Card>
+          
           <Dialog 
             onClose={closeUpdate} 
             open={loginOpen}
@@ -151,7 +219,7 @@ function Info(props) {
                   type='text'
                   multiline={true}
                   rows={5}
-                  value={text}
+                  placeholder={text}
                   onChange={updateText}
                 />
               </FormControl>
@@ -166,11 +234,44 @@ function Info(props) {
       );
     }
     else {
+      // These render when there is no logged in user
       return (
         <div className="info">
-          <p>Segmentin nimi: {props.segmentdata.Nimi}</p>
-          <p>Segmentin maasto: {props.segmentdata.Maasto}</p>
-          <p>Segmentin uusimmat tiedot: {props.segmentdata.update === null ? "Ei tietoja" : props.segmentdata.update.Teksti}</p>
+          <Card className={classes.root}>
+            <CardHeader
+              avatar={
+                <Avatar aria-label="recipe" className={classes.avatar}>
+                  {props.segmentdata.Nimi.charAt(0).toUpperCase()}
+                </Avatar>
+              }
+              action={
+                <IconButton aria-label="close" onClick={() => closeShownSegment()}>
+                  <CloseIcon />
+                </IconButton>
+              }
+              title={props.segmentdata.Nimi}
+              subheader={props.segmentdata.Maasto}
+              titleTypographyProps={
+                {
+                  align: 'left'
+                }
+              }
+              subheaderTypographyProps={
+                {
+                  align: 'left'
+                }
+              }
+            />
+
+            <CardContent>
+              <Typography variant="body1" color="textSecondary" align="left" component="p">
+                Lumilaatu
+              </Typography>
+              <Typography variant="body2" color="textSecondary" align="left" component="p">
+                {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
+              </Typography>
+            </CardContent>
+          </Card>
         </div>
       );
     }
