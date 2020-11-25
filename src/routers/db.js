@@ -3,8 +3,9 @@ API kutsut tietokannalle
 
 
 Päivityshistoria
-Arttu Lakkala 15.11 Lisätty segmentit muutos
 Arttu Lakkala 15.11 Lisätty segmentit delete
+Arttu Lakkala 22.11 Lisätty segmentit muutos
+Arttu Lakkala 25.11 Lisätty segmentit lisäys
 */
 const express = require('express');
 const router = express.Router();
@@ -367,6 +368,44 @@ router.put('/segment/:id', function(req, res) {
       }
   });
   }
+});
+
+
+// segmentin lisääminen
+router.post('/segment/', function(req, res) {
+  database.query('INSERT INTO Segmentit(Nimi, Maasto, Lumivyöryvaara) VALUES(?,?,?)',
+  [
+    req.body.Nimi,
+    req.body.Maasto,
+    req.body.Lumivyöryvaara,
+  ],
+  function (err, result, fields) {
+         if (err) throw err;
+         
+         var i=0;
+         var pointTable = req.body.Points;
+         var uusiID = result.insertId;
+         //tämä tehdään lopuksi
+         function palautus(result) { res.json(result); res.status(200); }
+         
+         pointTable.forEach((obj,i) => {
+           database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
+           [
+             uusiID,
+             i,
+             obj.lat,
+             obj.lng,
+           ],
+           function (err, result, fields) {
+             if (err) throw err;
+             
+             
+           });
+           i++;
+           //tapahtuu kun viimeinen kierros on käyty
+           if(i==pointTable.length) palautus();
+      });
+  });
 });
 
 
