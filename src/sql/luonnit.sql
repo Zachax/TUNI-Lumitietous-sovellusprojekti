@@ -1,4 +1,3 @@
---22.11 Lisättiin cascade on delete käyttäjiin ja segmenteiin
 
 CREATE TABLE Segmentit (
     ID SERIAL PRIMARY KEY,
@@ -29,7 +28,7 @@ CREATE TABLE Paivitykset (
     Segmentti BIGINT UNSIGNED,
     Aika DATETIME,
     Lumilaatu INT,
-    Teksti VARCHAR(500),
+    Teksti TEXT,
     FOREIGN KEY(Tekija) references Kayttajat(ID) ON DELETE CASCADE,
     FOREIGN KEY(Segmentti) references Segmentit(ID) ON DELETE CASCADE,
     CONSTRAINT tunniste PRIMARY KEY (Aika, Segmentti)
