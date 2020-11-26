@@ -1,3 +1,4 @@
+--Testikommentti täälläkin
 
 CREATE TABLE Segmentit (
     ID SERIAL PRIMARY KEY,
