@@ -4,6 +4,8 @@ Applikaation yläpalkki
 Luonut: Markku Nirkkonen
 
 Viimeisin päivitys
+Markku Nirkkonen 26.11.2020
+Suomennoksia, ei siis käytännön muutoksia
 
 **/
 
@@ -42,7 +44,7 @@ function TopBar(props) {
           <Typography variant="h6" className={styledClasses.barheader}>
             Snowledge
           </Typography>
-          <Box className={styledClasses.baritem}>{(props.token === null || props.token === undefined ? <div /> : <Button color="inherit" >Manage</Button>)}</Box>
+          <Box className={styledClasses.baritem}>{(props.token === null || props.token === undefined ? <div /> : <Button color="inherit" >Hallinta</Button>)}</Box>
           <Box className={styledClasses.baritem}>{(props.token === null || props.token === undefined ? <Login updateToken={props.updateToken} /> : <Logout updateToken={props.updateToken} />)}</Box>
 
         </Toolbar>

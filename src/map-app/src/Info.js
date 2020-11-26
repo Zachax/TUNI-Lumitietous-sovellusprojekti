@@ -6,6 +6,9 @@ Luonut: Markku Nirkkonen
 
 Päivityshistoria
 
+26.11. Markku Nirkkonen
+Tekstejä suomennettu
+
 25.11. Markku Nirkkonen
 Muotoiltu segmentin tiedot korttimaisemmaksi
 Segmentin tiedot näyttävän kortin voi sulkea
@@ -66,14 +69,14 @@ function Info(props) {
    * Event handlers
    */
   const openUpdate = (event) => {
-    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tietoa");
+    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tuoretta tietoa");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
     setLoginOpen(true);
   }
 
   const closeUpdate = (event) => {
     setLoginOpen(false);
-    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tietoa");
+    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tuoretta tietoa");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
   }
 
@@ -225,8 +228,8 @@ function Info(props) {
               </FormControl>
             <DialogActions>
               <Divider />
-              <Button id={"dialogClose"} onClick={closeUpdate}>Cancel</Button>
-              <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm}>Update</Button>
+              <Button id={"dialogClose"} onClick={closeUpdate}>Peruuta</Button>
+              <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm}>Päivitä</Button>
             </DialogActions>
           
           </Dialog>

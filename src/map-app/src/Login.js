@@ -5,6 +5,9 @@ Luonut: Markku Nirkkonen
 
 Viimeisin päivitys
 
+Markku Nirkkonen 26.11.2020
+Suomennoksia, ei siis käytännön muutoksia
+
 Markku Nirkkonen 17.11.
 Pieniä muotoiluseikkoja säädetty
 
@@ -111,11 +114,11 @@ function Login(props) {
   return (
     <div className="login">
       <IconButton 
-        //edge="start" 
+        edge="start" 
         color="inherit" 
         onClick={openLogin}
       >
-        <Typography>{(loading ? "Logging in" : "Login")}</Typography>
+        <Typography variant="button">{(loading ? "Kirjaudutaan" : "Kirjaudu")}</Typography>
         {(loading ? <CircularProgress color="secondary" size={20} /> : <VpnKeyIcon />)}
       </IconButton>
       <Dialog 
@@ -123,10 +126,10 @@ function Login(props) {
         open={loginOpen}
         className={styledClasses.input}
       >
-        <DialogTitle id="simple-dialog-title">Login</DialogTitle>
+        <DialogTitle id="simple-dialog-title">Kirjaudu sisään</DialogTitle>
           <TextField id="email" label="email" value={email} onChange={updateEmail} className={styledClasses.email}/>
             <FormControl className={styledClasses.password}>
-            <InputLabel htmlFor="standard-adornment-password" className={styledClasses.password}>Password</InputLabel>
+            <InputLabel htmlFor="standard-adornment-password" className={styledClasses.password}>Salasana</InputLabel>
             <Input
               id="standard-adornment-password"
               type={showPassword ? 'text' : 'password'}
@@ -147,8 +150,8 @@ function Login(props) {
           </FormControl>
         <DialogActions>
           <Divider />
-          <Button id={"dialogClose"} onClick={closeLogin}>Close</Button>
-          <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm}>Login</Button>
+          <Button id={"dialogClose"} onClick={closeLogin}>Sulje</Button>
+          <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm}>Kirjaudu</Button>
         </DialogActions>
       
       </Dialog>

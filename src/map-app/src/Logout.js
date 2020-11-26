@@ -4,6 +4,8 @@ Uloskirjautumistoimintojen piirto yläpalkkiin
 Luonut: Markku Nirkkonen
 
 Viimeisin päivitys
+Markku Nirkkonen 26.11.2020
+Suomennoksia, ei siis käytännön muutoksia
 
 **/
 
@@ -26,7 +28,7 @@ function Logout(props) {
         color="inherit" 
         onClick={Logout}
       >
-        <Typography>Logout</Typography>
+        <Typography variant="button" >Kirjaudu ulos</Typography>
         <ExitToAppIcon />
       </Button>
     </div>
