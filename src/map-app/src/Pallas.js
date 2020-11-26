@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import './App.css';
 import './style.css';
 import Map from './NewMap';
+import Manage from './Manage';
 import Info from './Info';
 import TopBar from './TopBar';
 import { useMediaQuery } from 'react-responsive';
@@ -30,9 +31,11 @@ function App() {
   const [segments, setSegments] = React.useState([]);
   //const [updates, setUpdates] = React.useState([]);
   const [shownSegment, setShownSegment] = React.useState(null);
+  const [viewManagement, setViewManagement] = React.useState(false);
 
   //imported hooks
   const isMobile = useMediaQuery({query: '(max-width:760px)'});
+  const manageOrMap = (viewManagement ? "Kartta" : "Hallitse");
 
   const styledClasses = useStyles();
 
@@ -72,28 +75,46 @@ function App() {
     setSegments(data);
   }
 
+  function updateView() {
+    setViewManagement(!viewManagement);
+  }
+
   // TODO: Styles of each component
   // TODO: Guide for segment colours
   return (
     <div className="App">
         <div className="top_bar">
-          <TopBar isMobile={isMobile} token={token} updateToken={updateToken} />   
+          <TopBar 
+            isMobile={isMobile} 
+            token={token} 
+            updateToken={updateToken} 
+            updateView={updateView} 
+            manageOrMap={manageOrMap} 
+          />   
         </div>
         <div id="map">
           <div className={styledClasses.toolbar} />
-
-            <Map 
-              shownSegment={shownSegment}
-              segments={segments} 
-              onClick={chooseSegment} 
-              isMobile={isMobile} 
-            />
-
+            {
+              (
+                viewManagement 
+                ?
+                <Manage 
+                  segments={segments}
+                />
+                :
+                <Map 
+                  shownSegment={shownSegment}
+                  segments={segments} 
+                  onClick={chooseSegment} 
+                  isMobile={isMobile} 
+                />
+              )
+            }
         </div>
         <div className="guide"></div>
         <div className="segment_info">
           <div className={styledClasses.toolbar} />
-          {(shownSegment !== null ? 
+          {(shownSegment !== null && !viewManagement ? 
             <Info
               //segments={segments}
               segmentdata={shownSegment} 

@@ -111,7 +111,7 @@ function Info(props) {
         },
         body: JSON.stringify(data),
       });
-      const res = await response.json();
+      await response.json();
     };
     fetchUpdate();
     

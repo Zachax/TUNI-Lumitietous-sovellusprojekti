@@ -35,6 +35,10 @@ function TopBar(props) {
 
   // Use styles
   const styledClasses = useStyles();
+
+  function updateView() {
+    props.updateView();
+  }
   
   // Returs different views for logged in user than for regular user
   if (!props.isMobile) {
@@ -44,8 +48,12 @@ function TopBar(props) {
           <Typography variant="h6" className={styledClasses.barheader}>
             Snowledge
           </Typography>
-          <Box className={styledClasses.baritem}>{(props.token === null || props.token === undefined ? <div /> : <Button color="inherit" >Hallinta</Button>)}</Box>
-          <Box className={styledClasses.baritem}>{(props.token === null || props.token === undefined ? <Login updateToken={props.updateToken} /> : <Logout updateToken={props.updateToken} />)}</Box>
+          <Box className={styledClasses.baritem}>
+            {(props.token === null || props.token === undefined ? <div /> : <Button color="inherit" onClick={updateView}>{props.manageOrMap}</Button>)}
+          </Box>
+          <Box className={styledClasses.baritem}>
+            {(props.token === null || props.token === undefined ? <Login updateToken={props.updateToken} /> : <Logout updateToken={props.updateToken} />)}
+          </Box>
 
         </Toolbar>
       </AppBar>
@@ -58,7 +66,17 @@ function TopBar(props) {
             Snowledge
           </Typography>
 
-          <Box className={styledClasses.baritem}>{(props.token === null || props.token === undefined ? <Login updateToken={props.updateToken}/> : <MobileMenu token={props.token} updateToken={props.updateToken} />)}</Box>
+          <Box className={styledClasses.baritem}>
+            {
+              (
+                props.token === null || props.token === undefined 
+                ? 
+                <Login updateToken={props.updateToken}/> 
+                : 
+                <MobileMenu token={props.token} updateToken={props.updateToken} updateView={props.updateView} manageOrMap={props.manageOrMap} />
+              )
+            }
+          </Box>
         </Toolbar>
       </AppBar>
     );

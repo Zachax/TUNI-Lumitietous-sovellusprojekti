@@ -60,7 +60,7 @@ function MobileMenu(props) {
 				onClose={handleMenuClose}
 			>
 
-				{(props.token === null || props.token === undefined ? <div /> : <MenuItem onClick={handleMenuClose}> <Button color="inherit">Manage</Button></MenuItem>)}
+				{(props.token === null || props.token === undefined ? <div /> : <MenuItem onClick={handleMenuClose}> <Button color="inherit" onClick={props.updateView}>{props.manageOrMap}</Button></MenuItem>)}
 				<Divider />
 				<MenuItem onClick={handleMenuClose}>
 					{(props.token === null || props.token === undefined ? <Login updateToken={props.updateToken} /> : <Logout updateToken={props.updateToken} />)}

@@ -4,6 +4,7 @@ Viimeisin päivitys
 
 Markku Nirkkonen 26.11.2020
 Segmenttien värien selitteen kutistamis/laajentamis -mahdollisuus lisätty
+Pieni korjaus segmenttien hoverin toimintaan.
 
 Markku Nirkkonen 25.11.2020
 Värit muutettu asiakkaan pyytämiksi
@@ -234,7 +235,7 @@ function Map(props) {
                       strokeOpacity: 0.8,
                       strokeWeight: 2,
                       fillColor: colors[vari % colors.length].color,
-                      fillOpacity: (mouseover.ID === item.ID || selectedSegment.ID === item.ID) && props.shownSegment !== null ? 0.8 : 0.15,
+                      fillOpacity: (mouseover.ID === item.ID || (selectedSegment.ID === item.ID && props.shownSegment !== null)) ? 0.8 : 0.15,
                       polygonKey: item.ID,
                       zIndex: item.On_Alasegmentti !== null ? 2 : 1,
                       visible: subsOnly && item.On_Alasegmentti === null ? false : true
