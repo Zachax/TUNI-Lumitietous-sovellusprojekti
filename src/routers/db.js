@@ -1,8 +1,11 @@
 /**
 API kutsut tietokannalle
 
+
 Päivityshistoria
 Arttu Lakkala 15.11 Lisätty segmentit delete
+Arttu Lakkala 22.11 Lisätty segmentit muutos
+Arttu Lakkala 25.11 Lisätty segmentit lisäys
 */
 const express = require('express');
 const router = express.Router();
@@ -15,7 +18,7 @@ const secret = "Lumihiriv0"
 //alusta tarkistus
 const { body, validationResult } = require('express-validator');
 
-
+//käyttäjä sisäänkirjautuminen
 router.post('/user/login', function(req, res) {
   database.query('SELECT * FROM Kayttajat WHERE Sähköposti = ?',[req.body.Sähköposti], function (err, result, fields) {
       if (err) throw err;
@@ -45,6 +48,8 @@ router.post('/user/login', function(req, res) {
   });
 });
 
+
+//käyttäjän tekeminen
 router.post('/user',
   [
   // tarkista sähköposti
@@ -82,16 +87,7 @@ router.post('/user',
   }
 });
 
-/*
-router.get('/points', function(req, res) {
-  database.query('SELECT * FROM Koordinaatit ORDER BY Segmentti', function (err, result, fields) {
-      if (err) throw err;
-      console.log(result);
-      res.json(result);
-  });
-});
-*/
-
+//segmenttuen haku
 router.get('/segments', function(req, res) {
   //get points from database
   database.query('SELECT * FROM Koordinaatit ORDER BY Segmentti', function (err, points, fields) {
@@ -127,7 +123,7 @@ router.get('/segments', function(req, res) {
   });
 });
 
-
+//segmentin tuoreimman päivityksen haku
 router.get('/segments/update/:id', function(req, res) {
   database.query(
   `SELECT Tekija, Segmentti, Lumilaatu, Teksti, Aika 
@@ -152,7 +148,7 @@ router.get('/segments/update/:id', function(req, res) {
 });
 
 
-
+//päivitysten haku
 router.get('/segments/update', function(req, res) {
   database.query(
   `SELECT Tekija, Segmentti, Lumilaatu, Teksti, Aika 
@@ -171,10 +167,7 @@ router.get('/segments/update', function(req, res) {
       res.status(200);
   });
 });
-
-
-
-
+//lumilaatujen haku
 router.get('/lumilaadut', function(req, res) {
     database.query('Select * FROM Lumilaadut', 
     function(err, result, fields) {
@@ -209,7 +202,7 @@ router.use(function(req, res, next) {
 
 });
 
-
+//käyttäjien haku
 router.get('/users', function(req, res) {
   database.query('SELECT * FROM Kayttajat', function (err, result, fields) {
       if (err) throw err;
@@ -217,7 +210,7 @@ router.get('/users', function(req, res) {
       res.status(200);
   });
 });
-
+//käyttäjän haku
 router.get('/user', function(req, res) {
   database.query('SELECT * FROM Kayttajat WHERE ID = ?',
   [
@@ -230,6 +223,7 @@ router.get('/user', function(req, res) {
   });
 });
 
+//käyttäjän tietojjen muutos
 router.put('/user/:id', function(req, res) {
   bcrypt.hash(req.body.Salasana, saltRounds, function(err, hash) {
     database.query(
@@ -257,7 +251,7 @@ router.put('/user/:id', function(req, res) {
 });
 
 
-
+//käyttäjän poisto
 router.delete('/user/:id', function(req, res) {
   database.query(
   `DELETE FROM Kayttajat
@@ -272,7 +266,7 @@ router.delete('/user/:id', function(req, res) {
       res.status(200);
   });
 });
-
+//päivityksen luonti
 router.post('/segments/update/:id', function(req, res) {
 
   if(req.body.Segmentti != req.params.id)
@@ -294,7 +288,8 @@ router.post('/segments/update/:id', function(req, res) {
   });
 });
 
-router.delete('/segments/:id', function(req, res) {
+//segmentin poisto
+router.delete('/segment/:id', function(req, res) {
   database.query(
   `DELETE FROM Segmentit
    WHERE ID = ?
@@ -309,5 +304,120 @@ router.delete('/segments/:id', function(req, res) {
   });
 });
 
+// segmentin tietojen muutos
+router.put('/segment/:id', function(req, res) {
+  if(req.params.id != req.body.ID)
+  {
+    res.json("Väärä ID body");        
+    res.status(400);
+  }
+  else{
+  database.query(
+  `UPDATE Segmentit
+     SET 
+     Nimi=?,
+     Maasto=?,
+     Lumivyöryvaara=?
+     WHERE ID = ?
+    `,
+  [
+    req.body.Nimi,
+    req.body.Maasto,
+    req.body.Lumivyöryvaara,
+    req.params.id
+  ],
+  function (err, result, fields) {
+      //poistetaan vanhat pisteet
+      if(req.body.Points != null){
+        database.query(
+          `DELETE FROM Koordinaatit
+           WHERE Segmentti = ?
+          `,
+          [req.params.id],
+          function (err, result, fields) {
+             if (err) throw err;
+             
+             var i=0;
+             var pointTable = req.body.Points;
+             //tämä tehdään lopuksi
+             function palautus(result) { res.json(result); res.status(200); }
+             
+             pointTable.forEach((obj,i) => {
+               database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
+               [
+                 req.params.id,
+                 i,
+                 obj.lat,
+                 obj.lng,
+               ],
+               function (err, result, fields) {
+                 if (err) throw err;
+                 
+                 
+               });
+               i++;
+               //tapahtuu kun viimeinen kierros on käyty
+               if(i==pointTable.length) palautus();
+           });
+      });
+      }
+      //mikäli pisteitä ei tarvitse muuttaa
+      else{
+      res.json(result);        
+      res.status(200);
+      }
+  });
+  }
+});
+
+
+// segmentin lisääminen
+router.post('/segment/', function(req, res) {
+  database.query('INSERT INTO Segmentit(Nimi, Maasto, Lumivyöryvaara) VALUES(?,?,?)',
+  [
+    req.body.Nimi,
+    req.body.Maasto,
+    req.body.Lumivyöryvaara,
+  ],
+  function (err, result, fields) {
+         if (err) throw err;
+         
+         var i=0;
+         var pointTable = req.body.Points;
+         var uusiID = result.insertId;
+         //tämä tehdään lopuksi
+         function palautus(result) { res.json(result); res.status(200); }
+         
+         pointTable.forEach((obj,i) => {
+           database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
+           [
+             uusiID,
+             i,
+             obj.lat,
+             obj.lng,
+           ],
+           function (err, result, fields) {
+             if (err) throw err;
+             
+             
+           });
+           i++;
+           //tapahtuu kun viimeinen kierros on käyty
+           if(i==pointTable.length) palautus();
+      });
+  });
+});
+
 
 module.exports = router;
+
+
+/*
+router.get('/points', function(req, res) {
+  database.query('SELECT * FROM Koordinaatit ORDER BY Segmentti', function (err, result, fields) {
+      if (err) throw err;
+      console.log(result);
+      res.json(result);
+  });
+});
+*/
