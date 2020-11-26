@@ -20,7 +20,8 @@ CREATE TABLE Kayttajat (
 
 CREATE TABLE Lumilaadut (
     ID SERIAL PRIMARY KEY,
-    Nimi VARCHAR(50)
+    Nimi VARCHAR(50),
+    Vari VARCHAR(15)
 );
 
 CREATE TABLE Paivitykset (
