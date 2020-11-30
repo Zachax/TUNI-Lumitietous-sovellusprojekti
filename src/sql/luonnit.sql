@@ -1,9 +1,7 @@
---Testikommentti täälläkin
-
 CREATE TABLE Segmentit (
     ID SERIAL PRIMARY KEY,
-    Nimi VARCHAR(30),
-    Maasto VARCHAR(20),
+    Nimi VARCHAR(100),
+    Maasto VARCHAR(100),
     Lumivyöryvaara BOOL,
     On_Alasegmentti BIGINT UNSIGNED,
     FOREIGN KEY(On_Alasegmentti) REFERENCES Segmentit(ID)
