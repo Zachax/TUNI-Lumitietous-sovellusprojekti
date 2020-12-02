@@ -70,24 +70,30 @@ router.post('/user',
   
   else{
     //salataan salasana
-    bcrypt.hash(req.body.Salasana, saltRounds, function(err, hash) {
-      database.query('INSERT INTO Kayttajat(Etunimi, Sukunimi, Sähköposti, Salasana) VALUES(?, ?, ?, ?)',
-      [
-        req.body.Etunimi,
-        req.body.Sukunimi,
-        req.body.Sähköposti,
-        hash
-      ],
-      function (err, points, fields) {
-        if (err) throw err;
-        res.json("Insert was succesfull");
-        res.status(204);
+    database.beginTransaction(function(err){
+      if (err) throw err;
+      bcrypt.hash(req.body.Salasana, saltRounds, function(err, hash) {
+        database.query('INSERT INTO Kayttajat(Etunimi, Sukunimi, Sähköposti, Salasana) VALUES(?, ?, ?, ?)',
+        [
+          req.body.Etunimi,
+          req.body.Sukunimi,
+          req.body.Sähköposti,
+          hash
+        ],
+        function (err, points, fields) {
+          if (err){database.rollback(function(){throw err;})}
+          database.commit(function(err){
+            if(err){database.rollback(function(){throw err;});}
+            res.json("Insert was succesfull");
+            res.status(204);
+           });
+        });
       });
     });
   }
 });
 
-//segmenttuen haku
+//segmenttien haku
 router.get('/segments', function(req, res) {
   //get points from database
   database.query('SELECT * FROM Koordinaatit ORDER BY Segmentti', function (err, points, fields) {
@@ -178,10 +184,10 @@ router.get('/lumilaadut', function(req, res) {
     });
 });
 
+
 //Salasanan tarkistus
 
 router.use(function(req, res, next) {
-
   if (req.headers.authorization) {
     if (req.headers.authorization.startsWith('Bearer ')) {
       var token = req.headers.authorization.slice(7, req.headers.authorization.length);
@@ -312,60 +318,88 @@ router.put('/segment/:id', function(req, res) {
     res.status(400);
   }
   else{
-  database.query(
-  `UPDATE Segmentit
-     SET 
-     Nimi=?,
-     Maasto=?,
-     Lumivyöryvaara=?
-     WHERE ID = ?
-    `,
-  [
-    req.body.Nimi,
-    req.body.Maasto,
-    req.body.Lumivyöryvaara,
-    req.params.id
-  ],
-  function (err, result, fields) {
-      //poistetaan vanhat pisteet
-      if(req.body.Points != null){
-        database.query(
-          `DELETE FROM Koordinaatit
-           WHERE Segmentti = ?
-          `,
-          [req.params.id],
-          function (err, result, fields) {
-             if (err) throw err;
-             
-             var i=0;
-             var pointTable = req.body.Points;
-             //tämä tehdään lopuksi
-             function palautus(result) { res.json(result); res.status(200); }
-             
-             pointTable.forEach((obj,i) => {
-               database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
-               [
-                 req.params.id,
-                 i,
-                 obj.lat,
-                 obj.lng,
-               ],
-               function (err, result, fields) {
-                 if (err) throw err;
-                 
-                 
-               });
-               i++;
-               //tapahtuu kun viimeinen kierros on käyty
-               if(i==pointTable.length) palautus();
-           });
-      });
-      }
-      //mikäli pisteitä ei tarvitse muuttaa
-      else{
-      res.json(result);        
-      res.status(200);
-      }
+  database.beginTransaction(function(err){  
+    database.query(
+    `UPDATE Segmentit
+       SET 
+       Nimi=?,
+       Maasto=?,
+       Lumivyöryvaara=?
+       WHERE ID = ?
+      `,
+    [
+      req.body.Nimi,
+      req.body.Maasto,
+      req.body.Lumivyöryvaara,
+      req.params.id
+    ],
+    function (err, result, fields) {
+        if(err){database.rollback(function(){throw err;});}
+        //poistetaan vanhat pisteet
+        if(req.body.Points != null){
+          database.query(
+            `DELETE FROM Koordinaatit
+             WHERE Segmentti = ?
+            `,
+            [req.params.id],
+            function (err, result, fields) {
+               if(err){database.rollback(function(){throw err;});}
+               
+               var i=0;
+               var pointTable = req.body.Points;
+               //tämä tehdään lopuksi
+               
+               function palautus(result, errorTable) {
+                 //tallennetaan muutokset, jos ei virheitä
+                 console.log(errorTable)
+                 if (errorTable.length == 0)
+                 {
+                   database.commit(function(err){
+                     if(err){database.rollback(function(){throw err;});}
+                     res.json(result); 
+                     res.status(200); 
+                   });
+                 }
+                 //muuten perutaan
+                 else
+                 {
+                   database.rollback(function(){
+                     res.json(errorTable);
+                     res.status(200);
+                    });
+                 }
+               }
+               
+               var errorTable = [];
+               pointTable.forEach((obj,i) => {
+                 database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
+                 [
+                   req.params.id,
+                   i,
+                   obj.lat,
+                   obj.lng,
+                 ],
+                 function (err, result, fields) {
+                   if(err){
+                     errorTable.push(err);
+                   }
+                   i++;
+                   console.log(i);
+                   //tapahtuu kun viimeinen kierros on käyty
+                   if(i==pointTable.length) palautus(result, errorTable);
+                 });
+             });
+        });
+        }
+        //mikäli pisteitä ei tarvitse muuttaa
+        else{
+        database.commit(function(err){
+          if(err){database.rollback(function(){throw err;});}
+          res.json(result);        
+          res.status(200);
+        });
+        }
+    });
   });
   }
 });
