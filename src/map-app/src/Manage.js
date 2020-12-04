@@ -5,6 +5,9 @@ muokata, poistaa, lisätä.
 
 Luonut: Markku Nirkkonen 26.11.2020
 
+Markku Nirkkonen 4.12.2020
+Segmentin poisto toimivaksi, varmistusdialogi puuttuuv ielä
+
 Viimeisin päivitys 26.11.2020
 Pohja, segmenttien listaus, segmentin poisto
 Segmentin muokkaus ja niiden lisääminen puuttuu vielä
@@ -40,6 +43,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyles = makeStyles((theme) => ({
   segmentCard: {
@@ -60,6 +66,8 @@ function Manage(props) {
   const classes = useStyles();
 
   const [anchorElMenu, setAnchorElMenu] = React.useState(null); 
+  const [selected, setSelected] = React.useState(null);
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
 	
 	const menuOpen = Boolean(anchorElMenu); 
 
@@ -69,22 +77,25 @@ function Manage(props) {
 
   // Event handlers
 	const handleMenu = event => {
+    console.log(event.currentTarget);
+    setSelected(event.currentTarget.id);
 		setAnchorElMenu(event.currentTarget);
 	};
     
 	const handleMenuClose = () => {
-		setAnchorElMenu(null);
-  };
-  
-  const handleEdit = () => {
-    console.log("Toteutetaan muokkaus myöhemmin");
     setAnchorElMenu(null);
+    setSelected(null);
   };
   
-  const handleDelete = (id) => {
-    //console.log(id);
+  function handleEdit() {
+    console.log(selected);
+    setAnchorElMenu(null);
+    setSelected(null);
+  };
+  
+  const handleDelete = () => {
     const fetchDelete = async () => {
-      const response = await fetch('api/segments/' + id,
+      const response = await fetch('api/segments/' + selected,
       {
         method: "DELETE",
         headers: {
@@ -119,8 +130,18 @@ function Manage(props) {
     };
     fetchData();
 
+    closeDelete();
+  };
+  
+  const openDelete = () => {
+    setDeleteOpen(true);
+  }
+
+  const closeDelete = () => {
     setAnchorElMenu(null);
-	};
+    setDeleteOpen(false);
+    setSelected(null);
+  }
 
   
   return (  
@@ -129,7 +150,7 @@ function Manage(props) {
         <Grid container spacing={0}>
           {
             props.segments.map(item => {
-              console.log(item);
+              //console.log(item);
               return (
                 <Grid item xs={12} sm={4}>
                   <Card className={classes.segmentCard}>
@@ -137,13 +158,13 @@ function Manage(props) {
                       title={item.Nimi}
                       subheader={"Pohjamaasto: " + item.Maasto}
                       action={
-                        <IconButton aria-label="close" onClick={handleMenu}>
+                        <IconButton id={item.ID} aria-label="close" onClick={handleMenu}>
                           <MoreVertIcon />
                         </IconButton>
                       }
                     />
                     <Menu
-                      id="menu-manage"
+                      
                       anchorEl={anchorElMenu}
                       anchorOrigin={{
                         vertical: 'top',
@@ -158,12 +179,13 @@ function Manage(props) {
                       onClose={handleMenuClose}
                     >
               
-                      {(props.token === null || props.token === undefined ? <div /> : <MenuItem onClick={handleMenuClose}> <Button color="inherit" onClick={props.updateView}>{props.manageOrMap}</Button></MenuItem>)}
-                      <Divider />
-                      <MenuItem onClick={handleEdit}>
+                      {/*(props.token === null || props.token === undefined ? <div /> : <MenuItem onClick={handleMenuClose}> <Button color="inherit" onClick={props.updateView}>{props.manageOrMap}</Button></MenuItem>)*/}
+                      
+                      <MenuItem onClick={() => handleEdit()}>
                         Muokkaa
                       </MenuItem>
-                      <MenuItem onClick={() => handleDelete(item.ID)}>
+                      <Divider />
+                      <MenuItem onClick={() => openDelete()}>
                         Poista
                       </MenuItem>
                     </Menu>
@@ -183,7 +205,21 @@ function Manage(props) {
           }  
         </Grid>   
       </Box>
-    </div>
+    
+    <Dialog 
+      onClose={closeDelete} 
+      open={deleteOpen}
+    >
+      <DialogTitle id="simple-dialog-title">Poista segmentti?</DialogTitle>
+        <Typography>Segmentin poistaminen poistaa segmentin, alasegmentin ja kaikki niihin liittyvät tiedot. Poista?</Typography>
+      <DialogActions>
+        <Divider />
+        <Button id={"deleteClose"} onClick={closeDelete}>Sulje</Button>
+        <Button variant="contained" color="primary" id={"delete"} onClick={handleDelete}>Poista</Button>
+      </DialogActions>
+    
+    </Dialog>
+  </div>
   );
 }
 
