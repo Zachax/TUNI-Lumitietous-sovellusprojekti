@@ -91,7 +91,8 @@ function App() {
             isMobile={isMobile} 
             token={token} 
             updateToken={updateToken} 
-            updateView={updateView} 
+            updateView={updateView}
+            viewManagement={viewManagement} 
             manageOrMap={manageOrMap} 
           />   
         </div>

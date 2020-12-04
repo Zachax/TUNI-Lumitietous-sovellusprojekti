@@ -7,6 +7,9 @@ Viimeisin päivitys
 Markku Nirkkonen 26.11.2020
 Suomennoksia, ei siis käytännön muutoksia
 
+2.12.2020 Markku Nirkkonen
+Korjattu niin, että uloskirjautuessa näkymä palaa karttaan
+
 **/
 
 import * as React from "react";
@@ -52,7 +55,13 @@ function TopBar(props) {
             {(props.token === null || props.token === undefined ? <div /> : <Button color="inherit" onClick={updateView}>{props.manageOrMap}</Button>)}
           </Box>
           <Box className={styledClasses.baritem}>
-            {(props.token === null || props.token === undefined ? <Login updateToken={props.updateToken} /> : <Logout updateToken={props.updateToken} />)}
+            {(
+              props.token === null || props.token === undefined 
+              ? 
+              <Login updateToken={props.updateToken} /> 
+              : 
+              <Logout updateToken={props.updateToken} viewManagement={props.viewManagement} updateView={updateView}/>      
+            )}
           </Box>
 
         </Toolbar>
@@ -73,7 +82,13 @@ function TopBar(props) {
                 ? 
                 <Login updateToken={props.updateToken}/> 
                 : 
-                <MobileMenu token={props.token} updateToken={props.updateToken} updateView={props.updateView} manageOrMap={props.manageOrMap} />
+                <MobileMenu 
+                  token={props.token} 
+                  updateToken={props.updateToken} 
+                  updateView={updateView} 
+                  viewManagement={props.viewManagement} 
+                  manageOrMap={props.manageOrMap} 
+                />
               )
             }
           </Box>

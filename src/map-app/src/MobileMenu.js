@@ -5,6 +5,9 @@ Luonut: Markku Nirkkonen
 
 Viimeisin päivitys
 
+2.12.2020 Markku Nirkkonen
+Korjattu niin, että uloskirjautuessa näkymä palaa karttaan
+
 **/
 
 import React from 'react';
@@ -63,7 +66,7 @@ function MobileMenu(props) {
 				{(props.token === null || props.token === undefined ? <div /> : <MenuItem onClick={handleMenuClose}> <Button color="inherit" onClick={props.updateView}>{props.manageOrMap}</Button></MenuItem>)}
 				<Divider />
 				<MenuItem onClick={handleMenuClose}>
-					{(props.token === null || props.token === undefined ? <Login updateToken={props.updateToken} /> : <Logout updateToken={props.updateToken} />)}
+					{(props.token === null || props.token === undefined ? <Login updateToken={props.updateToken} /> : <Logout updateToken={props.updateToken} viewManagement={props.viewManagement} updateView={props.updateView}/>)}
 				</MenuItem>
 			</Menu>
 		</div>
