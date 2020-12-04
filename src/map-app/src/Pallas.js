@@ -5,6 +5,9 @@ Luonut: Markku Nirkkonen
 
 Päivityshistoria
 
+Markku Nirkkonen 26.11.2020
+Hallintanäkymän komponentti lisätty
+
 Arttu Lakkala 15.11 Lisätty päivityksen lisäys segmenttiin.
 
 **/
@@ -88,7 +91,8 @@ function App() {
             isMobile={isMobile} 
             token={token} 
             updateToken={updateToken} 
-            updateView={updateView} 
+            updateView={updateView}
+            viewManagement={viewManagement} 
             manageOrMap={manageOrMap} 
           />   
         </div>
@@ -100,6 +104,9 @@ function App() {
                 ?
                 <Manage 
                   segments={segments}
+                  token={token}
+                  onUpdate={chooseSegment}
+                  updateSegments={updateSegments}
                 />
                 :
                 <Map 
