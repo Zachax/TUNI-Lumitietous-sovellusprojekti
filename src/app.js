@@ -15,8 +15,7 @@ app.use('/', express.static(path.join(__dirname, '/map-app/build')));
 app.use('/', express.static('public'));
 
 
-//router for payments
-app.use('/api/', db);
+app.use('/api/', api);
 
 app.get('/', (req,res) => {
   res.sendFile(path.join(__dirname, '/map-app/build/index.html'));
