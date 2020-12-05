@@ -5,6 +5,9 @@ Sisältää myös segmenttien tietojen päivitystoiminnot kirjautuneille käytt�
 Luonut: Markku Nirkkonen
 
 Päivityshistoria
+5.12. Arttu Lakkala
+Muutettii update postin kohde (api/segments/update/:id -> api/update/:id)
+Tehty API:ssa tapahtuneen muutoksen mukaisesti
 
 26.11. Markku Nirkkonen
 Tekstejä suomennettu
@@ -101,7 +104,7 @@ function Info(props) {
     }
     const fetchUpdate = async () => {
       setLoading(true);
-      const response = await fetch('api/segments/update/' + props.segmentdata.ID,
+      const response = await fetch('api/update/' + props.segmentdata.ID,
       {
         method: "POST",
         headers: {
