@@ -407,39 +407,61 @@ router.put('/segment/:id', function(req, res) {
 
 // segmentin lisääminen
 router.post('/segment/', function(req, res) {
-  database.query('INSERT INTO Segmentit(Nimi, Maasto, Lumivyöryvaara) VALUES(?,?,?)',
-  [
-    req.body.Nimi,
-    req.body.Maasto,
-    req.body.Lumivyöryvaara,
-  ],
-  function (err, result, fields) {
-         if (err) throw err;
-         
-         var i=0;
-         var pointTable = req.body.Points;
-         var uusiID = result.insertId;
-         //tämä tehdään lopuksi
-         function palautus(result) { res.json(result); res.status(200); }
-         
-         pointTable.forEach((obj,i) => {
-           database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
-           [
-             uusiID,
-             i,
-             obj.lat,
-             obj.lng,
-           ],
-           function (err, result, fields) {
-             if (err) throw err;
-             
-             
+  database.beginTransaction(function(err){ 
+    database.query('INSERT INTO Segmentit(Nimi, Maasto, Lumivyöryvaara) VALUES(?,?,?)',
+    [
+      req.body.Nimi,
+      req.body.Maasto,
+      req.body.Lumivyöryvaara,
+    ],
+    function (err, result, fields) {
+           if(err){database.rollback(function(){throw err;});}
+           
+           var i=0;
+           var pointTable = req.body.Points;
+           var uusiID = result.insertId;
+           //tämä tehdään lopuksi
+           function palautus(result, errorTable) {
+             //tallennetaan muutokset, jos ei virheitä
+             console.log(errorTable)
+             if (errorTable.length == 0)
+             {
+               database.commit(function(err){
+                 if(err){database.rollback(function(){throw err;});}
+                 res.json(result); 
+                 res.status(200); 
+               });
+             }
+             //muuten perutaan
+             else
+             {
+               database.rollback(function(){
+                 res.json(errorTable);
+                 res.status(200);
+                });
+             }
+           }
+           var errorTable = [];
+           pointTable.forEach((obj,i) => {
+               database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
+               [
+                 req.params.id,
+                 i,
+                 obj.lat,
+                 obj.lng,
+               ],
+               function (err, result, fields) {
+                 if(err){
+                   errorTable.push(err);
+                 }
+                 i++;
+                 console.log(i);
+                 //tapahtuu kun viimeinen kierros on käyty
+                 if(i==pointTable.length) palautus(result, errorTable);
+               });
            });
-           i++;
-           //tapahtuu kun viimeinen kierros on käyty
-           if(i==pointTable.length) palautus();
-      });
-  });
+        });
+    });
 });
 
 
