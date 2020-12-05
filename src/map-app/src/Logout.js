@@ -7,6 +7,9 @@ Viimeisin päivitys
 Markku Nirkkonen 26.11.2020
 Suomennoksia, ei siis käytännön muutoksia
 
+2.12.2020 Markku Nirkkonen
+Korjattu niin, että uloskirjautuessa näkymä palaa karttaan
+
 **/
 
 import * as React from "react";
@@ -19,6 +22,9 @@ function Logout(props) {
   // Event handlers
   const Logout = (event) => {
     props.updateToken(null);
+    if (props.viewManagement) {
+      props.updateView();
+    }   
   }
 
   return (
