@@ -9,6 +9,8 @@ Arttu Lakkala 25.11 Lisätty segmentit lisäys
 Arttu Lakkala 1.12  Rollback lisätty segmentin muutokseen
 Arttu Lakkala 5.12 Rollback lisätty segmentin lisäykseen
 Arttu Lakkala 5.12 uudelleennimettiin api.js
+Arttu Lakkala 6.12 Refactoroitiin object Routtereihin
+
 */
 const express = require('express');
 const router = express.Router();
@@ -128,6 +130,7 @@ router.get('/segments/update', function(req, res) {
     FROM Paivitykset
     GROUP BY(Segmentti)
    )
+   AND Aika > NOW() - INTERVAL 1 WEEK
    ORDER BY(Segmentti)`,
   function (err, result, fields) {
       if (err) throw err;

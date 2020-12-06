@@ -1,10 +1,17 @@
 /**
-Kontrolleri käyttäjäi varten
-
+API kutsut käyttäjälle
 
 Päivityshistoria
-Alustettu 12.5.2020 Arttu Lakkala
-**/
+Arttu Lakkala 15.11 Lisätty segmentit delete
+Arttu Lakkala 22.11 Lisätty segmentit muutos
+Arttu Lakkala 25.11 Lisätty segmentit lisäys
+Arttu Lakkala 1.12  Rollback lisätty segmentin muutokseen
+Arttu Lakkala 5.12 Rollback lisätty segmentin lisäykseen
+Arttu Lakkala 5.12 uudelleennimettiin api.js
+-----------------------------------------
+Arttu Lakkala 6.12 Refactoroitiin API:sta
+
+*/
 
 const express = require('express');
 const router = express.Router();
