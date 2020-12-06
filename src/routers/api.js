@@ -12,9 +12,12 @@ Arttu Lakkala 5.12 uudelleennimettiin api.js
 */
 const express = require('express');
 const router = express.Router();
-const database = require('./database');
+const database = require('./objectRouters/database');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const users = require('./objectRouters/users');
+const updates = require('./objectRouters/updates');
+const segments = require('./objectRouters/segments');
 //alusta salaukset
 const saltRounds = 15;
 const secret = "Lumihiriv0"
@@ -145,55 +148,10 @@ router.get('/lumilaadut', function(req, res) {
 });
 
 
-//Salasanan tarkistus
+//!!Käyttäjän teko toistaiseksi auki.
+//Siirrä salasana tarkistuksen taaksen ennen julkaisua
 
-router.use(function(req, res, next) {
-  if (req.headers.authorization) {
-    if (req.headers.authorization.startsWith('Bearer ')) {
-      var token = req.headers.authorization.slice(7, req.headers.authorization.length);
-      jwt.verify(token, secret, function(err, decoded) {
-        if(err) res.sendStatus(401);
-        else {
-          //jos kirjautuminen onnistuu kirjataan jääneet tiedot muistiin
-          req.decoded = decoded;
-          next();
-        }
-      });
-    } else {
-      res.sendStatus(401);
-    }
-  } else {
-    res.sendStatus(401);
-  }
-
-});
-
-///////////////////////////////////////////////
-
-
-//käyttäjien haku
-router.get('/user/all', function(req, res) {
-  database.query('SELECT * FROM Kayttajat', function (err, result, fields) {
-      if (err) throw err;
-      res.json(result);
-      res.status(200);
-  });
-});
-//käyttäjän haku
-router.get('/user', function(req, res) {
-  database.query('SELECT * FROM Kayttajat WHERE ID = ?',
-  [
-    req.decoded.id
-  ],
-  function (err, result, fields) {
-      if (err) throw err;
-      res.json(result);
-      res.status(200);
-  });
-});
-
-//käyttäjän tekeminen
-router.post('/user',
+router.post('/',
   [
   // tarkista sähköposti
   body('Sähköposti').isEmail().withMessage("Ei toimiva shäköposti"),
@@ -237,243 +195,61 @@ router.post('/user',
 });
 
 
+//Salasanan tarkistus
+
+router.use(function(req, res, next) {
+  if (req.headers.authorization) {
+    if (req.headers.authorization.startsWith('Bearer ')) {
+      var token = req.headers.authorization.slice(7, req.headers.authorization.length);
+      jwt.verify(token, secret, function(err, decoded) {
+        if(err) res.sendStatus(401);
+        else {
+          //jos kirjautuminen onnistuu kirjataan jääneet tiedot muistiin
+          req.decoded = decoded;
+          next();
+        }
+      });
+    } else {
+      res.sendStatus(401);
+    }
+  } else {
+    res.sendStatus(401);
+  }
+
+});
+
+//object routers
+router.use('/user/', users);
+router.use('/segment/', segments);
+router.use('/update/', updates);
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+
+//käyttäjien haku
+
+//käyttäjän haku
+
+
+//käyttäjän tekeminen
+
+
+
 
 
 //käyttäjän tietojjen muutos
-router.put('/user/:id', function(req, res) {
-  bcrypt.hash(req.body.Salasana, saltRounds, function(err, hash) {
-    database.query(
-    `UPDATE Kayttajat
-     SET 
-     Etunimi=?,
-     Sukunimi=?,
-     Sähköposti=?,
-     Salasana=?
-     WHERE ID = ?
-    `,
-    [
-      req.body.Etunimi,
-      req.body.Sukunimi,
-      req.body.Sähköposti,
-      hash,
-      req.params.id
-    ],
-    function (err, result, fields) {
-        if (err) throw err;
-        res.json(result);
-        res.status(200);
-    });
-  });
-});
 
 
 //käyttäjän poisto
-router.delete('/user/:id', function(req, res) {
-  database.query(
-  `DELETE FROM Kayttajat
-   WHERE ID = ?
-  `,
-  [
-    req.params.id
-  ],
-  function (err, result, fields) {
-      if (err) throw err;
-      res.json(result);
-      res.status(200);
-  });
-});
-//päivityksen luonti
-router.post('/update/:id', function(req, res) {
 
-  if(req.body.Segmentti != req.params.id)
-  {
-    res.json("Segmentti numerot eivät täsmää");
-    res.status(400);
-  }
-  database.query('INSERT INTO Paivitykset(Tekija, Segmentti, Lumilaatu, Teksti, Aika) VALUES(?, ?, ?, ?, NOW())',
-  [
-    req.decoded.id,
-    req.body.Segmentti,
-    req.body.Lumilaatu,
-    req.body.Teksti
-  ],
-  function (err, points, fields) {
-    if (err) throw err;
-    res.json("Insert was succesfull");
-    res.status(204);
-  });
-});
+//päivityksen luonti
 
 //segmentin poisto
-router.delete('/segment/:id', function(req, res) {
-  database.query(
-  `DELETE FROM Segmentit
-   WHERE ID = ?
-  `,
-  [
-    req.params.id
-  ],
-  function (err, result, fields) {
-      if (err) throw err;
-      res.json(result);
-      res.status(200);
-  });
-});
+
 
 // segmentin tietojen muutos
-router.put('/segment/:id', function(req, res) {
-  if(req.params.id != req.body.ID)
-  {
-    res.json("Väärä ID body");        
-    res.status(400);
-  }
-  else{
-  database.beginTransaction(function(err){  
-    database.query(
-    `UPDATE Segmentit
-       SET 
-       Nimi=?,
-       Maasto=?,
-       Lumivyöryvaara=?
-       WHERE ID = ?
-      `,
-    [
-      req.body.Nimi,
-      req.body.Maasto,
-      req.body.Lumivyöryvaara,
-      req.params.id
-    ],
-    function (err, result, fields) {
-        if(err){database.rollback(function(){throw err;});}
-        //poistetaan vanhat pisteet
-        if(req.body.Points != null){
-          database.query(
-            `DELETE FROM Koordinaatit
-             WHERE Segmentti = ?
-            `,
-            [req.params.id],
-            function (err, result, fields) {
-               if(err){database.rollback(function(){throw err;});}
-               
-               var i=0;
-               var pointTable = req.body.Points;
-               //tämä tehdään lopuksi
-               
-               function palautus(result, errorTable) {
-                 //tallennetaan muutokset, jos ei virheitä
-                 console.log(errorTable)
-                 if (errorTable.length == 0)
-                 {
-                   database.commit(function(err){
-                     if(err){database.rollback(function(){throw err;});}
-                     res.json(result); 
-                     res.status(200); 
-                   });
-                 }
-                 //muuten perutaan
-                 else
-                 {
-                   database.rollback(function(){
-                     res.json(errorTable);
-                     res.status(200);
-                    });
-                 }
-               }
-               
-               var errorTable = [];
-               pointTable.forEach((obj,i) => {
-                 database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
-                 [
-                   req.params.id,
-                   i,
-                   obj.lat,
-                   obj.lng,
-                 ],
-                 function (err, result, fields) {
-                   if(err){
-                     errorTable.push(err);
-                   }
-                   i++;
-                   console.log(i);
-                   //tapahtuu kun viimeinen kierros on käyty
-                   if(i==pointTable.length) palautus(result, errorTable);
-                 });
-             });
-        });
-        }
-        //mikäli pisteitä ei tarvitse muuttaa
-        else{
-        database.commit(function(err){
-          if(err){database.rollback(function(){throw err;});}
-          res.json(result);        
-          res.status(200);
-        });
-        }
-    });
-  });
-  }
-});
 
 
 // segmentin lisääminen
-router.post('/segment/', function(req, res) {
-  database.beginTransaction(function(err){ 
-    database.query('INSERT INTO Segmentit(Nimi, Maasto, Lumivyöryvaara) VALUES(?,?,?)',
-    [
-      req.body.Nimi,
-      req.body.Maasto,
-      req.body.Lumivyöryvaara,
-    ],
-    function (err, result, fields) {
-           if(err){database.rollback(function(){throw err;});}
-           
-           var i=0;
-           var pointTable = req.body.Points;
-           var uusiID = result.insertId;
-           //tämä tehdään lopuksi
-           function palautus(result, errorTable) {
-             //tallennetaan muutokset, jos ei virheitä
-             console.log(errorTable)
-             if (errorTable.length == 0)
-             {
-               database.commit(function(err){
-                 if(err){database.rollback(function(){throw err;});}
-                 res.json(result); 
-                 res.status(200); 
-               });
-             }
-             //muuten perutaan
-             else
-             {
-               database.rollback(function(){
-                 res.json(errorTable);
-                 res.status(200);
-                });
-             }
-           }
-           var errorTable = [];
-           pointTable.forEach((obj,i) => {
-               database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
-               [
-                 req.params.id,
-                 i,
-                 obj.lat,
-                 obj.lng,
-               ],
-               function (err, result, fields) {
-                 if(err){
-                   errorTable.push(err);
-                 }
-                 i++;
-                 console.log(i);
-                 //tapahtuu kun viimeinen kierros on käyty
-                 if(i==pointTable.length) palautus(result, errorTable);
-               });
-           });
-        });
-    });
-});
-
 
 module.exports = router;
 
