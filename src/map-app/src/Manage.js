@@ -5,8 +5,11 @@ muokata, poistaa, lisätä.
 
 Luonut: Markku Nirkkonen 26.11.2020
 
+Markku Nirkkonen 6.12.2020
+Alettu lisätä segmentin lisäystoimintoa
+
 Markku Nirkkonen 4.12.2020
-Segmentin poisto toimivaksi, varmistusdialogi puuttuuv ielä
+Segmentin poisto toimivaksi, lisätty varmistusdialogi poistamiseen
 
 Viimeisin päivitys 26.11.2020
 Pohja, segmenttien listaus, segmentin poisto
@@ -19,10 +22,6 @@ import * as React from "react";
 import IconButton from '@material-ui/core/IconButton';
 // import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-// import Divider from '@material-ui/core/Divider';
-// import Dialog from '@material-ui/core/Dialog';
-// import DialogActions from '@material-ui/core/DialogActions';
-// import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 // import InputLabel from '@material-ui/core/InputLabel';
 // import Input from '@material-ui/core/Input';
@@ -46,6 +45,8 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import AddSegment from './AddSegment';
+
 
 const useStyles = makeStyles((theme) => ({
   segmentCard: {
@@ -71,13 +72,12 @@ function Manage(props) {
 	
 	const menuOpen = Boolean(anchorElMenu); 
 
-  function showMore(id) {
-    console.log(id);
-  }
+  /*
+   * Event handlers
+   */
 
-  // Event handlers
-	const handleMenu = event => {
-    console.log(event.currentTarget);
+   
+  const handleMenu = event => {
     setSelected(event.currentTarget.id);
 		setAnchorElMenu(event.currentTarget);
 	};
@@ -87,7 +87,7 @@ function Manage(props) {
     setSelected(null);
   };
   
-  function handleEdit() {
+  const handleEdit = () => {
     console.log(selected);
     setAnchorElMenu(null);
     setSelected(null);
@@ -107,7 +107,7 @@ function Manage(props) {
     };
     fetchDelete();
 
-    // getting new segmentdata to view update immediately
+    // updating segments immediately
     const fetchData = async () => {
       const updates = await fetch('api/segments/update');
       const updateData = await updates.json();
@@ -119,10 +119,6 @@ function Manage(props) {
           if (update.Segmentti === segment.ID) {
             segment.update = update;           
           }
-          // update shown segment
-          // if (segment.ID === props.segmentdata.ID) {
-          //   props.onUpdate(segment);
-          // }
         });
       });
       props.updateSegments(data);
@@ -146,11 +142,15 @@ function Manage(props) {
   
   return (  
     <div>
+      <Box>
+        <AddSegment />
+      </Box>
       <Box className={classes.cardContainer}>
         <Grid container spacing={0}>
+          
           {
             props.segments.map(item => {
-              //console.log(item);
+              
               return (
                 <Grid item xs={12} sm={4}>
                   <Card className={classes.segmentCard}>
@@ -177,10 +177,7 @@ function Manage(props) {
                       }}
                       open={menuOpen}
                       onClose={handleMenuClose}
-                    >
-              
-                      {/*(props.token === null || props.token === undefined ? <div /> : <MenuItem onClick={handleMenuClose}> <Button color="inherit" onClick={props.updateView}>{props.manageOrMap}</Button></MenuItem>)*/}
-                      
+                    > 
                       <MenuItem onClick={() => handleEdit()}>
                         Muokkaa
                       </MenuItem>
