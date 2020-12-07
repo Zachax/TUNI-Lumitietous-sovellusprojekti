@@ -172,7 +172,7 @@ router.post('/', function(req, res) {
            pointTable.forEach((obj,i) => {
                database.query('INSERT INTO Koordinaatit(Segmentti, Jarjestys, Sijainti) VALUES(?, ?, ST_GeomFromText(\'POINT(? ?)\'))',
                [
-                 req.params.id,
+                 uusiID,
                  i,
                  obj.lat,
                  obj.lng,

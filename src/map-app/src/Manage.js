@@ -95,7 +95,7 @@ function Manage(props) {
   
   const handleDelete = () => {
     const fetchDelete = async () => {
-      const response = await fetch('api/segments/' + selected,
+      const response = await fetch('api/segment/' + selected,
       {
         method: "DELETE",
         headers: {
@@ -143,7 +143,7 @@ function Manage(props) {
   return (  
     <div>
       <Box>
-        <AddSegment />
+        <AddSegment token={props.token} segments={props.segments} updateSegments={props.updateSegments}/>
       </Box>
       <Box className={classes.cardContainer}>
         <Grid container spacing={0}>
