@@ -107,6 +107,7 @@ function App() {
                   token={token}
                   onUpdate={chooseSegment}
                   updateSegments={updateSegments}
+                  shownSegment={shownSegment}
                 />
                 :
                 <Map 

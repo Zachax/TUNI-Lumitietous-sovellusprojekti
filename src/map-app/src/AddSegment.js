@@ -184,6 +184,7 @@ function AddSegment(props) {
       >
         <DialogTitle id="simple-dialog-title">Lisää segmentti</DialogTitle>
         <Typography variant="caption">Anna segmentille nimi, maastopohjakuvaus ja rajaavat koordinaatit.</Typography>
+        <Typography variant="caption">Vähintään kolme (3) koordinaattipistettä vaaditaan.</Typography>
         <FormControl>
           <InputLabel htmlFor="name" >Segmentin nimi</InputLabel>
           <Input
