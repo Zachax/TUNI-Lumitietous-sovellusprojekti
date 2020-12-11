@@ -24,7 +24,7 @@ import { useMediaQuery } from 'react-responsive';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  toolbar: theme.mixins.toolbar
+  toolbar: theme.mixins.toolbar,
 }));
 
 function App() {
@@ -85,7 +85,7 @@ function App() {
   // TODO: Styles of each component
   // TODO: Guide for segment colours
   return (
-    <div className="App">
+    <div className="app">
         <div className="top_bar">
           <TopBar 
             isMobile={isMobile} 
@@ -96,8 +96,8 @@ function App() {
             manageOrMap={manageOrMap} 
           />   
         </div>
-        <div id="map">
-          <div className={styledClasses.toolbar} />
+        <div className="map_container">
+          {/* <div className={styledClasses.toolbar} /> */}
             {
               (
                 viewManagement 
@@ -121,7 +121,7 @@ function App() {
         </div>
         <div className="guide"></div>
         <div className="segment_info">
-          <div className={styledClasses.toolbar} />
+          {/* <div className={styledClasses.toolbar} /> */}
           {(shownSegment !== null && !viewManagement ? 
             <Info
               //segments={segments}

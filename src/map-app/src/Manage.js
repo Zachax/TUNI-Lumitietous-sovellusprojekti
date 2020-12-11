@@ -74,9 +74,7 @@ function Manage(props) {
   const [terrain, setTerrain] = React.useState(null);
   const [initials, setInitials] = React.useState(null);
   const [points, setPoints] = React.useState(null);
-  const [formOK, setFormOK] = React.useState(true);
   
-	
   const menuOpen = Boolean(anchorElMenu);
   
   /*

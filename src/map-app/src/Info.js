@@ -46,8 +46,15 @@ import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: 500,
-    margin: "auto"
+    backgroundColor: "transparent",
+    position: "relative",
+    top: "50px",
+    width: "100%",
+    // height: "50%",
+    // margin: "auto",
+    // position: "absolute",
+    //top: "120px",
+    // right: "0px",
   },
   media: {
     height: 0,
@@ -64,6 +71,7 @@ function Info(props) {
   const [loading, setLoading] = React.useState(false);
   const [snowtype, setSnowtype] = React.useState(0);
   const [text, setText] = React.useState("Ei tietoa");
+  
   const classes = useStyles();
 
   // TODO: still things to finalize. Styles etc.
@@ -154,7 +162,7 @@ function Info(props) {
           <Card className={classes.root}>
             <CardHeader
               avatar={
-                <Avatar aria-label="recipe" className={classes.avatar}>
+                <Avatar aria-label="segment_info" className={classes.avatar}>
                   {props.segmentdata.Nimi.charAt(0).toUpperCase()}
                 </Avatar>
               }
@@ -167,7 +175,8 @@ function Info(props) {
               subheader={props.segmentdata.Maasto}
               titleTypographyProps={
                 {
-                  align: 'left'
+                  align: 'left',
+                  color: 'white'
                 }
               }
               subheaderTypographyProps={
@@ -259,7 +268,7 @@ function Info(props) {
               subheader={props.segmentdata.Maasto}
               titleTypographyProps={
                 {
-                  align: 'left'
+                  align: 'left',
                 }
               }
               subheaderTypographyProps={

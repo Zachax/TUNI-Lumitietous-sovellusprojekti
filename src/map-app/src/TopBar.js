@@ -25,13 +25,16 @@ import { makeStyles } from '@material-ui/core/styles';
 
 // Styles for App-Bar
 const useStyles = makeStyles((theme) => ({
+  topbar: {
+    height: "120px",
+  },
   barheader: {
     flexGrow: 1,
   },
   baritem: {
     marginLeft: theme.spacing(2),
     display: "inline"
-  }
+  },
 }));
  
 function TopBar(props) {
@@ -46,7 +49,7 @@ function TopBar(props) {
   // Returs different views for logged in user than for regular user
   if (!props.isMobile) {
     return (
-      <AppBar>
+      <Box className={styledClasses.topbar}>
         <Toolbar>
           <Typography variant="h6" className={styledClasses.barheader}>
             Snowledge
@@ -65,11 +68,11 @@ function TopBar(props) {
           </Box>
 
         </Toolbar>
-      </AppBar>
+      </Box>
     );
   } else {
     return (
-      <AppBar>
+      <Box className={styledClasses.topbar}>
         <Toolbar>
           <Typography variant="h6" className={styledClasses.barheader}>
             Snowledge
@@ -93,7 +96,7 @@ function TopBar(props) {
             }
           </Box>
         </Toolbar>
-      </AppBar>
+      </Box>
     );
   }
 };

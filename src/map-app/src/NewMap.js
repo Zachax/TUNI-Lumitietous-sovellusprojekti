@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     padding: theme.spacing(1),
     position: "absolute",
-    top: "550px",
+    bottom: "20px",
     left: theme.spacing(1),
     zIndex: 1
   },
@@ -56,8 +56,8 @@ const useStyles = makeStyles((theme) => ({
     width: "120px",
     backgroundColor: "white",
     position: "absolute",
-    top: "120px",
-    right: theme.spacing(1),
+    top: "210px",
+    left: theme.spacing(1),
     zIndex: 1,
     display: "block"
   },
