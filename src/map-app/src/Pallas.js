@@ -4,6 +4,7 @@ Pää javascript react appiin
 Luonut: Markku Nirkkonen
 
 Päivityshistoria
+11.12. Lisättiin lumilaadun ja alasegmentin tiedot hakujen parsimiseen
 
 Markku Nirkkonen 26.11.2020
 Hallintanäkymän komponentti lisätty
@@ -45,12 +46,21 @@ function App() {
   // after rendering segment data is fetched - should this be in some other way?
   useEffect(() => {
     const fetchData = async () => {
+      const snow = await fetch('api/lumilaadut');
+      const snowdata = await snow.json();
       const updates = await fetch('api/segments/update');
       const updateData = await updates.json();
-      //console.log(updateData);
-      //setUpdates(updateData);
       const response = await fetch('api/segments');
       const data = await response.json();
+      
+      await updateData.forEach(update => {
+        snowdata.forEach(snow => {
+          if(snow.ID === update.Lumilaatu){
+            update.Lumi = snow;
+          }
+        });
+      });
+      
       data.forEach(segment => {
         segment.update = null;
         updateData.forEach(update => {
@@ -58,8 +68,16 @@ function App() {
             segment.update = update;
           }
         });
+        if(segment.On_Alasegmentti != null)
+        {
+          data.forEach(mahd_yla_segmentti => {
+            if(mahd_yla_segmentti.ID === segment.On_Alasegmentti){
+              segment.On_Alasegmentti = mahd_yla_segmentti.Nimi;
+            }
+          });
+        }
       });
-      console.log(data)
+      console.log(data);
       updateSegments(data);
     };
     fetchData();

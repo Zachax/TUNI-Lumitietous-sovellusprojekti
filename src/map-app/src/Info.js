@@ -5,6 +5,8 @@ Sisältää myös segmenttien tietojen päivitystoiminnot kirjautuneille käytt�
 Luonut: Markku Nirkkonen
 
 Päivityshistoria
+11.12. Lisättiin lumilaadun ja alasegmentin tiedot hakujen parsimiseen
+
 5.12. Arttu Lakkala
 Muutettii update postin kohde (api/segments/update/:id -> api/update/:id)
 Tehty API:ssa tapahtuneen muutoksen mukaisesti
@@ -128,10 +130,22 @@ function Info(props) {
     
     // getting new segmentdata to view update immediately
     const fetchData = async () => {
+      const snow = await fetch('api/lumilaadut');
+      const snowdata = await snow.json();
       const updates = await fetch('api/segments/update');
       const updateData = await updates.json();
       const response = await fetch('api/segments');
       const data = await response.json();
+      
+      
+      await updateData.forEach(update => {
+        snowdata.forEach(snow => {
+          if(snow.ID === update.Lumilaatu){
+            update.Lumi = snow;
+          }
+        });
+      });
+      
       data.forEach(segment => {
         segment.update = null;
         updateData.forEach(update => {
@@ -143,7 +157,16 @@ function Info(props) {
             props.onUpdate(segment);
           }
         });
+        if(segment.On_Alasegmentti != null)
+        {
+          data.forEach(mahd_yla_segmentti => {
+            if(mahd_yla_segmentti.ID === segment.On_Alasegmentti){
+              segment.On_Alasegmentti = mahd_yla_segmentti.Nimi;
+            }
+          });
+        } 
       });
+      console.log(data);
       props.updateSegments(data);
       setLoading(false);
     };
@@ -280,7 +303,7 @@ function Info(props) {
 
             <CardContent>
               <Typography variant="body1" color="textSecondary" align="left" component="p">
-                Lumilaatu
+                {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
               </Typography>
               <Typography variant="body2" color="textSecondary" align="left" component="p">
                 {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
