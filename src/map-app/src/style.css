@@ -1,43 +1,66 @@
-#map {
+/*
+ *
+ * Tyylimäärittelyjä
+ *
+ * 
+ *
+ */
+
+ 
+/* 
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+} */
+
+/* .map_container {
   height: 600px;
   /* The height is 600 pixels */
-  width: 100%;
+  /* width: 100%; */
   /* The width is the width of the web page */
+/*} */
+
+body {
+  height: 100%;
+  margin: 0
+}
+
+.app {
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+}
+
+.app .top_bar {
+  flex: 0 1 auto;
+}
+
+.app .map_container {
+  flex: 1 1 auto;
+  height: calc(100vh - 120px);
 }
 
 .map {
-  height: 600px;
+  flex: 1 1 auto;
+  height: calc(100vh - 120px);
+}
+
+.info {
+  background-color: rgba(0,0,0,0.75);
+  max-width: calc(100vh - 50px);
+  min-width: 300px;
+  z-index: 1;
+  height: calc(100vh - 120px);
+  margin: auto;
+  position: absolute;
+  top: 120px;
+  right: 0px;
+}
+
+/* .map {
+  height: 600px; */
   /* The height is 600 pixels */
-  width: 100%;
+  /* width: 100%; */
   /* The width is the width of the web page */
-}
-
-#popupbox {
-  margin: 0; 
-  margin-left: 40%; 
-  margin-right: 40%;
-  margin-top: 50px; 
-  padding-top: 10px; 
-  width: 20%; 
-  height: 150px; 
-  position: absolute; 
-  background: #FBFBF0; 
-  border: solid #000000 2px; 
-  z-index: 9; 
-  font-family: arial; 
-  visibility: hidden; 
-}
-
-#loginlink {
-  display: inline-block;
-}
-
-
-#closelink {
-  display: inline-block;
-}
-
-#closelink:hover {
-  background-color: grey;
-  cursor: pointer;
-}
+/* } */
