@@ -346,7 +346,7 @@ function Manage(props) {
                     <CardContent>
 
                       <Typography variant="body1" color="textSecondary" align="left" component="p">
-                        {item.On_Alasegmentti !== null ? "Alasegmentti" : "Yläsegmentti"}
+                        {item.On_Alasegmentti !== null ? "Segmentin "+ item.On_Alasegmentti +" alasemgentti" : "Yläsegmentti"}
                       </Typography>
 
                     </CardContent>
