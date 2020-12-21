@@ -2,41 +2,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>Test Page</title>
-        <script
-          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVBvBd1YQDLygYNpwRlbmzosX52Y3l0X0&callback=initMap&libraries=&v=weekly"
-          defer
-        ></script>
-        <link rel="stylesheet" type="text/css" href="css/style.css" />
-        <script src="js/map.js"></script>
-        <style>
-        </style>
     </head>
 
    <body>
 
-    <div id="popupbox"> 
-      <form name="login" action="" method="get">
-      <center>Username:</center>
-      <center><input name="username" size="14" /></center>
-      <center>Password:</center>
-      <center><input name="password" type="password" size="14" /></center>
-      <center><input type="submit" name="submit" value="login" /></center>
-      </form>
-      <br />
-      <center><p id="closelink">close</p></center> 
-    </div> 
-    <div id="top_bar">
-      <p>
-        Pallaksen lumet 
+      <p id="demo">
       </p>
-      <div id="loginlink">Login</div>
-    </div>
-    <div id="map"></div>
-    <div id="guide"></div>
-    <div id="segment_info"></div>
-    <script src="js/login.js"></script>
+    
    </body>
-
+    
+   <script>
+   const HAL_ARVOT = ['obs-obs-1-1-t2m','obs-obs-1-1-ws_10min','obs-obs-1-1-wd_10min','obs-obs-1-1-wg_10min'];
+   //riittä jos haet kaikki tulokset relevantti tieto niissä
+   const data = fetch('http://opendata.fmi.fi/wfs/fin?service=WFS&version=2.0.0&request=GetFeature&storedquery_id=fmi::observations::weather::timevaluepair&fmisid=101982&')
+   .then((response) => response.text())
+   .then((response) => {
+     parser = new DOMParser();
+     xmlDoc = parser.parseFromString(response,"text/xml");
+     tulokset = xmlDoc.getElementsByTagName("om:result");
+     for(let tulos of tulokset) {
+      if(HAL_ARVOT.includes(tulos.firstElementChild.getAttribute('gml:id'))){
+        console.log(tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML);
+      }
+     }
+    });
+   </script>
 </html>
