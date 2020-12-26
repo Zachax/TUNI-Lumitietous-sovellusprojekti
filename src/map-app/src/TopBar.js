@@ -42,6 +42,44 @@ function TopBar(props) {
   // Use styles
   const styledClasses = useStyles();
 
+
+  const fecthWeather = async () => {
+      //riittä jos haet kaikki tulokset relevantti tieto niissä
+     var Sää = new Object();
+     const data = fetch('http://opendata.fmi.fi/wfs/fin?service=WFS&version=2.0.0&request=GetFeature&storedquery_id=fmi::observations::weather::timevaluepair&fmisid=101982&')
+     .then((response) => response.text())
+     .then((response) => {
+       const parser = new DOMParser();
+       const xmlDoc = parser.parseFromString(response,"text/xml");
+       const tulokset = xmlDoc.getElementsByTagName("om:result");
+       
+       for(let tulos of tulokset) {
+        switch (tulos.firstElementChild.getAttribute('gml:id')) {
+          case 'obs-obs-1-1-t2m':
+            Sää.Lampotila = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+            break;
+          
+          case 'obs-obs-1-1-ws_10min':
+            Sää.Tuuli_nopeus = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+            break;
+          
+          case 'obs-obs-1-1-wd_10min':
+            Sää.Tuuli_suunta = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+            break;
+            
+          case 'obs-obs-1-1-wg_10min':
+            Sää.Tuuli_puuska = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+            break;
+        }
+       }
+      });
+      
+      props.Sää = Sää;
+   };
+  
+  fecthWeather();
+  console.log(props.Sää);
+  
   function updateView() {
     props.updateView();
   }
