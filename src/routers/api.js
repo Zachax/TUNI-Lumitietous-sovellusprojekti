@@ -225,44 +225,8 @@ router.use(function(req, res, next) {
 router.use('/user/', users);
 router.use('/segment/', segments);
 router.use('/update/', updates);
-///////////////////////////////////////////////
-///////////////////////////////////////////////
 
-//käyttäjien haku
-
-//käyttäjän haku
-
-
-//käyttäjän tekeminen
-
-
-
-
-
-//käyttäjän tietojjen muutos
-
-
-//käyttäjän poisto
-
-//päivityksen luonti
-
-//segmentin poisto
-
-
-// segmentin tietojen muutos
-
-
-// segmentin lisääminen
 
 module.exports = router;
 
 
-/*
-router.get('/points', function(req, res) {
-  database.query('SELECT * FROM Koordinaatit ORDER BY Segmentti', function (err, result, fields) {
-      if (err) throw err;
-      console.log(result);
-      res.json(result);
-  });
-});
-*/
