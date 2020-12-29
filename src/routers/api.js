@@ -36,7 +36,19 @@ router.post('/user/login', function(req, res) {
           if (login) {
           jwt.sign({ id: user.ID, Sahkoposti: user.Sähköposti }, secret, { algorithm: 'HS256' }, function(err, token) {
             console.log(token);
-            res.json({ token: token }); 
+            res.json(
+              { 
+                token: token, 
+                user: {
+                  Etunimi: user.Etunimi,
+                  Sukunimi: user.Sukunimi,
+                  ID: user.ID,
+                  Rooli: user.Rooli,
+                  Sähköposti: user.Sähköposti
+                } 
+              }
+              
+            ); 
             res.status(200);
           });
           }
@@ -177,12 +189,13 @@ router.post('/',
     database.beginTransaction(function(err){
       if (err) throw err;
       bcrypt.hash(req.body.Salasana, saltRounds, function(err, hash) {
-        database.query('INSERT INTO Kayttajat(Etunimi, Sukunimi, Sähköposti, Salasana) VALUES(?, ?, ?, ?)',
+        database.query('INSERT INTO Kayttajat(Etunimi, Sukunimi, Sähköposti, Salasana, Rooli) VALUES(?, ?, ?, ?, ?)',
         [
           req.body.Etunimi,
           req.body.Sukunimi,
           req.body.Sähköposti,
-          hash
+          hash,
+          req.body.Rooli ? req.body.Rooli : "operator"
         ],
         function (err, points, fields) {
           if (err){database.rollback(function(){throw err;})}

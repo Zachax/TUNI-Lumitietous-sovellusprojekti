@@ -1,5 +1,5 @@
 /**
-Uloskirjautumistoimintojen piirto yläpalkkiin
+Uloskirjautumispainike ja sen toiminnallisuudet
 
 Luonut: Markku Nirkkonen
 
@@ -20,8 +20,11 @@ import Typography from '@material-ui/core/Typography';
 function Logout(props) {
 
   // Event handlers
+  
+  
   const Logout = (event) => {
     props.updateToken(null);
+    props.updateUser(null);
     if (props.viewManagement) {
       props.updateView();
     }   

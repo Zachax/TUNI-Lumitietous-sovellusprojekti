@@ -1,5 +1,5 @@
 /**
-Piirtää pienellä näytöllä valikon kirjautuneelle käyttäjälle
+Luo pienellä näytöllä valikon kirjautuneelle käyttäjälle käyttäjäikonin taakse
 
 Luonut: Markku Nirkkonen
 
@@ -28,23 +28,27 @@ function MobileMenu(props) {
 	const menuOpen = Boolean(anchorElMenu);  
 
   // Event handlers
+	
+	// Asettaa menun paikan klikattuun elementtiin
 	const handleMenu = event => {
 		setAnchorElMenu(event.currentTarget);
 	};
     
+	// Sulkee menun
 	const handleMenuClose = () => {
 		setAnchorElMenu(null);
 	};
 
-	// TODO: Name of the signed in user to be shown
 	return (
 		<div className="mobilemenu">
+			
+			{/* Painike, joka avaa menun */}
 			<IconButton 
 				//edge="start" 
 				color="inherit" 
 				onClick={handleMenu}
 			>
-				<Typography>"NAME"</Typography>
+				<Typography>{props.user.Etunimi}</Typography>
 				<AccountCircleIcon />
 			</IconButton>
 			<Menu
@@ -62,11 +66,21 @@ function MobileMenu(props) {
 				open={menuOpen}
 				onClose={handleMenuClose}
 			>
-
+				
+				{/* Näytetään omat tiedot -painike ja vaihtuva painike näytettävän ruudun mukaan */}
+				{!props.viewManagement ? <div /> : <MenuItem><Button color="inherit">Omat tiedot</Button></MenuItem>}
 				{(props.token === null || props.token === undefined ? <div /> : <MenuItem onClick={handleMenuClose}> <Button color="inherit" onClick={props.updateView}>{props.manageOrMap}</Button></MenuItem>)}
 				<Divider />
 				<MenuItem onClick={handleMenuClose}>
-					{(props.token === null || props.token === undefined ? <Login updateToken={props.updateToken} /> : <Logout updateToken={props.updateToken} viewManagement={props.viewManagement} updateView={props.updateView}/>)}
+					
+					{/*painikkeet kirjaudu / kirjaudu ulos tilanteen mukaan */}
+					{(
+						props.token === null || props.token === undefined 
+						? 
+						<Login updateToken={props.updateToken} updateUser={props.updateUser} /> 
+						: 
+						<Logout updateToken={props.updateToken} updateUser={props.updateUser} viewManagement={props.viewManagement} updateView={props.updateView}/>
+					)}
 				</MenuItem>
 			</Menu>
 		</div>

@@ -1,5 +1,5 @@
 /**
-Kartan piirto käyttöliittymään
+Kartan piirto käyttöliittymään ('@react-google-maps/api' -kirjaston komponenteilla)
 Viimeisin päivitys
 
 Markku Nirkkonen 26.11.2020
@@ -36,7 +36,7 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
 
-// Styles for additional boxes above map
+// Tyylimäärittelyt kartan päälle piirrettäville laatikoille
 const useStyles = makeStyles((theme) => ({
   checkbox: {
     backgroundColor: "white",
@@ -95,7 +95,7 @@ function Map(props) {
   const [ subsOnly, setSubsOnly ] = React.useState(false);
   const [ expanded, setExpanded ] = React.useState(props.isMobile ? false : true);
 
-  // zoom depends on screen size
+  // zoom rippuu näytön koosta
   const zoom = (props.isMobile ? 11 : 12);
   
   // TODO: Segmenttien nimet ja värit voisivat olla kannassa ja tulla sieltä, tämä on purkkaratkaisu
@@ -126,7 +126,7 @@ function Map(props) {
     },
   ]
 
-  // map styles as %-size of it's ancestor
+  // kartan tyylit 
   const mapStyles = {        
     height: "100%",
     width: "100%"
@@ -135,23 +135,29 @@ function Map(props) {
   /*
    * Event handlers
    */
+  
+  // Päivittää tiedon kartalta valitusta segmentistä
   function updateChosen(segment) {
     setSelectedSegment(segment);
     props.onClick(segment);
   }
 
+  // Päivitetään tieto siitä, minkä segmentin päälläkursori on
   function updateMouseover(id, name) {
     setMouseover({ID: id, name: name});
   }
 
+  // Nollataan tiedot, kun kursori poistuu segmentin päältä
   function handleMouseout() {
     setMouseover({ID: null, name: null});
   }
 
+  // Päivitetään tieto siitä, näytetäänkö vain alasegmentit vai ei
   function updateSubsOnly() {
     setSubsOnly(!subsOnly);
   }
 
+  // Laajentaa/kutistaa segmenttien väritietoboksin
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -164,7 +170,7 @@ function Map(props) {
      * Karttaan piirretään checkbox yläsegmenttien piilottamiselle,
      * Infolaatikko selittämään kartan värejä
      * Segmentit monikulmioina
-     *
+     * Kartta piirretään '@react-google-maps/api' -kirjaston komponenteilla
      */
     <div className="map">
       <Box className={styledClasses.checkboxContainer}>
@@ -224,7 +230,10 @@ function Map(props) {
               if(item.update !== null){
                 vari = item.update.Lumilaatu;
               }
-              // Drawing of segment polygons
+              /* Piirretään segmentit monikulmioina
+               * TODO: värit suoraan segmenttitiedoista, eikä väliaikaisesta taulukosta
+               * zIndex määrittää päällekäisyysjärjestyksen sen perusteella, onko kyseessä alasegmentti vai ei
+               */
               return (
                 <Polygon 
                   key={item.ID}

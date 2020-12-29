@@ -87,7 +87,7 @@ function Manage(props) {
           shownSegment={props.shownSegment}
         /> 
         : 
-        <UserManage token={props.token} />
+        <UserManage token={props.token} role={props.role} />
       }
   </div>
   );

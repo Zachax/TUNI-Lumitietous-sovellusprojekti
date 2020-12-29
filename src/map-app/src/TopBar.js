@@ -4,11 +4,17 @@ Applikaation yläpalkki
 Luonut: Markku Nirkkonen
 
 Viimeisin päivitys
-Markku Nirkkonen 26.11.2020
-Suomennoksia, ei siis käytännön muutoksia
+
+29.12.2020 Markku Nirkkonen
+Lisätty painike omien tietojen muokkaamiselle
 
 2.12.2020 Markku Nirkkonen
 Korjattu niin, että uloskirjautuessa näkymä palaa karttaan
+
+Markku Nirkkonen 26.11.2020
+Suomennoksia, ei siis käytännön muutoksia
+
+
 
 **/
 
@@ -54,16 +60,22 @@ function TopBar(props) {
           <Typography variant="h6" className={styledClasses.barheader}>
             Snowledge
           </Typography>
+     
           <Box className={styledClasses.baritem}>
             {(props.token === null || props.token === undefined ? <div /> : <Button color="inherit" onClick={updateView}>{props.manageOrMap}</Button>)}
           </Box>
+
+          <Box className={styledClasses.baritem}>
+            {!props.viewManagement ? <div /> : <Button color="inherit">Omat tiedot</Button>}
+          </Box>
+
           <Box className={styledClasses.baritem}>
             {(
               props.token === null || props.token === undefined 
               ? 
-              <Login updateToken={props.updateToken} /> 
+              <Login updateToken={props.updateToken} updateUser={props.updateUser}/> 
               : 
-              <Logout updateToken={props.updateToken} viewManagement={props.viewManagement} updateView={updateView}/>      
+              <Logout updateToken={props.updateToken} updateUser={props.updateUser} viewManagement={props.viewManagement} updateView={updateView}/>      
             )}
           </Box>
 
@@ -83,11 +95,13 @@ function TopBar(props) {
               (
                 props.token === null || props.token === undefined 
                 ? 
-                <Login updateToken={props.updateToken}/> 
+                <Login updateToken={props.updateToken} updateUser={props.updateUser} /> 
                 : 
                 <MobileMenu 
-                  token={props.token} 
-                  updateToken={props.updateToken} 
+                  token={props.token}
+                  user={props.user} 
+                  updateToken={props.updateToken}
+                  updateUser={props.updateUser} 
                   updateView={updateView} 
                   viewManagement={props.viewManagement} 
                   manageOrMap={props.manageOrMap} 

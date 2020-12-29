@@ -6,6 +6,9 @@ Luonut: Markku Nirkkonen 18.12.2020
 
 Viimeisimmät muutokset:
 
+Markku Nirkkonen 29.12.2020
+Käyttäjien muokkaustoiminnot näkyvät vain, jos kirjautuneen käyttäjän rooli on admin
+
 Markku Nirkkonen 19.12.2020
 Muokkaaminen ja poistaminen toimivat.
 
@@ -34,7 +37,7 @@ import { useEffect } from 'react';
 
 
 const useStyles = makeStyles((theme) => ({
-  segmentCard: {
+  userCard: {
     padding: theme.spacing(1),
     maxWidth: 400,
     //maxHeight: 300,
@@ -65,11 +68,11 @@ function UserManage(props) {
   const [email, setEmail] = React.useState(null);
   const [password, setPassword] = React.useState(null);
   const [initials, setInitials] = React.useState(null);
-
   const [users, setUsers] = React.useState(null);
   
   const menuOpen = Boolean(anchorElMenu);
 
+  // Käyttäjätietojen automaattinen haku, kun komponentti on renderöity
   useEffect(() => {
     const fetchUsers = async () => {
       const users = await fetch('api/user/all',
@@ -116,14 +119,14 @@ function UserManage(props) {
 		setAnchorElMenu(event.currentTarget);
 	};
     
-  // Menun sulkeminen nollaa valitut segmentit
+  // Menun sulkeminen nollaa valitun käyttäjän
   const handleMenuClose = () => {
     setAnchorElMenu(null);
     setSelected(null);
     setInitials(null);
   };
   
-  // Segmentin poiston api-kutsu
+  // Käyttäjän poiston api-kutsu
   const handleDelete = () => {
     const fetchDelete = async () => {
       const response = await fetch('api/user/' + selected.ID,
@@ -159,12 +162,12 @@ function UserManage(props) {
     closeDelete();
   };
   
-  // avataan segmentin poistodialogi
+  // avataan käyttäjän poistodialogi
   const openDelete = () => {
     setDeleteOpen(true);
   }
 
- // Suljetaan poistodialogi ja nollataan segmentin valinta
+ // Suljetaan poistodialogi ja nollataan käyttäjän valinta
   const closeDelete = () => {
     setAnchorElMenu(null);
     setDeleteOpen(false);
@@ -240,6 +243,7 @@ function UserManage(props) {
     setSelected(null);
   }
 
+  // etunimen päivitys
   const updateFirstName = (event) => {
     if (event.target.value === "") {
       setFirstName(initials.Etunimi);
@@ -248,6 +252,7 @@ function UserManage(props) {
     }
   }
 
+  // sukunimen päivitys
   const updateLastName = (event) => {
     if (event.target.value === "") {
       setLastName(initials.Sukunimi);
@@ -256,6 +261,7 @@ function UserManage(props) {
     }
   }
 
+  // sähköpostin päivittäminen
   const updateEmail = (event) => {
     if (event.target.value === "") {
       setEmail(initials.Email);
@@ -264,141 +270,146 @@ function UserManage(props) {
     }
   }
 
+  // TODO: salasanan vaihto, ainakin käyttäjän oman salasanan vaihtamiseen
   const updatePassword = (event) => {
     setPassword(event.target.value);
   }
 
   // Renderöinti
-  return (  
-    <div>
-
-      {/* Painike, mistä voi lisätä segmentin */}
-      <Box>
-        {/* <AddSegment token={props.token} segments={props.segments} updateSegments={props.updateSegments}/> */}
-      </Box>
-      
-      {/* Segmenttikortit */}
-      <Box className={classes.cardContainer}>
-        <Grid container spacing={0}> 
-          
-          {/* Luodaan jokaiselle käyttäjälle oma kortti */}
-          {
-            users === null 
-            ? 
-            <div />
-            :
-            users.map(item => {
-              return (
-                <Grid item xs={12} sm={4}>
-                  <Card className={classes.segmentCard}>
-                    <CardHeader 
-                      title={item.Etunimi + " " +item.Sukunimi}
-                      subheader={item.Sähköposti}
-                      action={
-                        <IconButton id={item.ID} aria-label="close" onClick={(event) => handleMenu(event, item)}>
-                          <MoreVertIcon />
-                        </IconButton>
-                      }
-                    />
+  if (props.role === "admin") {
+    return (  
+      <div>
+  
+        {/*TODO: painike käyttäjän lisäämiselle, sekä omien tietojen muokkaamiselle?*/}
+        
+        {/* Käyttäjäkortit */}
+        <Box className={classes.cardContainer}>
+          <Grid container spacing={0}> 
+            
+            {/* Luodaan jokaiselle käyttäjälle oma kortti */}
+            {
+              users === null 
+              ? 
+              <div />
+              :
+              users.map(item => {
+                return (
+                  <Grid item xs={12} sm={4}>
+                    <Card className={classes.userCard}>
+                      <CardHeader 
+                        title={item.Etunimi + " " +item.Sukunimi}
+                        subheader={item.Sähköposti}
+                        action={
+                          <IconButton id={item.ID} aria-label="close" onClick={(event) => handleMenu(event, item)}>
+                            <MoreVertIcon />
+                          </IconButton>
+                        }
+                      />
+                      
+                      {/* Valikko kortin lisätoiminnoille */}
+                      <Menu           
+                        anchorEl={anchorElMenu}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                        keepMounted
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                        open={menuOpen}
+                        onClose={handleMenuClose}
+                      > 
+                        <MenuItem onClick={() => openEdit(item)}>
+                          Muokkaa
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem onClick={() => openDelete()}>
+                          Poista
+                        </MenuItem>
+                      </Menu>
+  
+                      <CardContent>
+  
+                        <Typography variant="body1" color="textSecondary" align="left" component="p">
+                          {item.Rooli !== null ? "Rooli: " + item.Rooli: "Ei määriteltyä roolia"}
+                        </Typography>
+  
+                      </CardContent>
+                    </Card>
                     
-                    {/* Valikko kortin lisätoiminnoille */}
-                    <Menu           
-                      anchorEl={anchorElMenu}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      keepMounted
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      open={menuOpen}
-                      onClose={handleMenuClose}
-                    > 
-                      <MenuItem onClick={() => openEdit(item)}>
-                        Muokkaa
-                      </MenuItem>
-                      <Divider />
-                      <MenuItem onClick={() => openDelete()}>
-                        Poista
-                      </MenuItem>
-                    </Menu>
-
-                    <CardContent>
-
-                      <Typography variant="body1" color="textSecondary" align="left" component="p">
-                        {item.Rooli !== null ? "Rooli: " + item.On_Alasegmentti: "Ei määriteltyä roolia"}
-                      </Typography>
-
-                    </CardContent>
-                  </Card>
-                  
-                </Grid>
-              );
-            })
-          }  
-        </Grid>   
-      </Box>
-    
-    {/* Segmentin poistodialogi */}
-    <Dialog 
-      onClose={closeDelete} 
-      open={deleteOpen}
-    >
-      <DialogTitle id="delete_segment">Poista käyttäjä?</DialogTitle>
-        <Typography>Poistetaan käyttäjä ja kaikki käyttäjään liittyvät tiedot. Poista?</Typography>
-      <DialogActions>
-        <Divider />
-        <Button id={"deleteClose"} onClick={closeDelete}>Sulje</Button>
-        <Button variant="contained" color="primary" id={"delete"} onClick={handleDelete}>Poista</Button>
-      </DialogActions>
-    
-    </Dialog>
-    
-    {/* Muokkausdialogi (lomake) */}
-    <Dialog 
-        onClose={closeEdit} 
-        open={editOpen}
+                  </Grid>
+                );
+              })
+            }  
+          </Grid>   
+        </Box>
+      
+      {/* Käyttäjän poistodialogi */}
+      <Dialog 
+        onClose={closeDelete} 
+        open={deleteOpen}
       >
-        <DialogTitle id="edit_segment">Muokkaa käyttäjää</DialogTitle>
-        <FormControl>  
-          <InputLabel htmlFor="firstname" >Muuta etunimeä</InputLabel>
-          <Input
-            id="firstname"
-            type='text'
-            onChange={updateFirstName}
-            placeholder={selected !== null ? selected.Etunimi : ""}
-          />
-        </FormControl>
-        <FormControl>  
-          <InputLabel htmlFor="lastname" >Muuta sukunimeä</InputLabel>
-          <Input
-            id="lastname"
-            type='text'
-            onChange={updateLastName}
-            placeholder={selected !== null ? selected.Sukunimi : ""}
-          />
-        </FormControl>
-        <FormControl>  
-          <InputLabel htmlFor="email" >Muuta sähköpostia</InputLabel>
-          <Input
-            id="email"
-            type='text'
-            onChange={updateEmail}
-            placeholder={selected !== null ? selected.Email : ""}
-          />
-        </FormControl>
-
+        <DialogTitle id="delete_user">Poista käyttäjä?</DialogTitle>
+          <Typography>Poistetaan käyttäjä ja kaikki käyttäjään liittyvät tiedot. Poista?</Typography>
         <DialogActions>
           <Divider />
-          <Button id={"editClose"} onClick={closeEdit}>Sulje</Button>
-          <Button variant="contained" color="primary" id={"save_edit"} onClick={handleEdit} >Tallenna muutokset</Button>
+          <Button id={"deleteClose"} onClick={closeDelete}>Sulje</Button>
+          <Button variant="contained" color="primary" id={"delete"} onClick={handleDelete}>Poista</Button>
         </DialogActions>
       
       </Dialog>
-  </div>
-  );
+      
+      {/* Muokkausdialogi (lomake) */}
+      <Dialog 
+          onClose={closeEdit} 
+          open={editOpen}
+        >
+          <DialogTitle id="edit_user">Muokkaa käyttäjää</DialogTitle>
+          <FormControl>  
+            <InputLabel htmlFor="firstname" >Muuta etunimeä</InputLabel>
+            <Input
+              id="firstname"
+              type='text'
+              onChange={updateFirstName}
+              placeholder={selected !== null ? selected.Etunimi : ""}
+            />
+          </FormControl>
+          <FormControl>  
+            <InputLabel htmlFor="lastname" >Muuta sukunimeä</InputLabel>
+            <Input
+              id="lastname"
+              type='text'
+              onChange={updateLastName}
+              placeholder={selected !== null ? selected.Sukunimi : ""}
+            />
+          </FormControl>
+          <FormControl>  
+            <InputLabel htmlFor="email" >Muuta sähköpostia</InputLabel>
+            <Input
+              id="email"
+              type='text'
+              onChange={updateEmail}
+              placeholder={selected !== null ? selected.Email : ""}
+            />
+          </FormControl>
+  
+          <DialogActions>
+            <Divider />
+            <Button id={"editClose"} onClick={closeEdit}>Sulje</Button>
+            <Button variant="contained" color="primary" id={"save_edit"} onClick={handleEdit} >Tallenna muutokset</Button>
+          </DialogActions>
+        
+        </Dialog>
+    </div>
+    );
+  } else {
+    return (
+      <Typography variant="h6">Käyttäjähallinta vaatii admin-oikeudet</Typography>
+    );
+  }
+  
 }
 
 export default UserManage;

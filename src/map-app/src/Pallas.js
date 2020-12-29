@@ -4,6 +4,9 @@ Pää javascript react appiin
 Luonut: Markku Nirkkonen
 
 Päivityshistoria
+
+29.12.2020 Lisätty kirjautuneen käyttäjän tietojen tallentamiseen liittyviä toimintoja
+
 11.12. Lisättiin lumilaadun ja alasegmentin tiedot hakujen parsimiseen
 
 Markku Nirkkonen 26.11.2020
@@ -32,6 +35,7 @@ function App() {
 
   // Use state hooks
   const [token, setToken] = React.useState(null);
+  const [user, setUser] = React.useState(null);
   const [segments, setSegments] = React.useState([]);
   //const [updates, setUpdates] = React.useState([]);
   const [shownSegment, setShownSegment] = React.useState(null);
@@ -39,6 +43,7 @@ function App() {
 
   //imported hooks
   const isMobile = useMediaQuery({query: '(max-width:760px)'});
+  
   const manageOrMap = (viewManagement ? "Kartta" : "Hallitse");
 
   const styledClasses = useStyles();
@@ -92,6 +97,10 @@ function App() {
     setToken(token);
   }
 
+  function updateUser(user) {
+    setUser(user);
+  }
+
   function updateSegments(data) {
     setSegments(data);
   }
@@ -107,6 +116,8 @@ function App() {
         <div className="top_bar">
           <TopBar 
             isMobile={isMobile} 
+            updateUser={updateUser}
+            user={user}
             token={token} 
             updateToken={updateToken} 
             updateView={updateView}
@@ -122,6 +133,7 @@ function App() {
                 ?
                 <Manage 
                   segments={segments}
+                  role={user.Rooli}
                   token={token}
                   onUpdate={chooseSegment}
                   updateSegments={updateSegments}
