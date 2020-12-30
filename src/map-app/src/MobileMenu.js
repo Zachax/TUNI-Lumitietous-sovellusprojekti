@@ -18,12 +18,15 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
+import Dialog from '@material-ui/core/Dialog';
 import Login from './Login';
 import Logout from './Logout';
+import EditOwn from './EditOwn';
 
 function MobileMenu(props) {
   // Hooks
-	const [anchorElMenu, setAnchorElMenu] = React.useState(null); 
+	const [anchorElMenu, setAnchorElMenu] = React.useState(null);
+	const [ editOwnOpen, setEditOwnOpen ] = React.useState(false);
 	
 	const menuOpen = Boolean(anchorElMenu);  
 
@@ -39,6 +42,14 @@ function MobileMenu(props) {
 		setAnchorElMenu(null);
 	};
 
+	const openEditOwn = () => {
+    setEditOwnOpen(true);
+  }
+
+  const closeEditOwn = () => {
+    setEditOwnOpen(false);
+  }
+
 	return (
 		<div className="mobilemenu">
 			
@@ -48,7 +59,7 @@ function MobileMenu(props) {
 				color="inherit" 
 				onClick={handleMenu}
 			>
-				<Typography>{props.user.Etunimi}</Typography>
+				<Typography>{(props.user !== null && props.user !== undefined) ? props.user.Etunimi : "Nimeä ei löydy"}</Typography>
 				<AccountCircleIcon />
 			</IconButton>
 			<Menu
@@ -68,7 +79,7 @@ function MobileMenu(props) {
 			>
 				
 				{/* Näytetään omat tiedot -painike ja vaihtuva painike näytettävän ruudun mukaan */}
-				{!props.viewManagement ? <div /> : <MenuItem><Button color="inherit">Omat tiedot</Button></MenuItem>}
+				{!props.viewManagement ? <div /> : <MenuItem><Button color="inherit" onClick={openEditOwn}>Omat tiedot</Button></MenuItem>}
 				{(props.token === null || props.token === undefined ? <div /> : <MenuItem onClick={handleMenuClose}> <Button color="inherit" onClick={props.updateView}>{props.manageOrMap}</Button></MenuItem>)}
 				<Divider />
 				<MenuItem onClick={handleMenuClose}>
@@ -83,6 +94,12 @@ function MobileMenu(props) {
 					)}
 				</MenuItem>
 			</Menu>
+			<Dialog
+				onClose={closeEditOwn}
+				open={editOwnOpen}
+			>
+				<EditOwn user={props.user} token={props.token} closeEditOwn={closeEditOwn} updateUser={props.updateUser}/>
+			</Dialog>
 		</div>
 	);
 }

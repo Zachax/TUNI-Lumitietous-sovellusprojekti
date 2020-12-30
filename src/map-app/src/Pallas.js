@@ -110,7 +110,6 @@ function App() {
   }
 
   // TODO: Styles of each component
-  // TODO: Guide for segment colours
   return (
     <div className="app">
         <div className="top_bar">
