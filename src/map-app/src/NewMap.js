@@ -2,6 +2,9 @@
 Kartan piirto käyttöliittymään ('@react-google-maps/api' -kirjaston komponenteilla)
 Viimeisin päivitys
 
+Markku Nirkkonen 30.12.2020
+Värit tulevat nyt päivityksistä
+
 Markku Nirkkonen 26.11.2020
 Segmenttien värien selitteen kutistamis/laajentamis -mahdollisuus lisätty
 Pieni korjaus segmenttien hoverin toimintaan.
@@ -97,34 +100,6 @@ function Map(props) {
 
   // zoom rippuu näytön koosta
   const zoom = (props.isMobile ? 11 : 12);
-  
-  // TODO: Segmenttien nimet ja värit voisivat olla kannassa ja tulla sieltä, tämä on purkkaratkaisu
-  const colors = [
-    {
-      name: "Ei tuoretta tietoa",
-      color: "#000000",
-    },
-    {
-      name: "Pehmeä lumi",
-      color: "#76c4d6"
-    },
-    {
-      name: "Tuulen pieksämä aaltoileva lumi",
-      color: "#3f7089"
-    },
-    {
-      name: "Korppu",
-      color: "#3838a0"
-    },
-    {
-      name: "Sohjo",
-      color: "#7a357c"
-    },
-    {
-      name: "Jää",
-      color: "#b533b2"
-    },
-  ]
 
   // kartan tyylit 
   const mapStyles = {        
@@ -202,17 +177,21 @@ function Map(props) {
         </IconButton>
         </Box>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
-          {colors.map(item => {
-            
-            return (
-              // Seliteboksi, sisältää käytettävät värit ja selitteet
-              <Box className={styledClasses.infobox}>
-                <Paper className={styledClasses.colorbox} style={{backgroundColor: item.color}} />
-                <Typography variant='caption' align='justify'>{item.name}</Typography>
-                <Divider />
-              </Box>
-            );
-          })}
+          {props.segmentColors !== null ?
+            props.segmentColors.map(item => {
+              
+              return (
+                // Seliteboksi, sisältää käytettävät värit ja selitteet
+                <Box className={styledClasses.infobox}>
+                  <Paper className={styledClasses.colorbox} style={{backgroundColor: item.color}} />
+                  <Typography variant='caption' align='justify'>{item.name}</Typography>
+                  <Divider />
+                </Box>
+              );
+            })
+            :
+            <div />
+          }
         </Collapse>
       </Box>     
       <LoadScript
@@ -227,11 +206,13 @@ function Map(props) {
           {
             props.segments.map(item => {
               var vari=0
+              var drawColor="#000000"
               if(item.update !== null){
                 vari = item.update.Lumilaatu;
+                drawColor = item.update.Lumi.Vari;
               }
               /* Piirretään segmentit monikulmioina
-               * TODO: värit suoraan segmenttitiedoista, eikä väliaikaisesta taulukosta
+               * 
                * zIndex määrittää päällekäisyysjärjestyksen sen perusteella, onko kyseessä alasegmentti vai ei
                */
               return (
@@ -240,10 +221,10 @@ function Map(props) {
                   path={item.Points}
                   options={
                     {
-                      strokeColor: colors[vari % colors.length].color,
+                      strokeColor: drawColor,
                       strokeOpacity: 0.8,
                       strokeWeight: 2,
-                      fillColor: colors[vari % colors.length].color,
+                      fillColor: drawColor,
                       fillOpacity: (mouseover.ID === item.ID || (selectedSegment.ID === item.ID && props.shownSegment !== null)) ? 0.8 : 0.15,
                       polygonKey: item.ID,
                       zIndex: item.On_Alasegmentti !== null ? 2 : 1,

@@ -37,6 +37,7 @@ function App() {
   const [token, setToken] = React.useState(null);
   const [user, setUser] = React.useState(null);
   const [segments, setSegments] = React.useState([]);
+  const [segmentColors, setSegmentColors] = React.useState(null);
   //const [updates, setUpdates] = React.useState([]);
   const [shownSegment, setShownSegment] = React.useState(null);
   const [viewManagement, setViewManagement] = React.useState(false);
@@ -57,6 +58,14 @@ function App() {
       const updateData = await updates.json();
       const response = await fetch('api/segments');
       const data = await response.json();
+
+      const emptyColor = [{color: "#000000", name: "Ei tietoa"}];
+      const snowcolors = snowdata.map(snow => {
+        return {color: snow.Vari, name: snow.Nimi};
+      });
+      
+      setSegmentColors(emptyColor.concat(snowcolors));
+
       
       await updateData.forEach(update => {
         snowdata.forEach(snow => {
@@ -141,6 +150,7 @@ function App() {
                 :
                 <Map 
                   shownSegment={shownSegment}
+                  segmentColors={segmentColors}
                   segments={segments} 
                   onClick={chooseSegment} 
                   isMobile={isMobile} 
