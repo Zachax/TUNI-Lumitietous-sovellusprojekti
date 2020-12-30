@@ -4,6 +4,9 @@ Pää javascript react appiin
 Luonut: Markku Nirkkonen
 
 Päivityshistoria
+
+29.12.2020 Lisätty kirjautuneen käyttäjän tietojen tallentamiseen liittyviä toimintoja
+
 11.12. Lisättiin lumilaadun ja alasegmentin tiedot hakujen parsimiseen
 
 Markku Nirkkonen 26.11.2020
@@ -32,13 +35,16 @@ function App() {
 
   // Use state hooks
   const [token, setToken] = React.useState(null);
+  const [user, setUser] = React.useState(null);
   const [segments, setSegments] = React.useState([]);
+  const [segmentColors, setSegmentColors] = React.useState(null);
   //const [updates, setUpdates] = React.useState([]);
   const [shownSegment, setShownSegment] = React.useState(null);
   const [viewManagement, setViewManagement] = React.useState(false);
 
   //imported hooks
   const isMobile = useMediaQuery({query: '(max-width:760px)'});
+  
   const manageOrMap = (viewManagement ? "Kartta" : "Hallitse");
 
   const styledClasses = useStyles();
@@ -52,6 +58,14 @@ function App() {
       const updateData = await updates.json();
       const response = await fetch('api/segments');
       const data = await response.json();
+
+      const emptyColor = [{color: "#000000", name: "Ei tietoa"}];
+      const snowcolors = snowdata.map(snow => {
+        return {color: snow.Vari, name: snow.Nimi};
+      });
+      
+      setSegmentColors(emptyColor.concat(snowcolors));
+
       
       await updateData.forEach(update => {
         snowdata.forEach(snow => {
@@ -92,6 +106,10 @@ function App() {
     setToken(token);
   }
 
+  function updateUser(user) {
+    setUser(user);
+  }
+
   function updateSegments(data) {
     setSegments(data);
   }
@@ -101,12 +119,13 @@ function App() {
   }
 
   // TODO: Styles of each component
-  // TODO: Guide for segment colours
   return (
     <div className="app">
         <div className="top_bar">
           <TopBar 
             isMobile={isMobile} 
+            updateUser={updateUser}
+            user={user}
             token={token} 
             updateToken={updateToken} 
             updateView={updateView}
@@ -122,6 +141,7 @@ function App() {
                 ?
                 <Manage 
                   segments={segments}
+                  role={user.Rooli}
                   token={token}
                   onUpdate={chooseSegment}
                   updateSegments={updateSegments}
@@ -130,6 +150,7 @@ function App() {
                 :
                 <Map 
                   shownSegment={shownSegment}
+                  segmentColors={segmentColors}
                   segments={segments} 
                   onClick={chooseSegment} 
                   isMobile={isMobile} 

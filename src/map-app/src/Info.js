@@ -5,6 +5,9 @@ Sisältää myös segmenttien tietojen päivitystoiminnot kirjautuneille käytt�
 Luonut: Markku Nirkkonen
 
 Päivityshistoria
+30.12.2020 Markku Nirkkonen
+Avatar värjäytyy segmentin värin mukaiseksi
+
 11.12. Lisättiin lumilaadun ja alasegmentin tiedot hakujen parsimiseen
 
 5.12. Arttu Lakkala
@@ -63,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "56.25%" // 16:9
   },
   avatar: {
-    backgroundColor: red[500]
+    backgroundColor: props => props.avatarColor
   }
 }));
  
@@ -74,7 +77,7 @@ function Info(props) {
   const [snowtype, setSnowtype] = React.useState(0);
   const [text, setText] = React.useState("Ei tietoa");
   
-  const classes = useStyles();
+  const classes = useStyles({avatarColor: props.segmentdata.update === null ? "#000000" : props.segmentdata.update.Lumi.Vari});
 
   // TODO: still things to finalize. Styles etc.
 
@@ -211,7 +214,7 @@ function Info(props) {
 
             <CardContent>
               <Typography variant="body1" color="textSecondary" align="left" component="p">
-                Lumilaatu
+                {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
               </Typography>
               <Typography variant="body2" color="textSecondary" align="left" component="p">
                 {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}

@@ -1,5 +1,5 @@
 /**
-Kirjautumistoimintojen piirto yläpalkkiin
+Kirjautumispainike ja sen toiminnallisuus
 
 Luonut: Markku Nirkkonen
 
@@ -56,10 +56,13 @@ function Login(props) {
   /*
    * Event handlers
    */
+  
+  //Avaa kirjautumisdialogin
   const openLogin = (event) => {
     setLoginOpen(true);
   }
 
+  // Sulkee kirjautumisdialogin
   const closeLogin = (event) => {
     setLoginOpen(false);
     setEmail("");
@@ -83,7 +86,7 @@ function Login(props) {
     setPassword(event.target.value);
   }
 
-  // When form is sent, POST method api call to /user/login
+  // Kun lomake lähetetään, tehdään POST-kutsu api/user/login
   const sendForm = (event) => {
     const data = {
       Sähköposti: email,
@@ -103,6 +106,8 @@ function Login(props) {
       const res = await response.json();
       
       props.updateToken(res.token);
+      console.log(res.user);
+      props.updateUser(res.user);
       setLoading(false);
     };
     fetchLogin();
@@ -113,6 +118,7 @@ function Login(props) {
 
   return (
     <div className="login">
+      {/* Kirjautumisen avaava ikonipainike */}
       <IconButton 
         edge="start" 
         color="inherit" 
@@ -121,12 +127,14 @@ function Login(props) {
         <Typography variant="button">{(loading ? "Kirjaudutaan" : "Kirjaudu")}</Typography>
         {(loading ? <CircularProgress color="secondary" size={20} /> : <VpnKeyIcon />)}
       </IconButton>
+      
+      {/* Kirjautumisdialogi */}
       <Dialog 
         onClose={closeLogin} 
         open={loginOpen}
         className={styledClasses.input}
       >
-        <DialogTitle id="simple-dialog-title">Kirjaudu sisään</DialogTitle>
+        <DialogTitle id="login-dialog">Kirjaudu sisään</DialogTitle>
           <TextField id="email" label="email" value={email} onChange={updateEmail} className={styledClasses.email}/>
             <FormControl className={styledClasses.password}>
             <InputLabel htmlFor="standard-adornment-password" className={styledClasses.password}>Salasana</InputLabel>
