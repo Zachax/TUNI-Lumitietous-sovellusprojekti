@@ -32,7 +32,7 @@ import FormControl from '@material-ui/core/FormControl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
-// Styles
+// Tyylejä sisäänkirjautumislomakkeen osille
 const useStyles = makeStyles((theme) => ({
   password: {
     padding: theme.spacing(2),

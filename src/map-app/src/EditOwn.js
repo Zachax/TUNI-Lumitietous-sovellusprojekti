@@ -24,7 +24,7 @@ import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
+//import Dialog from '@material-ui/core/Dialog';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -36,6 +36,7 @@ function EditOwn(props) {
   const [lastName, setLastName] = React.useState(null);
   const [email, setEmail] = React.useState(null);
 
+  // Määrittää, onko muokkauslomakkeen tallennuspainike aktiivinen (tyhjillä/muuttamattomilla syötteillä ei ole)
   const saveDisabled = Boolean(
     (firstName === null || firstName === props.user.Etunimi) && 
     (lastName === null || lastName === props.user.Sukunimi) && 
@@ -69,6 +70,7 @@ function EditOwn(props) {
     }
   }
 
+  // lomakkeen sulkeminen nollaa muutokset seuraavaa muokkauskertaa varten
   const handleClose = () => {
     props.closeEditOwn();
     setEmail(null);
@@ -76,7 +78,7 @@ function EditOwn(props) {
     setLastName(null);
   }
 
-    // Käsitellään käyttäjän muokkaus
+  // Käsitellään käyttäjän muokkaus
   // TODO: syötteiden tarkistukset jollakin tavalla? 
   const handleEdit = () => {
     
@@ -128,6 +130,7 @@ function EditOwn(props) {
 
   return (
     <div>
+      {/* Dialogi näyttää nykyiset tiedot ja sisältää muokkauskentät, sekä toimintopainikkeet muokkaamista varten */}
       <DialogTitle id="edit_user">Muokkaa tietojasi</DialogTitle>
         <DialogContent>
         <Typography variant="subtitle2">Tiedot nyt:</Typography>

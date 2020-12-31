@@ -25,31 +25,35 @@ import Manage from './Manage';
 import Info from './Info';
 import TopBar from './TopBar';
 import { useMediaQuery } from 'react-responsive';
-import { makeStyles } from '@material-ui/core/styles';
+//import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
-  toolbar: theme.mixins.toolbar,
-}));
+// const useStyles = makeStyles((theme) => ({
+//   toolbar: theme.mixins.toolbar,
+// }));
 
 function App() {
 
-  // Use state hooks
+  // Use state hookit
   const [token, setToken] = React.useState(null);
   const [user, setUser] = React.useState(null);
   const [segments, setSegments] = React.useState([]);
   const [segmentColors, setSegmentColors] = React.useState(null);
-  //const [updates, setUpdates] = React.useState([]);
   const [shownSegment, setShownSegment] = React.useState(null);
   const [viewManagement, setViewManagement] = React.useState(false);
 
-  //imported hooks
+  //imported hook. Kysely näyttöportin koosta
   const isMobile = useMediaQuery({query: '(max-width:760px)'});
   
+  // Valikoissa näkyvä teksti riippuu näytettävästä tilasta
   const manageOrMap = (viewManagement ? "Kartta" : "Hallitse");
 
-  const styledClasses = useStyles();
+  // const styledClasses = useStyles();
 
-  // after rendering segment data is fetched - should this be in some other way?
+  /*
+   * Haetaan renderöinnin jälkeen aina tiedot lumilaaduista, päivityksistä ja segmenteistä
+   * Tallennetaan ne hookkeihin
+   *
+   */
   useEffect(() => {
     const fetchData = async () => {
       const snow = await fetch('api/lumilaadut');
@@ -59,13 +63,13 @@ function App() {
       const response = await fetch('api/segments');
       const data = await response.json();
 
+      // Taulukko käytettäville väreille kartassa. Musta väri oletuksena, jos tietoa ei ole
+      // Muut värit suoraan kannasta
       const emptyColor = [{color: "#000000", name: "Ei tietoa"}];
       const snowcolors = snowdata.map(snow => {
         return {color: snow.Vari, name: snow.Nimi};
       });
-      
       setSegmentColors(emptyColor.concat(snowcolors));
-
       
       await updateData.forEach(update => {
         snowdata.forEach(snow => {
@@ -91,36 +95,45 @@ function App() {
           });
         }
       });
-      console.log(data);
+      //console.log(data);
       updateSegments(data);
     };
     fetchData();
   }, []);
 
-  // Event handler function for updating shown segment
-  function chooseSegment(choice) {
+  /*
+   * Event handlerit
+   */
+
+  // Segmentin valinta
+   function chooseSegment(choice) {
     setShownSegment(choice);
   }
 
+  // Token tallennetaan reactin stateen
   function updateToken(token) {
     setToken(token);
   }
 
+  // Käyttäjän päivitys (kirjautuneen)
   function updateUser(user) {
     setUser(user);
   }
 
+  // Kaikkien segmenttien päivittäminen
   function updateSegments(data) {
     setSegments(data);
   }
 
+  // Vaihtaa näkymää hallinnan ja kartan välillä
   function updateView() {
     setViewManagement(!viewManagement);
   }
 
-  // TODO: Styles of each component
+  // TODO: Komponenttien tyylejä ja asetteluja voi vielä parannella
   return (
     <div className="app">
+        {/* Sovelluksen yläpalkki */}
         <div className="top_bar">
           <TopBar 
             isMobile={isMobile} 
@@ -134,7 +147,7 @@ function App() {
           />   
         </div>
         <div className="map_container">
-          {/* <div className={styledClasses.toolbar} /> */}
+          {/* Hallintanäkymä tai kartta tilanteen mukaan */}
             {
               (
                 viewManagement 
@@ -158,9 +171,11 @@ function App() {
               )
             }
         </div>
-        <div className="guide"></div>
+        {/* <div className="guide"></div> */}
+        
+        {/* Sovelluksen sivupalkki, jossa näytetään kartalta valitun segmentin tietoja
+          Näytetään, kun jokin segmentti valittuna, eikä olla hallintanäkymässä */}
         <div className="segment_info">
-          {/* <div className={styledClasses.toolbar} /> */}
           {(shownSegment !== null && !viewManagement ? 
             <Info
               //segments={segments}

@@ -79,37 +79,47 @@ function Info(props) {
   
   const classes = useStyles({avatarColor: props.segmentdata.update === null ? "#000000" : props.segmentdata.update.Lumi.Vari});
 
-  // TODO: still things to finalize. Styles etc.
+  // TODO: Pitää tehdä tyyliltään mustalla sivupalkkipohjalla näkyväksi
+  // TODO: Lomaketta pitää laajentaa. Tietojen lähetykseen mukaan päivittäjän ID ym.
 
   /*
    * Event handlers
    */
+  
+  // Segmentin päivitysdialogin avaus
   const openUpdate = (event) => {
     setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tuoretta tietoa");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
     setLoginOpen(true);
   }
 
+  // Segmentin päivitysdialogin sulkeminen
   const closeUpdate = (event) => {
     setLoginOpen(false);
     setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tuoretta tietoa");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
   }
 
+  // Lumitilanteen kuvaustekstin päivittäminen
   const updateText = (event) => {
     setText(event.target.value);
   }
 
+  // Lumitilanteen lumityypin päivittäminen
   const updateSnowtype = (event) => {
     setSnowtype(event.target.value);
   }
 
+  // Nollataan valittu segmentti sulkiessa
   function closeShownSegment() {
     props.onClose(null);
   }
 
-  // When form is sent, POST method api call to /user/login
+  // Kun lomake lähetetään, tehdään POST methodin api-kutsu polkuun /api/update/:id
   const sendForm = (event) => {
+    
+    // Tallennushetken lumilaatu, kuvausteksti. Lisäksi päivitettävän (valitun) segmentin ID
+    // TODO: Päivittäjän ID mukaan? Mitä muita tietoja tarvitaan?
     const data = {
       Segmentti: props.segmentdata.ID,
       Lumilaatu: snowtype,
@@ -131,7 +141,7 @@ function Info(props) {
     };
     fetchUpdate();
     
-    // getting new segmentdata to view update immediately
+    // Haetaan ajantasaiset segmenttien tiedot heti päivittämisen jälkeen
     const fetchData = async () => {
       const snow = await fetch('api/lumilaadut');
       const snowdata = await snow.json();
@@ -169,20 +179,20 @@ function Info(props) {
           });
         } 
       });
-      console.log(data);
+      //console.log(data);
       props.updateSegments(data);
       setLoading(false);
     };
     fetchData();
-    
-    closeUpdate();
-    
+    closeUpdate();  
   }
 
+  // Segmenttidataa tulee olla, jotta renderöidään mitään näkyvää
   if (props.segmentdata !== undefined) {
+    
     if (props.token !== null && props.token !== undefined) {
       
-      // These render when there is user logged in
+      // Nämä renderöidään, kun käyttäjä on kirjautunut (muokkaustoiminto lisänä)
       return (
         <div className="info">
           <Card className={classes.root}>
@@ -275,7 +285,7 @@ function Info(props) {
       );
     }
     else {
-      // These render when there is no logged in user
+      // Kirjautumattoman käyttäjän näkymät (muokkaustoimintoa ei ole)
       return (
         <div className="info">
           <Card className={classes.root}>
@@ -316,6 +326,7 @@ function Info(props) {
         </div>
       );
     }
+  // mikäli segmenttidataa ei ole saatavilla, ei yritetä renderöidä mitään näkyvää
   } else {
     return <div className="info" />;
   }

@@ -14,14 +14,12 @@ Korjattu niin, että uloskirjautuessa näkymä palaa karttaan
 Markku Nirkkonen 26.11.2020
 Suomennoksia, ei siis käytännön muutoksia
 
-
-
 **/
 
 import * as React from "react";
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import AppBar from '@material-ui/core/AppBar';
+//import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
@@ -31,7 +29,7 @@ import EditOwn from './EditOwn';
 import MobileMenu from './MobileMenu';
 import { makeStyles } from '@material-ui/core/styles';
 
-// Styles for App-Bar
+// Yläpalkin osien tyylejä
 const useStyles = makeStyles((theme) => ({
   topbar: {
     height: "120px",
@@ -66,8 +64,9 @@ function TopBar(props) {
   }
 
   
-  // Returs different views for logged in user than for regular user
+  // Näkymät riippuvat näyttöportin koosta ja siitä, onko käyttäjä kirjautunut vai ei
   if (!props.isMobile) {
+    // Pienen näytön näkymät (toiminnot valikon takana)
     return (
       <div>
         <Box className={styledClasses.topbar}>
@@ -105,6 +104,7 @@ function TopBar(props) {
       </div>
     );
   } else {
+    // Suuren näytön näkymät (toiminnot näkyvillä yläpalkissa)
     return (
       <Box className={styledClasses.topbar}>
         <Toolbar>

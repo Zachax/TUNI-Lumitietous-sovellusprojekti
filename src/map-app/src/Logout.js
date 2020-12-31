@@ -20,8 +20,8 @@ import Typography from '@material-ui/core/Typography';
 function Logout(props) {
 
   // Event handlers
-  
-  
+   
+  //  Uloskirjautuminen nollaa tokenin ja kirjautuneen käyttäjän
   const Logout = (event) => {
     props.updateToken(null);
     props.updateUser(null);
