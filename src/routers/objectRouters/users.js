@@ -51,21 +51,43 @@ router.get('/', function(req, res) {
 
 
 router.put('/:id', function(req, res) {
-  bcrypt.hash(req.body.Salasana, saltRounds, function(err, hash) {
+  if (req.body.Salasana) {
+    bcrypt.hash(req.body.Salasana, saltRounds, function(err, hash) {
+      database.query(
+      `UPDATE Kayttajat
+       SET 
+       Etunimi=?,
+       Sukunimi=?,
+       Sähköposti=?,
+       Salasana=?
+       WHERE ID = ?
+      `,
+      [
+        req.body.Etunimi,
+        req.body.Sukunimi,
+        req.body.Sähköposti,
+        hash,
+        req.params.id
+      ],
+      function (err, result, fields) {
+          if (err) throw err;
+          res.json(result);
+          res.status(200);
+      });
+    });
+  } else {
     database.query(
     `UPDATE Kayttajat
-     SET 
-     Etunimi=?,
-     Sukunimi=?,
-     Sähköposti=?,
-     Salasana=?
-     WHERE ID = ?
+      SET 
+      Etunimi=?,
+      Sukunimi=?,
+      Sähköposti=?
+      WHERE ID = ?
     `,
     [
       req.body.Etunimi,
       req.body.Sukunimi,
       req.body.Sähköposti,
-      hash,
       req.params.id
     ],
     function (err, result, fields) {
@@ -73,7 +95,8 @@ router.put('/:id', function(req, res) {
         res.json(result);
         res.status(200);
     });
-  });
+  }
+  
 });
 
 
