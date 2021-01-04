@@ -87,9 +87,6 @@ function SegmentManage(props) {
    * Event handlers
    */
 
-  
-
-   
   // Segmentin valikon avaaminen, tarkentaa samalla valitun segmentin 
   const handleMenu = (event, item) => {
     props.onUpdate(item);

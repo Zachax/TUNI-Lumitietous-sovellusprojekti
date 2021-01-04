@@ -5,6 +5,9 @@ Luonut: Markku Nirkkonen
 
 Viimeisin päivitys
 
+4.1.2020 Markku Nirkkonen & Arttu Lakkala
+Säädatan hakeminen ilmatieteenlaitokselta ja sen tietojen näyttäminen yläpalkkiin lisätty
+
 29.12.2020 Markku Nirkkonen
 Lisätty painike omien tietojen muokkaamiselle
 
@@ -27,6 +30,7 @@ import Login from './Login';
 import Logout from './Logout';
 import EditOwn from './EditOwn';
 import MobileMenu from './MobileMenu';
+import NavigationIcon from '@material-ui/icons/Navigation';
 import { makeStyles } from '@material-ui/core/styles';
 
 // Yläpalkin osien tyylejä
@@ -35,24 +39,30 @@ const useStyles = makeStyles((theme) => ({
     height: "120px",
   },
   barheader: {
+    margin: "auto",
     flexGrow: 1,
   },
-  baritem: {
+  baritems: {
     marginLeft: theme.spacing(2),
     display: "inline"
   },
+  direction: {
+    marginLeft: theme.spacing(1),
+    transform: props => 'rotate(' + props.degrees + 'deg)',
+  }
 }));
  
 function TopBar(props) {
 
   // Hooks
   const [ editOwnOpen, setEditOwnOpen ] = React.useState(false);
+  const [ weather, setWeather ] = React.useState(null);
 
   // Use styles
-  const styledClasses = useStyles();
+  const styledClasses = useStyles({degrees: weather !== null ? weather.Tuuli_suunta - 180 : 0});
 
 
-  const fecthWeather = async () => {
+  const fetchWeather = async () => {
       //riittä jos haet kaikki tulokset relevantti tieto niissä
      var Sää = new Object();
      const data = fetch('http://opendata.fmi.fi/wfs/fin?service=WFS&version=2.0.0&request=GetFeature&storedquery_id=fmi::observations::weather::timevaluepair&fmisid=101982&')
@@ -61,6 +71,7 @@ function TopBar(props) {
        const parser = new DOMParser();
        const xmlDoc = parser.parseFromString(response,"text/xml");
        const tulokset = xmlDoc.getElementsByTagName("om:result");
+       console.log(tulokset);
        
        for(let tulos of tulokset) {
         switch (tulos.firstElementChild.getAttribute('gml:id')) {
@@ -82,12 +93,15 @@ function TopBar(props) {
         }
        }
       });
-      
-      props.Sää = Sää;
+
+      //console.log(Sää);
+      if (weather === null) {
+        setWeather(Sää);
+      }
    };
   
-  fecthWeather();
-  console.log(props.Sää);
+  fetchWeather();
+  //console.log(props.Sää);
   
   function updateView() {
     props.updateView();
@@ -101,6 +115,15 @@ function TopBar(props) {
     setEditOwnOpen(false);
   }
 
+  var windicon;
+  if (weather === null) {
+    windicon = <Typography>-</Typography>;
+  } else if (weather.Tuuli_suunta === "0.0") {
+    windicon = <Typography>-</Typography>;
+  } else {
+    windicon = <NavigationIcon className={styledClasses.direction} />;
+  }
+
   
   // Näkymät riippuvat näyttöportin koosta ja siitä, onko käyttäjä kirjautunut vai ei
   if (!props.isMobile) {
@@ -109,19 +132,28 @@ function TopBar(props) {
       <div>
         <Box className={styledClasses.topbar}>
           <Toolbar>
+
             <Typography variant="h6" className={styledClasses.barheader}>
               Snowledge
             </Typography>
+
+            <Box className={styledClasses.baritems}>
+              <Typography variant="subtitle1">Laukukero Huippu</Typography>
+              <Typography variant="h6">{weather !== null ? weather.Lampotila + " °C | " + weather.Tuuli_nopeus + " m/s" : "Lämpötilatietoa ei saatu"}</Typography>
+
+              <Typography variant="body2">{weather !== null ? "(puuskissa " + weather.Tuuli_puuska + " m/s)" : "Puuskannopeustietoa ei saatu"}</Typography>
+              <Typography variant="body2">Tuulen suunta {windicon}</Typography>
+            </Box>      
       
-            <Box className={styledClasses.baritem}>
+            <Box className={styledClasses.baritems}>
               {(props.token === null || props.token === undefined ? <div /> : <Button color="inherit" onClick={updateView}>{props.manageOrMap}</Button>)}
             </Box>
 
-            <Box className={styledClasses.baritem}>
+            <Box className={styledClasses.baritems}>
               {!props.viewManagement ? <div /> : <Button color="inherit" onClick={openEditOwn}>Omat tiedot</Button>}
             </Box>
 
-            <Box className={styledClasses.baritem}>
+            <Box className={styledClasses.baritems}>
               {(
                 props.token === null || props.token === undefined 
                 ? 
@@ -146,11 +178,18 @@ function TopBar(props) {
     return (
       <Box className={styledClasses.topbar}>
         <Toolbar>
+
           <Typography variant="h6" className={styledClasses.barheader}>
             Snowledge
           </Typography>
 
-          <Box className={styledClasses.baritem}>
+          <Box className={styledClasses.baritems}>
+            <Typography variant="subtitle1">Laukukero Huippu</Typography>
+            <Typography variant="h6">{weather !== null ? weather.Lampotila + " °C | " + weather.Tuuli_nopeus + " m/s" : "Säätietoa ei saatu"}</Typography>
+            <Box display="inline">{windicon}</Box>
+          </Box>
+
+          <Box className={styledClasses.baritems}>
             {
               (
                 props.token === null || props.token === undefined 
