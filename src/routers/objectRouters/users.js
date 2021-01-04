@@ -8,6 +8,7 @@ Arttu Lakkala 25.11 Lisätty segmentit lisäys
 Arttu Lakkala 1.12  Rollback lisätty segmentin muutokseen
 Arttu Lakkala 5.12 Rollback lisätty segmentin lisäykseen
 Arttu Lakkala 5.12 uudelleennimettiin api.js
+Arttu Lakkala 4.01 Poistettiin mahdollisuus poistaa admin
 -----------------------------------------
 Arttu Lakkala 6.12 Refactoroitiin API:sta
 
@@ -102,7 +103,7 @@ router.put('/:id', function(req, res) {
 
 router.delete('/:id', function(req, res) {
   database.query(
-  `DELETE FROM Kayttajat
+  `SELECT * FROM Kayttajat
    WHERE ID = ?
   `,
   [
@@ -110,8 +111,29 @@ router.delete('/:id', function(req, res) {
   ],
   function (err, result, fields) {
       if (err) throw err;
-      res.json(result);
-      res.status(200);
+      console.log(result.length);
+      if(result.length < 1) {
+        res.end("Poistettavaa ei löytynyt");
+        res.status(404);
+      }
+      else if(result[0].Rooli =='admin'){
+        res.end("adminia ei voi poistaa");
+        res.status(401);
+      }
+      else{
+        database.query(
+        `DELETE FROM Kayttajat
+         WHERE ID = ?
+        `,
+        [
+          req.params.id
+        ],
+        function (err, result, fields) {
+            if (err) throw err;
+            res.json(result);
+            res.status(200);
+        });
+      }
   });
 });
 
