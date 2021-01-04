@@ -22,7 +22,6 @@ Suomennoksia, ei siis käytännön muutoksia
 import * as React from "react";
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-//import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
@@ -58,9 +57,21 @@ function TopBar(props) {
   const [ editOwnOpen, setEditOwnOpen ] = React.useState(false);
   const [ weather, setWeather ] = React.useState(null);
 
-  // Use styles
+  /* Tyyliattribuutti degrees on tuulen tulosuunta asteina.
+   * Ikonia käännetään säädatasta saatu asteluku - 180, sillä nuoli on oletuksena kohti pohjoista,
+   * mutta 360 tarkoittaa tuulen tulosuunnissa pohjoista.
+   */
   const styledClasses = useStyles({degrees: weather !== null ? weather.Tuuli_suunta - 180 : 0});
-
+  
+  // Tuulen suunnan ikonin (nuoli) näkyvyys riippuu siitä, onko tuulen suunta eri kuin 0.0 (= tyyni)
+  var windicon;
+  if (weather === null) {
+    windicon = <Typography>-</Typography>;
+  } else if (weather.Tuuli_suunta === "0.0") {
+    windicon = <Typography>-</Typography>;
+  } else {
+    windicon = <NavigationIcon className={styledClasses.direction} />;
+  }
 
   const fetchWeather = async () => {
       //riittä jos haet kaikki tulokset relevantti tieto niissä
@@ -71,37 +82,40 @@ function TopBar(props) {
        const parser = new DOMParser();
        const xmlDoc = parser.parseFromString(response,"text/xml");
        const tulokset = xmlDoc.getElementsByTagName("om:result");
-       console.log(tulokset);
        
        for(let tulos of tulokset) {
         switch (tulos.firstElementChild.getAttribute('gml:id')) {
+          
+          // Lämpötila-attribuutin data
           case 'obs-obs-1-1-t2m':
             Sää.Lampotila = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
             break;
           
+          // Tuulen nopeuden attribuutin data
           case 'obs-obs-1-1-ws_10min':
             Sää.Tuuli_nopeus = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
             break;
           
+          // Tuulen suunna attribuutin data (asteina, tuulen tulosuunta, 360 = pohjoinen)
           case 'obs-obs-1-1-wd_10min':
             Sää.Tuuli_suunta = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
             break;
-            
+          
+          // Tuulen puuskien nopeuden attribuutin data
           case 'obs-obs-1-1-wg_10min':
             Sää.Tuuli_puuska = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
             break;
         }
        }
       });
-
-      //console.log(Sää);
+      
+      // Jos säätietoa ei vielä ole, se tallennetaan hook stateen
       if (weather === null) {
         setWeather(Sää);
       }
    };
   
   fetchWeather();
-  //console.log(props.Sää);
   
   function updateView() {
     props.updateView();
@@ -114,29 +128,21 @@ function TopBar(props) {
   const closeEditOwn = () => {
     setEditOwnOpen(false);
   }
-
-  var windicon;
-  if (weather === null) {
-    windicon = <Typography>-</Typography>;
-  } else if (weather.Tuuli_suunta === "0.0") {
-    windicon = <Typography>-</Typography>;
-  } else {
-    windicon = <NavigationIcon className={styledClasses.direction} />;
-  }
-
   
   // Näkymät riippuvat näyttöportin koosta ja siitä, onko käyttäjä kirjautunut vai ei
   if (!props.isMobile) {
-    // Pienen näytön näkymät (toiminnot valikon takana)
+    // Suuren näytön näkymät (toiminnot näkyvillä, säätiedot laajemmin)
     return (
       <div>
         <Box className={styledClasses.topbar}>
           <Toolbar>
 
+            {/* Otsikko, (voidaan korvata kuvalla myöhemmin?) */}
             <Typography variant="h6" className={styledClasses.barheader}>
               Snowledge
             </Typography>
 
+            {/* Säätiedot */}
             <Box className={styledClasses.baritems}>
               <Typography variant="subtitle1">Laukukero Huippu</Typography>
               <Typography variant="h6">{weather !== null ? weather.Lampotila + " °C | " + weather.Tuuli_nopeus + " m/s" : "Lämpötilatietoa ei saatu"}</Typography>
@@ -145,14 +151,17 @@ function TopBar(props) {
               <Typography variant="body2">Tuulen suunta {windicon}</Typography>
             </Box>      
       
+            {/* Valinta kartta- ja hallintanäkymän välillä */}
             <Box className={styledClasses.baritems}>
               {(props.token === null || props.token === undefined ? <div /> : <Button color="inherit" onClick={updateView}>{props.manageOrMap}</Button>)}
             </Box>
 
+            {/* Omien tietojen muokkaus kirjautuneille */}
             <Box className={styledClasses.baritems}>
               {!props.viewManagement ? <div /> : <Button color="inherit" onClick={openEditOwn}>Omat tiedot</Button>}
             </Box>
 
+            {/* Kirjautuminen */}
             <Box className={styledClasses.baritems}>
               {(
                 props.token === null || props.token === undefined 
@@ -165,6 +174,8 @@ function TopBar(props) {
 
           </Toolbar>
         </Box>
+        
+        {/* Käyttäjän omien tietojen muokkaus. Elementti EditOwn omassa tiedostossaan */}
         <Dialog
           onClose={closeEditOwn}
           open={editOwnOpen}
@@ -174,21 +185,24 @@ function TopBar(props) {
       </div>
     );
   } else {
-    // Suuren näytön näkymät (toiminnot näkyvillä yläpalkissa)
+    // Pienen näytön näkymät (toiminnot valikossa, säätiedot tiivistetymmin)
     return (
       <Box className={styledClasses.topbar}>
         <Toolbar>
-
+          
+          {/* Otsikko, (voidaan korvata kuvalla myöhemmin?) */}
           <Typography variant="h6" className={styledClasses.barheader}>
             Snowledge
           </Typography>
 
+          {/* Säätiedot */}
           <Box className={styledClasses.baritems}>
             <Typography variant="subtitle1">Laukukero Huippu</Typography>
             <Typography variant="h6">{weather !== null ? weather.Lampotila + " °C | " + weather.Tuuli_nopeus + " m/s" : "Säätietoa ei saatu"}</Typography>
             <Box display="inline">{windicon}</Box>
           </Box>
 
+          {/* Kirjautuminen, tai valikko, jos käyttäjä kirjautunut */}
           <Box className={styledClasses.baritems}>
             {
               (

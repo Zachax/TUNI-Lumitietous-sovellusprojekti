@@ -194,6 +194,8 @@ function Map(props) {
           }
         </Collapse>
       </Box>     
+      
+      {/* Tässä tarvitaan toimiva APIkey Googlelta */}
       <LoadScript
         googleMapsApiKey='AIzaSyBVBvBd1YQDLygYNpwRlbmzosX52Y3l0X0'
       >

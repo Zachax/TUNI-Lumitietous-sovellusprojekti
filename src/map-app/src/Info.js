@@ -30,6 +30,7 @@ import * as React from "react";
 import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -41,32 +42,31 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
 import Avatar from "@material-ui/core/Avatar";
-import { red } from "@material-ui/core/colors";
 import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: "transparent",
-    position: "relative",
-    top: "50px",
-    width: "100%",
-    // height: "50%",
-    // margin: "auto",
-    // position: "absolute",
-    //top: "120px",
-    // right: "0px",
-  },
-  media: {
-    height: 0,
-    paddingTop: "56.25%" // 16:9
-  },
+
   avatar: {
-    backgroundColor: props => props.avatarColor
+    backgroundColor: props => props.avatarColor,
+    display: "flex",
+    margin: "auto"
+  },
+  close: {
+    color: "white"
+  },
+  textBox: {
+    display: "block",
+    margin: "auto",   
+  },
+  snowInfoTexts: {
+    maxWidth: 300,
+    color: "white",
+    padding: theme.spacing(4),
+  },
+  editButton: {
+    color: "white",
+    display: "flex",
   }
 }));
  
@@ -195,52 +195,36 @@ function Info(props) {
       // Nämä renderöidään, kun käyttäjä on kirjautunut (muokkaustoiminto lisänä)
       return (
         <div className="info">
-          <Card className={classes.root}>
-            <CardHeader
-              avatar={
-                <Avatar aria-label="segment_info" className={classes.avatar}>
-                  {props.segmentdata.Nimi.charAt(0).toUpperCase()}
-                </Avatar>
-              }
-              action={
-                <IconButton aria-label="close" onClick={() => closeShownSegment()}>
-                  <CloseIcon />
-                </IconButton>
-              }
-              title={props.segmentdata.Nimi}
-              subheader={props.segmentdata.Maasto}
-              titleTypographyProps={
-                {
-                  align: 'left',
-                  color: 'white'
-                }
-              }
-              subheaderTypographyProps={
-                {
-                  align: 'left'
-                }
-              }
-            />
+          <IconButton aria-label="close" className={classes.close} onClick={() => closeShownSegment()}>
+            <CloseIcon />
+          </IconButton>
 
-            <CardContent>
-              <Typography variant="body1" color="textSecondary" align="left" component="p">
-                {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" align="left" component="p">
-                {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
-              </Typography>
-            </CardContent>
-            <CardActions disableSpacing>
-              <IconButton 
-                edge="start" 
-                color="inherit" 
-                onClick={openUpdate}
-              >
-                <EditIcon />
-                <Typography variant="button">Päivitä</Typography>
-              </IconButton>
-            </CardActions>
-          </Card>
+          <Avatar aria-label="segment_info" className={classes.avatar}>
+            {props.segmentdata.Nimi.charAt(0).toUpperCase()}
+          </Avatar>
+
+          <Box className={classes.textBox} >
+            <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
+            </Typography>
+            <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
+            </Typography>
+            <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
+            </Typography>
+            <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
+            </Typography>
+          </Box>
+
+          <IconButton 
+            className={classes.editButton}
+            onClick={openUpdate}
+          >
+            <EditIcon />
+            <Typography variant="button">Päivitä</Typography>
+          </IconButton>
           
           <Dialog 
             onClose={closeUpdate} 
@@ -288,41 +272,29 @@ function Info(props) {
       // Kirjautumattoman käyttäjän näkymät (muokkaustoimintoa ei ole)
       return (
         <div className="info">
-          <Card className={classes.root}>
-            <CardHeader
-              avatar={
-                <Avatar aria-label="recipe" className={classes.avatar}>
-                  {props.segmentdata.Nimi.charAt(0).toUpperCase()}
-                </Avatar>
-              }
-              action={
-                <IconButton aria-label="close" onClick={() => closeShownSegment()}>
-                  <CloseIcon />
-                </IconButton>
-              }
-              title={props.segmentdata.Nimi}
-              subheader={props.segmentdata.Maasto}
-              titleTypographyProps={
-                {
-                  align: 'left',
-                }
-              }
-              subheaderTypographyProps={
-                {
-                  align: 'left'
-                }
-              }
-            />
+          <IconButton aria-label="close" className={classes.close} onClick={() => closeShownSegment()}>
+            <CloseIcon />
+          </IconButton>
 
-            <CardContent>
-              <Typography variant="body1" color="textSecondary" align="left" component="p">
-                {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" align="left" component="p">
-                {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
-              </Typography>
-            </CardContent>
-          </Card>
+          <Avatar aria-label="segment_info" className={classes.avatar}>
+            {props.segmentdata.Nimi.charAt(0).toUpperCase()}
+          </Avatar>
+
+          <Box className={classes.textBox} >
+            <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
+            </Typography>
+            <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
+            </Typography>
+            <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
+            </Typography>
+            <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
+            </Typography>
+          </Box>
+          
         </div>
       );
     }

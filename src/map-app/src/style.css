@@ -47,7 +47,7 @@ body {
 }
 
 .info {
-  background-color: rgba(0,0,0,0.75);
+  background-color: rgba(0,0,0,0.8);
   max-width: calc(100vh - 50px);
   min-width: 300px;
   z-index: 1;
