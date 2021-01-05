@@ -56,8 +56,12 @@ const useStyles = makeStyles((theme) => ({
     color: "white"
   },
   textBox: {
+    margin: "auto",
     display: "block",
-    margin: "auto",   
+  },
+  snowLogo: {
+    padding: theme.spacing(4),
+    textAlign: "center"
   },
   snowInfoTexts: {
     maxWidth: 300,
@@ -199,23 +203,29 @@ function Info(props) {
             <CloseIcon />
           </IconButton>
 
-          <Avatar aria-label="segment_info" className={classes.avatar}>
+          {/* <Avatar aria-label="segment_info" className={classes.avatar} >
             {props.segmentdata.Nimi.charAt(0).toUpperCase()}
-          </Avatar>
+          </Avatar> */}
+
+          
 
           <Box className={classes.textBox} >
-            <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
-            </Typography>
-            <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
-            </Typography>
-            <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
-            </Typography>
-            <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
-            </Typography>
+
+          <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
+            {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
+          </Typography>
+          {/* <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
+            {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
+          </Typography> */}
+          <Box className={classes.snowLogo}>
+            {props.segmentdata.update !== null ? <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"}/> : <div />}
+          </Box>
+          <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
+            {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
+          </Typography>
+          <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
+            {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
+          </Typography>
           </Box>
 
           <IconButton 
@@ -276,17 +286,21 @@ function Info(props) {
             <CloseIcon />
           </IconButton>
 
-          <Avatar aria-label="segment_info" className={classes.avatar}>
+          {/* <Avatar aria-label="segment_info" className={classes.avatar}>
             {props.segmentdata.Nimi.charAt(0).toUpperCase()}
-          </Avatar>
+          </Avatar> */}
 
           <Box className={classes.textBox} >
+
             <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
             </Typography>
-            <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
+            {/* <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
-            </Typography>
+            </Typography> */}
+            <Box className={classes.snowLogo}>
+              {props.segmentdata.update !== null ? <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"}/> : <div />}
+            </Box>
             <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
             </Typography>

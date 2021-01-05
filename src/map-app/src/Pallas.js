@@ -66,8 +66,8 @@ function App() {
       // Taulukko käytettäville väreille kartassa. Musta väri oletuksena, jos tietoa ei ole
       // Muut värit suoraan kannasta
       const emptyColor = [{color: "#000000", name: "Ei tietoa"}];
-      const snowcolors = snowdata.map(snow => {
-        return {color: snow.Vari, name: snow.Nimi};
+      const snowcolors = snowdata.map((item) => {
+        return {color: item.Vari, name: item.Nimi};
       });
       setSegmentColors(emptyColor.concat(snowcolors));
       
