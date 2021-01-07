@@ -77,6 +77,9 @@ const useStyles = makeStyles((theme) => ({
     //width: "40px",
     zIndex: 1,
   },
+  snowLogo: {
+    textAlign: "center"
+  },
   expand: {
     transform: 'rotate(0deg)',
     marginLeft: 'auto',
@@ -177,14 +180,27 @@ function Map(props) {
         </IconButton>
         </Box>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
-          {props.segmentColors !== null ?
-            props.segmentColors.map(item => {
+          {/* Selitteet renderöidään, jos tiedot segmenttien nimistä ovat saatavilla (props.segmentColors.name) */}
+          {
+            props.segmentColors !== null 
+            ?
+            props.segmentColors.map((item, index) => {
               
               return (
-                // Seliteboksi, sisältää käytettävät värit ja selitteet
+                // Seliteboksi, sisältää lumilogot ja selitteet
                 <Box className={styledClasses.infobox}>
-                  <Paper className={styledClasses.colorbox} style={{backgroundColor: item.color}} />
-                  <Typography variant='caption' align='justify'>{item.name}</Typography>
+                  {/* TODO: kun ei-tietoa-logo saatavilla, ehdon voi poistaa */}
+                  {
+                    index === 0 
+                    ? 
+                    <Typography className={styledClasses.snowLogo}>?</Typography> 
+                    : 
+                    <Box className={styledClasses.snowLogo}><img src={process.env.PUBLIC_URL + "/pienetlogot/" + index + ".png"} alt="lumityypin logo" align="center"/></Box>      
+                  }
+                  {/* <Paper className={styledClasses.colorbox} style={{backgroundColor: item.color}} /> */}
+                  <Box className={styledClasses.snowLogo}>
+                    <Typography variant='caption' align='justify'>{item.name}</Typography>
+                  </Box>       
                   <Divider />
                 </Box>
               );
@@ -207,10 +223,10 @@ function Map(props) {
         >
           {
             props.segments.map(item => {
-              var vari=0
+              //var vari=0
               var drawColor="#000000"
               if(item.update !== null){
-                vari = item.update.Lumilaatu;
+                //vari = item.update.Lumilaatu;
                 drawColor = item.update.Lumi.Vari;
               }
               /* Piirretään segmentit monikulmioina

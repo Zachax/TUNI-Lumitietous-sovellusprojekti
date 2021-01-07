@@ -95,7 +95,7 @@ function App() {
           });
         }
       });
-      //console.log(data);
+      console.log(data);
       updateSegments(data);
     };
     fetchData();

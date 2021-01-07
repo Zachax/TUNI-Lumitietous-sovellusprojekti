@@ -75,38 +75,41 @@ function TopBar(props) {
 
   const fetchWeather = async () => {
       //riittä jos haet kaikki tulokset relevantti tieto niissä
-     var Sää = new Object();
-     const data = fetch('http://opendata.fmi.fi/wfs/fin?service=WFS&version=2.0.0&request=GetFeature&storedquery_id=fmi::observations::weather::timevaluepair&fmisid=101982&')
-     .then((response) => response.text())
-     .then((response) => {
-       const parser = new DOMParser();
-       const xmlDoc = parser.parseFromString(response,"text/xml");
-       const tulokset = xmlDoc.getElementsByTagName("om:result");
-       
-       for(let tulos of tulokset) {
-        switch (tulos.firstElementChild.getAttribute('gml:id')) {
-          
-          // Lämpötila-attribuutin data
-          case 'obs-obs-1-1-t2m':
-            Sää.Lampotila = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
-            break;
-          
-          // Tuulen nopeuden attribuutin data
-          case 'obs-obs-1-1-ws_10min':
-            Sää.Tuuli_nopeus = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
-            break;
-          
-          // Tuulen suunna attribuutin data (asteina, tuulen tulosuunta, 360 = pohjoinen)
-          case 'obs-obs-1-1-wd_10min':
-            Sää.Tuuli_suunta = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
-            break;
-          
-          // Tuulen puuskien nopeuden attribuutin data
-          case 'obs-obs-1-1-wg_10min':
-            Sää.Tuuli_puuska = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
-            break;
+     var Sää = {};
+     fetch('http://opendata.fmi.fi/wfs/fin?service=WFS&version=2.0.0&request=GetFeature&storedquery_id=fmi::observations::weather::timevaluepair&fmisid=101982&')
+      .then((response) => response.text())
+      .then((response) => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(response,"text/xml");
+        const tulokset = xmlDoc.getElementsByTagName("om:result");
+        
+        for(let tulos of tulokset) {
+          switch (tulos.firstElementChild.getAttribute('gml:id')) {
+            
+            // Lämpötila-attribuutin data
+            case 'obs-obs-1-1-t2m':
+              Sää.Lampotila = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+              break;
+            
+            // Tuulen nopeuden attribuutin data
+            case 'obs-obs-1-1-ws_10min':
+              Sää.Tuuli_nopeus = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+              break;
+            
+            // Tuulen suunna attribuutin data (asteina, tuulen tulosuunta, 360 = pohjoinen)
+            case 'obs-obs-1-1-wd_10min':
+              Sää.Tuuli_suunta = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+              break;
+            
+            // Tuulen puuskien nopeuden attribuutin data
+            case 'obs-obs-1-1-wg_10min':
+              Sää.Tuuli_puuska = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+              break;
+            default: 
+              // Jos ei osumia, ei tehdä mitään
+              break;
+          }
         }
-       }
       });
       
       // Jos säätietoa ei vielä ole, se tallennetaan hook stateen
@@ -139,14 +142,15 @@ function TopBar(props) {
 
             {/* Otsikko, (voidaan korvata kuvalla myöhemmin?) */}
             <Typography variant="h6" className={styledClasses.barheader}>
-              Snowledge
+              <img src="pollo.ico" alt="Pallaksen pöllöt logo" />
             </Typography>
 
             {/* Säätiedot */}
             <Box className={styledClasses.baritems}>
+              {/* Havaintoaseman nimi */}
               <Typography variant="subtitle1">Laukukero Huippu</Typography>
+              
               <Typography variant="h6">{weather !== null ? weather.Lampotila + " °C | " + weather.Tuuli_nopeus + " m/s" : "Lämpötilatietoa ei saatu"}</Typography>
-
               <Typography variant="body2">{weather !== null ? "(puuskissa " + weather.Tuuli_puuska + " m/s)" : "Puuskannopeustietoa ei saatu"}</Typography>
               <Typography variant="body2">Tuulen suunta {windicon}</Typography>
             </Box>      
@@ -192,12 +196,15 @@ function TopBar(props) {
           
           {/* Otsikko, (voidaan korvata kuvalla myöhemmin?) */}
           <Typography variant="h6" className={styledClasses.barheader}>
-            Snowledge
+            <img src="pollo.ico" alt="Pallaksen pöllöt logo" />
           </Typography>
 
           {/* Säätiedot */}
           <Box className={styledClasses.baritems}>
+            {/* Havaintoaseman nimi */}
             <Typography variant="subtitle1">Laukukero Huippu</Typography>
+            
+            {/* TODO: järjestä paremmin näkyväksi pienellä näytöllä, esimerkiksi eri riveille */}
             <Typography variant="h6">{weather !== null ? weather.Lampotila + " °C | " + weather.Tuuli_nopeus + " m/s" : "Säätietoa ei saatu"}</Typography>
             <Box display="inline">{windicon}</Box>
           </Box>

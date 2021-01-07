@@ -5,6 +5,13 @@ Sisältää myös segmenttien tietojen päivitystoiminnot kirjautuneille käytt�
 Luonut: Markku Nirkkonen
 
 Päivityshistoria
+
+7.1.2021 Markku Nirkkonen
+Lumitilanteen päivitysaika näkyviin käyttöliittymään
+
+4.1.2021 Markku Nirkkonen
+Avatarin tilalle segmentin lumitilannetta kuvaava logo
+
 30.12.2020 Markku Nirkkonen
 Avatar värjäytyy segmentin värin mukaiseksi
 
@@ -42,16 +49,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
-import Avatar from "@material-ui/core/Avatar";
 import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme) => ({
 
-  avatar: {
-    backgroundColor: props => props.avatarColor,
-    display: "flex",
-    margin: "auto"
-  },
   close: {
     color: "white"
   },
@@ -81,7 +82,24 @@ function Info(props) {
   const [snowtype, setSnowtype] = React.useState(0);
   const [text, setText] = React.useState("Ei tietoa");
   
-  const classes = useStyles({avatarColor: props.segmentdata.update === null ? "#000000" : props.segmentdata.update.Lumi.Vari});
+  const classes = useStyles();
+
+  var updateDate;
+  var updateTime;
+
+  // Parsitaan päivämäärä ja aika päivityksestä, mikäli päivitys löytyy
+  if (props.segmentdata.update !== null) {
+    
+    // Datasta aika tulee muodossa: yyyy-mm-ddThh:mm:ss.000Z
+    let timedata = props.segmentdata.update.Aika;
+    let timeString = timedata.split("T");
+    
+    // Päivämäärä taulukoksi muotoon [vuosi, kuukausi, päivä]
+    updateDate = timeString[0].split("-");
+
+    // Kellonaika muodossa hh:mm:ss
+    updateTime = timeString[1].split(".")[0];
+  }
 
   // TODO: Pitää tehdä tyyliltään mustalla sivupalkkipohjalla näkyväksi
   // TODO: Lomaketta pitää laajentaa. Tietojen lähetykseen mukaan päivittäjän ID ym.
@@ -169,7 +187,7 @@ function Info(props) {
           if (update.Segmentti === segment.ID) {
             segment.update = update;           
           }
-          // update shown segment
+          // päivitetään näytettävä segmentti
           if (segment.ID === props.segmentdata.ID) {
             props.onUpdate(segment);
           }
@@ -191,6 +209,8 @@ function Info(props) {
     closeUpdate();  
   }
 
+  
+
   // Segmenttidataa tulee olla, jotta renderöidään mitään näkyvää
   if (props.segmentdata !== undefined) {
     
@@ -203,29 +223,28 @@ function Info(props) {
             <CloseIcon />
           </IconButton>
 
-          {/* <Avatar aria-label="segment_info" className={classes.avatar} >
-            {props.segmentdata.Nimi.charAt(0).toUpperCase()}
-          </Avatar> */}
-
-          
-
           <Box className={classes.textBox} >
 
-          <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
-            {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
-          </Typography>
-          {/* <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
-            {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
-          </Typography> */}
-          <Box className={classes.snowLogo}>
-            {props.segmentdata.update !== null ? <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"}/> : <div />}
-          </Box>
-          <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
-            {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
-          </Typography>
-          <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
-            {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
-          </Typography>
+            <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
+            </Typography>
+            {/* Pohjamaasto, kommentoi näkyviin jos halutaan näyttää */}
+            {/* <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
+            </Typography> */}
+            <Box className={classes.snowLogo}>
+              {/* Segmentin logon tulee olla nimetty segmentin ID:n kanssa yhtenevästi */}
+              {props.segmentdata.update !== null ? <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/> : <div />}
+            </Box>
+            <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
+            </Typography>
+            <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
+            </Typography>
+            <Typography variant="caption" className={classes.snowInfoTexts} align="center" component="p">
+              {props.segmentdata.update === null ? "" : `${updateDate[2]}.${updateDate[1]}.${updateDate[0]} ${updateTime}`}
+            </Typography>
           </Box>
 
           <IconButton 
@@ -295,17 +314,21 @@ function Info(props) {
             <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
             </Typography>
+            {/* Pohjamaasto, kommentoi näkyviin jos halutaan näyttää */}
             {/* <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
             </Typography> */}
             <Box className={classes.snowLogo}>
-              {props.segmentdata.update !== null ? <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"}/> : <div />}
+              {props.segmentdata.update !== null ? <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/> : <div />}
             </Box>
             <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
             </Typography>
             <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
+            </Typography>
+            <Typography variant="caption" className={classes.snowInfoTexts} align="center" component="p">
+            {props.segmentdata.update === null ? "" : `${updateDate[2]}.${updateDate[1]}.${updateDate[0]} ${updateTime}`}
             </Typography>
           </Box>
           
