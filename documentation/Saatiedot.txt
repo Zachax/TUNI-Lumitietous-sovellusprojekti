@@ -1,0 +1,3 @@
+Sivulla näkyvät säätiedot haetaan ilmatieteen laitoksen avoimen datan latausrajapinnasta (https://www.ilmatieteenlaitos.fi/avoin-data)
+Säädata on vain käyttöliittymän puolella, mikäli tietoja halutaan tallentaa tietokantaan se vaatii tietokannan laajennusta.
+Säätietojen laajennukseen kannattaa hyödyntää (https://www.ilmatieteenlaitos.fi/tallennetut-kyselyt) asiakkaan tarpeiden mukaan.
