@@ -2,6 +2,9 @@
 Kartan piirto käyttöliittymään ('@react-google-maps/api' -kirjaston komponenteilla)
 Viimeisin päivitys
 
+Markku Nirkkonen 9.1.2021
+Lisätty metsään viittaavat markerit, joista voi valita myös metsäsegmentin lumitilanteen näkyviin
+
 Markku Nirkkonen 30.12.2020
 Värit tulevat nyt päivityksistä
 
@@ -25,7 +28,7 @@ Lisätty päivitys värin valintaan
 
 **/
 
-import { GoogleMap, LoadScript, Polygon } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Polygon, Marker } from '@react-google-maps/api';
 import * as React from "react";
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -95,6 +98,7 @@ function Map(props) {
   
   // Use state hooks
   const [ selectedSegment, setSelectedSegment ] = React.useState({});
+  const [ woodsSegment, setWoodsSegment ] = React.useState(null);
   const [ mouseover, setMouseover ] = React.useState({ID: null, name: null});
   const [ center, setCenter ] = React.useState({ lat: 68.067334, lng: 24.062813 });
   const [ subsOnly, setSubsOnly ] = React.useState(false);
@@ -102,6 +106,13 @@ function Map(props) {
 
   // zoom rippuu näytön koosta
   const zoom = (props.isMobile ? 11 : 12);
+
+  // Koordinaattipisteet segmenttejä ympäröiville metsämarkereille
+  const markerPoints = [
+    {lat: 68.035073, lng: 24.044421},
+    {lat: 68.085595, lng: 24.005129},
+    {lat: 68.082975, lng: 24.116956}
+  ]
 
   // kartan tyylit 
   const mapStyles = {        
@@ -222,14 +233,25 @@ function Map(props) {
         >
           {
             props.segments.map(item => {
-              //var vari=0
+           
               var drawColor="#000000"
               if(item.update !== null){
-                //vari = item.update.Lumilaatu;
                 if (item.update.Lumi !== undefined) {
                   drawColor = item.update.Lumi.Vari;
                 }        
               }
+              
+              // Metsäsegmentti tulee tallentaa erikseen hookeihin, jotta markereihin saadaan yhdistettyä oikea segmentti
+              if (item.Nimi === "Metsä") {
+                if (woodsSegment === null) {
+                  setWoodsSegment(item);
+                } else if (woodsSegment.update !== null && item.update !== null) {
+                  if (woodsSegment.update.Teksti !== item.update.Teksti) {
+                    setWoodsSegment(item);
+                  }
+                }           
+              }
+
               /* Piirretään segmentit monikulmioina
                * 
                * zIndex määrittää päällekäisyysjärjestyksen sen perusteella, onko kyseessä alasegmentti vai ei
@@ -256,6 +278,25 @@ function Map(props) {
                 />
               )
             })
+          }
+          
+          {/* Kun metsäsegmentti on tiedossa, piirretään markerit, joista metsäsegmentin voi myös valita (muuten ei piirretä) */}
+          { 
+            woodsSegment !== null ?
+            markerPoints.map((points) => {
+              return (
+                <Marker 
+                  position={points}
+                  icon={`${process.env.PUBLIC_URL}/pienetlogot/0.png`}
+                  onClick={() => updateChosen(woodsSegment)}
+                  onMouseOver={() => updateMouseover(woodsSegment.ID, woodsSegment.Nimi)}
+                  onMouseOut={() => handleMouseout()}
+                />
+              );
+              
+            })
+            :
+            null
           }
         </GoogleMap>
       </LoadScript>   
