@@ -194,10 +194,10 @@ function TopBar(props) {
       <Box className={styledClasses.topbar}>
         <Toolbar>
           
-          {/* Otsikko, (voidaan korvata kuvalla myöhemmin?) */}
-          <Typography variant="h6" className={styledClasses.barheader}>
+          {/* Otsikko (kuva) */}
+          <Box className={styledClasses.barheader}>
             <img src="pollo.ico" alt="Pallaksen pöllöt logo" />
-          </Typography>
+          </Box>
 
           {/* Säätiedot */}
           <Box className={styledClasses.baritems}>

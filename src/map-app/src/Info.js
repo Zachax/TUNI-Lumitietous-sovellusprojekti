@@ -6,6 +6,9 @@ Luonut: Markku Nirkkonen
 
 Päivityshistoria
 
+9.1.2021 Markku Nirkkonen
+Lumitilanteen päivitysdialogia fiksattu paremmaksi
+
 7.1.2021 Markku Nirkkonen
 Lumitilanteen päivitysaika näkyviin käyttöliittymään
 
@@ -50,6 +53,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from "@material-ui/icons/Close";
+import FormHelperText from '@material-ui/core/FormHelperText';
+
 
 const useStyles = makeStyles((theme) => ({
 
@@ -72,9 +77,19 @@ const useStyles = makeStyles((theme) => ({
   editButton: {
     color: "white",
     display: "flex",
+  },
+  inputs: {
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
+  helpers: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   }
 }));
- 
+
 function Info(props) {
 
   const [loginOpen, setLoginOpen] = React.useState(false);
@@ -101,16 +116,13 @@ function Info(props) {
     updateTime = timeString[1].split(".")[0];
   }
 
-  // TODO: Pitää tehdä tyyliltään mustalla sivupalkkipohjalla näkyväksi
-  // TODO: Lomaketta pitää laajentaa. Tietojen lähetykseen mukaan päivittäjän ID ym.
-
   /*
    * Event handlers
    */
   
   // Segmentin päivitysdialogin avaus
   const openUpdate = (event) => {
-    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tuoretta tietoa");
+    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei kuvausta");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
     setLoginOpen(true);
   }
@@ -118,7 +130,7 @@ function Info(props) {
   // Segmentin päivitysdialogin sulkeminen
   const closeUpdate = (event) => {
     setLoginOpen(false);
-    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tuoretta tietoa");
+    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei kuvausta");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
   }
 
@@ -141,11 +153,11 @@ function Info(props) {
   const sendForm = (event) => {
     
     // Tallennushetken lumilaatu, kuvausteksti. Lisäksi päivitettävän (valitun) segmentin ID
-    // TODO: Päivittäjän ID mukaan? Mitä muita tietoja tarvitaan?
     const data = {
       Segmentti: props.segmentdata.ID,
       Lumilaatu: snowtype,
-      Teksti: text
+      // Kuvauksen syöttökentän ollessa tyhjä (text === ""), päivitetään edellisen päivityksen tekstillä
+      Teksti: text === "" ? props.segmentdata.update.Teksti : text
     }
     const fetchUpdate = async () => {
       setLoading(true);
@@ -255,18 +267,28 @@ function Info(props) {
             <Typography variant="button">Päivitä</Typography>
           </IconButton>
           
+          {/* Segmentin päivitysdialogi */}
           <Dialog 
             onClose={closeUpdate} 
             open={loginOpen}
           >
             <DialogTitle id="simple-dialog-title">Päivitä segmenttiä</DialogTitle>
-              <Typography>{props.segmentdata.Nimi}</Typography>
+              
+              {/* Avustetekstit, esim segmentin nimi */}
+              <Box className={classes.helpers}>
+                <Typography>{props.segmentdata.Nimi}</Typography>
+                <Typography variant="caption" >Vihje: jos haluat päivittää vain aikaleiman, päivitä muuttamatta lumityyppiä ja jätä kuvaus tyhjäksi</Typography>
+              </Box>
+              
+              {/* Lumityypin valinta */}
+              <InputLabel id="snowtype" className={classes.inputs}>Lumityyppi</InputLabel>
               <Select
-                labelId="demo-simple-select-placeholder-label-label"
-                id="demo-simple-select-placeholder-label"
+                labelId="snowtype"
+                id="snowtype"
                 value={snowtype}
                 onChange={updateSnowtype}
                 displayEmpty
+                className={classes.inputs}
               >
                 <MenuItem value={0}>Ei tietoa</MenuItem>
                 <MenuItem value={1}>Pehmeä lumi</MenuItem>
@@ -275,8 +297,10 @@ function Info(props) {
                 <MenuItem value={4}>Sohjo</MenuItem>
                 <MenuItem value={5}>Jää</MenuItem>
               </Select>
+              {snowtype === 0 ? <FormHelperText className={classes.inputs}>Muuta lumityyppiä päivittääksesi</FormHelperText> : <div />}
 
-              <FormControl>
+              {/* Kuvausteksti */}
+              <FormControl className={classes.inputs}>
                 <InputLabel htmlFor="text" >Kuvaus</InputLabel>
                 <Input
                   id="text"
@@ -284,13 +308,15 @@ function Info(props) {
                   multiline={true}
                   rows={5}
                   placeholder={text}
-                  onChange={updateText}
+                  onChange={updateText}              
                 />
               </FormControl>
+            
+            {/* Dialogin toimintopainikkeet. Päivitys disabloitu, jos lumityyppi on Ei tietoa (snowtype === 0) */}
             <DialogActions>
               <Divider />
               <Button id={"dialogClose"} onClick={closeUpdate}>Peruuta</Button>
-              <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm}>Päivitä</Button>
+              <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm} disabled={snowtype === 0}>Päivitä</Button>
             </DialogActions>
           
           </Dialog>
@@ -304,10 +330,6 @@ function Info(props) {
           <IconButton aria-label="close" className={classes.close} onClick={() => closeShownSegment()}>
             <CloseIcon />
           </IconButton>
-
-          {/* <Avatar aria-label="segment_info" className={classes.avatar}>
-            {props.segmentdata.Nimi.charAt(0).toUpperCase()}
-          </Avatar> */}
 
           <Box className={classes.textBox} >
 

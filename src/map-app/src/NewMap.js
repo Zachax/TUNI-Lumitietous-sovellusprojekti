@@ -31,7 +31,6 @@ import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
@@ -227,7 +226,9 @@ function Map(props) {
               var drawColor="#000000"
               if(item.update !== null){
                 //vari = item.update.Lumilaatu;
-                drawColor = item.update.Lumi.Vari;
+                if (item.update.Lumi !== undefined) {
+                  drawColor = item.update.Lumi.Vari;
+                }        
               }
               /* Piirretään segmentit monikulmioina
                * 
