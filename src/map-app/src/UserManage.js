@@ -34,6 +34,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { useEffect } from 'react';
+import AddUser from './AddUser';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -97,6 +98,22 @@ function UserManage(props) {
    * Event handlers
    */
 
+   // Käyttäjät päivitetään
+  const fetchUsers = async () => {
+    const users = await fetch('api/user/all',
+    {
+      method: "GET",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: "Bearer " + props.token
+      }
+    });
+    const usersdata = await users.json();
+
+    console.log(usersdata);
+    setUsers(usersdata);
+  };
    
   // Käyttäjän valikon avaaminen, tarkentaa samalla valitun käyttäjän 
   const handleMenu = (event, item) => {
@@ -141,22 +158,6 @@ function UserManage(props) {
     };
     fetchDelete();
 
-    // käyttäjät päivitetään heti
-    const fetchUsers = async () => {
-      const users = await fetch('api/user/all',
-      {
-        method: "GET",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: "Bearer " + props.token
-        }
-      });
-      const usersdata = await users.json();
-
-      console.log(usersdata);
-      setUsers(usersdata);
-    };
     fetchUsers();
 
     closeDelete();
@@ -174,6 +175,8 @@ function UserManage(props) {
     setSelected(null);
     setInitials(null);
   }
+
+  
 
   // Käsitellään käyttäjän muokkaus
   // TODO: syötteiden tarkistukset jollakin tavalla? 
@@ -205,26 +208,12 @@ function UserManage(props) {
     };
     fetchEditUser();
 
-    // Käyttäjät päivitetään
-    const fetchUsers = async () => {
-      const users = await fetch('api/user/all',
-      {
-        method: "GET",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: "Bearer " + props.token
-        }
-      });
-      const usersdata = await users.json();
-
-      console.log(usersdata);
-      setUsers(usersdata);
-    };
+    
     fetchUsers();
     setAnchorElMenu(null);
     closeEdit();
   };
+
 
   // Avataan muokkausdialogi
   const openEdit = (item) => {
@@ -280,7 +269,10 @@ function UserManage(props) {
     return (  
       <div>
   
-        {/*TODO: painike käyttäjän lisäämiselle, sekä omien tietojen muokkaamiselle?*/}
+        {/* Painike, mistä voi lisätä segmentin */}
+        <Box>
+          <AddUser token={props.token} fetchUsers={fetchUsers} />
+        </Box>
         
         {/* Käyttäjäkortit */}
         <Box className={classes.cardContainer}>

@@ -242,19 +242,19 @@ function Map(props) {
               }
               
               // Metsäsegmentti tulee tallentaa erikseen hookeihin, jotta markereihin saadaan yhdistettyä oikea segmentti
-              if (item.Nimi === "Metsä") {
-                if (woodsSegment === null) {
-                  setWoodsSegment(item);
-                } else if (woodsSegment.update !== null && item.update !== null) {
-                  if (woodsSegment.update.Teksti !== item.update.Teksti) {
-                    setWoodsSegment(item);
-                  }
-                }           
-              }
+              // if (item.Nimi === "Metsä") {
+              //   if (woodsSegment === null) {
+              //     setWoodsSegment(item);
+              //   } else if (woodsSegment.update !== null && item.update !== null) {
+              //     if (woodsSegment.update.Teksti !== item.update.Teksti) {
+              //       setWoodsSegment(item);
+              //     }
+              //   }           
+              // }
 
               /* Piirretään segmentit monikulmioina
                * 
-               * zIndex määrittää päällekäisyysjärjestyksen sen perusteella, onko kyseessä alasegmentti vai ei
+               * zIndex määrittää päällekkäisyysjärjestyksen sen perusteella, onko kyseessä alasegmentti vai ei
                */
               return (
                 <Polygon 
@@ -282,14 +282,14 @@ function Map(props) {
           
           {/* Kun metsäsegmentti on tiedossa, piirretään markerit, joista metsäsegmentin voi myös valita (muuten ei piirretä) */}
           { 
-            woodsSegment !== null ?
+            props.woodsSegment !== null ?
             markerPoints.map((points) => {
               return (
                 <Marker 
                   position={points}
                   icon={`${process.env.PUBLIC_URL}/pienetlogot/0.png`}
-                  onClick={() => updateChosen(woodsSegment)}
-                  onMouseOver={() => updateMouseover(woodsSegment.ID, woodsSegment.Nimi)}
+                  onClick={() => updateChosen(props.woodsSegment)}
+                  onMouseOver={() => updateMouseover(props.woodsSegment.ID, props.woodsSegment.Nimi)}
                   onMouseOut={() => handleMouseout()}
                 />
               );

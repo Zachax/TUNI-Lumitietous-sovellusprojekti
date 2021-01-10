@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
 function Info(props) {
 
   const [loginOpen, setLoginOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  //const [loading, setLoading] = React.useState(false);
   const [snowtype, setSnowtype] = React.useState(0);
   const [text, setText] = React.useState("Ei tietoa");
   
@@ -161,7 +161,7 @@ function Info(props) {
       Teksti: text === "" ? props.segmentdata.update.Teksti : text
     }
     const fetchUpdate = async () => {
-      setLoading(true);
+      //setLoading(true);
       const response = await fetch('api/update/' + props.segmentdata.ID,
       {
         method: "POST",
@@ -212,11 +212,14 @@ function Info(props) {
               segment.On_Alasegmentti = mahd_yla_segmentti.Nimi;
             }
           });
-        } 
+        }
+        if (segment.Nimi === "Metsä") {
+          props.updateWoods(segment);
+        }
       });
-      //console.log(data);
+
       props.updateSegments(data);
-      setLoading(false);
+
     };
     fetchData();
     closeUpdate();  
@@ -251,10 +254,10 @@ function Info(props) {
 
             <Box className={classes.snowLogo}>
               {/* Segmentin logon tulee olla nimetty segmentin ID:n kanssa yhtenevästi */}
-              {props.segmentdata.update === null || props.segmentdata.update === undefined ? <div /> : <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/>}
+              {props.segmentdata.update === null || props.segmentdata.update.Lumi === undefined ? <div /> : <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/>}
             </Box>
             <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata.update === null || props.segmentdata.update === undefined ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
+              {props.segmentdata.update === null || props.segmentdata.update.Lumi === undefined ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
             </Typography>
             <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata.update === null || props.segmentdata.update === undefined ? "Ei kuvausta" : props.segmentdata.update.Teksti}

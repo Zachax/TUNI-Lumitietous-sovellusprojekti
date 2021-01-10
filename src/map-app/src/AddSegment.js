@@ -105,12 +105,24 @@ function AddSegment(props) {
     };
     fetchAddSegment();
 
-    // Segmentit päivitetään
+    // Haetaan ajantasaiset segmenttien tiedot heti päivittämisen jälkeen
     const fetchData = async () => {
+      const snow = await fetch('api/lumilaadut');
+      const snowdata = await snow.json();
       const updates = await fetch('api/segments/update');
       const updateData = await updates.json();
       const response = await fetch('api/segments');
       const data = await response.json();
+      
+      
+      await updateData.forEach(update => {
+        snowdata.forEach(snow => {
+          if(snow.ID === update.Lumilaatu){
+            update.Lumi = snow;
+          }
+        });
+      });
+      
       data.forEach(segment => {
         segment.update = null;
         updateData.forEach(update => {
@@ -118,10 +130,14 @@ function AddSegment(props) {
             segment.update = update;           
           }
         });
+        if (segment.Nimi === "Metsä") {
+          props.updateWoods(segment);
+        }
       });
+
       props.updateSegments(data);
 
-    };
+      };
     fetchData();
 
     closeAdd();

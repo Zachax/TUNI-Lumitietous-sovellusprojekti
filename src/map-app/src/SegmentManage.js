@@ -87,6 +87,37 @@ function SegmentManage(props) {
    * Event handlers
    */
 
+  // Haetaan ajantasaiset segmenttien tiedot heti päivittämisen jälkeen
+  const fetchData = async () => {
+    const snow = await fetch('api/lumilaadut');
+    const snowdata = await snow.json();
+    const updates = await fetch('api/segments/update');
+    const updateData = await updates.json();
+    const response = await fetch('api/segments');
+    const data = await response.json();
+    
+    
+    await updateData.forEach(update => {
+      snowdata.forEach(snow => {
+        if(snow.ID === update.Lumilaatu){
+          update.Lumi = snow;
+        }
+      });
+    });
+    
+    data.forEach(segment => {
+      segment.update = null;
+      updateData.forEach(update => {
+        if (update.Segmentti === segment.ID) {
+          segment.update = update;           
+        }
+      });
+    });
+
+    props.updateSegments(data);
+
+  };
+
   // Segmentin valikon avaaminen, tarkentaa samalla valitun segmentin 
   const handleMenu = (event, item) => {
     props.onUpdate(item);
@@ -134,26 +165,14 @@ function SegmentManage(props) {
           Authorization: "Bearer " + props.token
         }
       });
+      
+      // Tieto metsäsegmentin poistosta huomioidaan
+      if (selected.Nimi === "Metsä") {
+        props.updateWoods(null);
+      }
     };
     fetchDelete();
 
-    // segmentit päivitetään heti
-    const fetchData = async () => {
-      const updates = await fetch('api/segments/update');
-      const updateData = await updates.json();
-      const response = await fetch('api/segments');
-      const data = await response.json();
-      data.forEach(segment => {
-        segment.update = null;
-        updateData.forEach(update => {
-          if (update.Segmentti === segment.ID) {
-            segment.update = update;           
-          }
-        });
-      });
-      props.updateSegments(data);
-
-    };
     fetchData();
 
     closeDelete();
@@ -205,23 +224,6 @@ function SegmentManage(props) {
     };
     fetchEditSegment();
 
-    // Segmentit päivitetään
-    const fetchData = async () => {
-      const updates = await fetch('api/segments/update');
-      const updateData = await updates.json();
-      const response = await fetch('api/segments');
-      const data = await response.json();
-      data.forEach(segment => {
-        segment.update = null;
-        updateData.forEach(update => {
-          if (update.Segmentti === segment.ID) {
-            segment.update = update;           
-          }
-        });
-      });
-      props.updateSegments(data);
-
-    };
     fetchData();
     setAnchorElMenu(null);
     closeEdit();
@@ -299,7 +301,7 @@ function SegmentManage(props) {
 
       {/* Painike, mistä voi lisätä segmentin */}
       <Box>
-        <AddSegment token={props.token} segments={props.segments} updateSegments={props.updateSegments}/>
+        <AddSegment token={props.token} segments={props.segments} updateSegments={props.updateSegments} updateWoods={props.updateWoods}/>
       </Box>
       
       {/* Segmenttikortit */}
