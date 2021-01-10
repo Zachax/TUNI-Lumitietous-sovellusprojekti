@@ -3,6 +3,9 @@ Segmentin lisäyspainike ja segmentin lisäykseen liittyvät toiminnot
 
 Luonut: Markku Nirkkonen 6.12.2020
 
+10.1.2021 Markku Nirkkonen
+Lisäyksiä segmentin lisäämiseen, esimerkiksi segmentin asettaminen lumivyöryherkäksi alueeksi
+
 7.12.2020 Markku Nirkkonen
 Jatkettu segmentin lisäyslomakkeen toteuttamista.
 Segmentin lisääminen toimii, mutta lomake ei tarkista vielä kaikkia syötteitä.
@@ -15,6 +18,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import Checkbox from '@material-ui/core/Checkbox';
 import Divider from '@material-ui/core/Divider';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -25,6 +29,7 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import IconButton from '@material-ui/core/IconButton';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const useStyles = makeStyles((theme) => ({
   add: {
@@ -51,10 +56,11 @@ function AddSegment(props) {
   const [segmentName, setSegmentName] = React.useState("");
   const [terrain, setTerrain] = React.useState("");
   const [addOpen, setAddOpen] = React.useState(false);
+  const [danger, setDanger] = React.useState(false);
 
   // Tarkistuksia lisäyspainikkeen aktivoitumiselle lisäysdialogissa
   // Tarkistaa, onko segmentillä nimi ja maastopohja
-  // TODO: Lisää tarkistuksia koordinaateista
+  // TODO: Lisää tarkistuksia koordinaateista?
   const formOK = Boolean(!(segmentName !== "" && terrain !== ""));
   
   // Määrittää, piirretäänkö rivinpoistopainike koordinaattipisterivin perään
@@ -80,11 +86,10 @@ function AddSegment(props) {
   const handleAdd = () => {
     
     // Tiedot  tulevat hookeista
-    // TODO: Lumivyöryvaara oletuksena false
     const data = {
       Nimi: segmentName,
       Maasto: terrain,
-      Lumivyöryvaara: false,
+      Lumivyöryvaara: danger,
       Points: points
     }
 
@@ -153,6 +158,11 @@ function AddSegment(props) {
     setTerrain(event.target.value);
   }
 
+  // Lumivyöryvaaran vaihtamienn
+  const updateDanger = (event) => {
+    setDanger(!danger);
+  }
+
   // Koordinaattipisteiden päivittäminen
   const updatePoints = (index, latOrLng, event) => {
     console.log(event);
@@ -217,6 +227,17 @@ function AddSegment(props) {
             onChange={updateTerrain}
           />
         </FormControl>
+        <FormControlLabel
+          control={
+            <Checkbox            
+              checked={danger}
+              onChange={updateDanger}
+              name="danger"
+              color="primary"
+            />
+          }
+          label="Lumivyöryriskialue"
+        />
         
         {/* Luodaan rivejä koordinaattipisteille 
         Neljännestä rivistä eteenpäin on mahdollisuus poistaa rivi */}

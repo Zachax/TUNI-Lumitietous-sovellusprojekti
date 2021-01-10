@@ -6,6 +6,9 @@ Luonut: Markku Nirkkonen
 
 Päivityshistoria
 
+10.1.2021 Markku Nirkkonen
+Lumivyöryvaara näkyy, kun tarkastellaan segmenttiä, joka on lumivyöryaluetta
+
 9.1.2021 Markku Nirkkonen
 Lumitilanteen päivitysdialogia fiksattu paremmaksi
 Lisäksi pieniä korjauksia
@@ -67,13 +70,13 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
   },
   snowLogo: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(3),
     textAlign: "center"
   },
   snowInfoTexts: {
     maxWidth: 300,
     color: "white",
-    padding: theme.spacing(4),
+    padding: theme.spacing(3),
   },
   editButton: {
     color: "white",
@@ -94,7 +97,6 @@ const useStyles = makeStyles((theme) => ({
 function Info(props) {
 
   const [loginOpen, setLoginOpen] = React.useState(false);
-  //const [loading, setLoading] = React.useState(false);
   const [snowtype, setSnowtype] = React.useState(0);
   const [text, setText] = React.useState("Ei tietoa");
   
@@ -115,6 +117,21 @@ function Info(props) {
 
     // Kellonaika muodossa hh:mm:ss
     updateTime = timeString[1].split(".")[0];
+  }
+
+  var dangerimage;
+  var dangertext;
+
+  // Alustetaan komponentit, mikäli valitulla segmentillä on lumivyöryvaara
+  if (props.segmentdata !== null) {
+    if (props.segmentdata.Lumivyöryvaara) {
+      // Lumivyöryvaaran merkin tiedostonimi on !.png
+      dangerimage = <img src={process.env.PUBLIC_URL + "/lumilogot/!.png"} alt="lumivyöryvaaran logo"/>;
+      dangertext = <Typography variant="subtitle1" color="error">Lumivyöryherkkä alue, tarkista lumivyörytilanne!</Typography>
+    } else {
+      dangerimage = <div />;
+      dangertext = null;
+    }
   }
 
   /*
@@ -218,6 +235,7 @@ function Info(props) {
         }
       });
 
+      // Päivitetään segmentit, jotta ne piirtyvät uudestaan
       props.updateSegments(data);
 
     };
@@ -241,8 +259,10 @@ function Info(props) {
 
           <Box className={classes.textBox} >
 
+            {/* Segmentin nimi ja lumivyöryvaarasta kertova teksti, mikäli kyseessä lumivyöryherkkä segmentti */}
             <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
+              {props.segmentdata === null ? null : dangertext}
             </Typography>
 
             {/* Pohjamaasto, kommentoi näkyviin jos halutaan näyttää */}
@@ -255,6 +275,8 @@ function Info(props) {
             <Box className={classes.snowLogo}>
               {/* Segmentin logon tulee olla nimetty segmentin ID:n kanssa yhtenevästi */}
               {props.segmentdata.update === null || props.segmentdata.update.Lumi === undefined ? <div /> : <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/>}
+              {/* Lumivyöryvaarasta ilmoitetaan logolla */}
+              {props.segmendata === null ? null : dangerimage}
             </Box>
             <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata.update === null || props.segmentdata.update.Lumi === undefined ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
@@ -341,8 +363,11 @@ function Info(props) {
 
           <Box className={classes.textBox} >
 
+            {/* Segmentin nimi ja lumivyöryvaarasta kertova teksti, mikäli kyseessä lumivyöryherkkä segmentti */}
             <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
+              {/* Lumivyöryvaarasta ilmoitetaan logolla */}
+              {props.segmentdata === null ? null : dangertext}
             </Typography>
 
             {/* Pohjamaasto, kommentoi näkyviin jos halutaan näyttää */}
@@ -353,6 +378,7 @@ function Info(props) {
             <Box className={classes.snowLogo}>
               {/* Segmentin logon tulee olla nimetty segmentin ID:n kanssa yhtenevästi */}
               {props.segmentdata.update === null || props.segmentdata.update === undefined ? <div /> : <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/>}
+              {props.segmendata === null ? null : dangerimage}
             </Box>
             <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata.update === null || props.segmentdata.update === undefined ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}

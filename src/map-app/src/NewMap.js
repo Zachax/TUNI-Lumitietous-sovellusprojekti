@@ -98,7 +98,6 @@ function Map(props) {
   
   // Use state hooks
   const [ selectedSegment, setSelectedSegment ] = React.useState({});
-  const [ woodsSegment, setWoodsSegment ] = React.useState(null);
   const [ mouseover, setMouseover ] = React.useState({ID: null, name: null});
   const [ center, setCenter ] = React.useState({ lat: 68.067334, lng: 24.062813 });
   const [ subsOnly, setSubsOnly ] = React.useState(false);
