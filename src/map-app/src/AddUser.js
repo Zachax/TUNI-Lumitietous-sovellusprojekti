@@ -1,12 +1,7 @@
 /**
-Segmentin lisäyspainike ja segmentin lisäykseen liittyvät toiminnot
+Käyttäjän lisäykseen liittyvät toiminnot
 
-Luonut: Markku Nirkkonen 6.12.2020
-
-7.12.2020 Markku Nirkkonen
-Jatkettu segmentin lisäyslomakkeen toteuttamista.
-Segmentin lisääminen toimii, mutta lomake ei tarkista vielä kaikkia syötteitä.
-
+Luonut: Markku Nirkkonen 9.1.2021
 
 **/
 
@@ -111,9 +106,6 @@ function AddUser(props) {
       await props.fetchUsers();
     };
     fetchAddUser();
-
-    
-
     closeAdd();
   }
 

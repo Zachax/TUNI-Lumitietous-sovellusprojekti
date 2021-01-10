@@ -6,6 +6,9 @@ Luonut: Markku Nirkkonen 18.12.2020
 
 Viimeisimmät muutokset:
 
+Markku Nirkkonen 10.1.2021
+Admin voi muuttaa muiden käyttäjien salasanoja
+
 Markku Nirkkonen 29.12.2020
 Käyttäjien muokkaustoiminnot näkyvät vain, jos kirjautuneen käyttäjän rooli on admin
 
@@ -31,10 +34,14 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { useEffect } from 'react';
 import AddUser from './AddUser';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -67,32 +74,22 @@ function UserManage(props) {
   const [firstName, setFirstName] = React.useState(null);
   const [lastName, setLastName] = React.useState(null);
   const [email, setEmail] = React.useState(null);
-  const [password, setPassword] = React.useState(null);
+  const [password, setPassword] = React.useState("");
+  const [confirm, setConfirm] = React.useState("");
+  const [mismatch, setMismatch] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
   const [initials, setInitials] = React.useState(null);
   const [users, setUsers] = React.useState(null);
   
   const menuOpen = Boolean(anchorElMenu);
 
+  // Muokkauslomakkeen voi lähettää, jos salasana tyhjä (ei muuteta) tai vähintään 7 merkkiä
+  const editFormOK = (password.length >= 7 || password === "");
+
   // Käyttäjätietojen automaattinen haku, kun komponentti on renderöity
   useEffect(() => {
-    const fetchUsers = async () => {
-      const users = await fetch('api/user/all',
-      {
-        method: "GET",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: "Bearer " + props.token
-        }
-      });
-
-      const usersdata = await users.json();
-
-      console.log(usersdata);
-      setUsers(usersdata);
-    };
     fetchUsers();
-  }, []);
+  });
   
   /*
    * Event handlers
@@ -111,7 +108,6 @@ function UserManage(props) {
     });
     const usersdata = await users.json();
 
-    console.log(usersdata);
     setUsers(usersdata);
   };
    
@@ -158,6 +154,7 @@ function UserManage(props) {
     };
     fetchDelete();
 
+    // Poiston jälkeen käyttäjätiedot päivitetään
     fetchUsers();
 
     closeDelete();
@@ -176,44 +173,47 @@ function UserManage(props) {
     setInitials(null);
   }
 
-  
-
   // Käsitellään käyttäjän muokkaus
-  // TODO: syötteiden tarkistukset jollakin tavalla? 
   const handleEdit = () => {
-    
-    // Tiedot  tulevat hookeista
-    const data = {
-      Etunimi: firstName === null ? initials.Etunimi : firstName,
-      Sukunimi: lastName === null ? initials.Sukunimi : lastName,
-      Sähköposti: email === null ? initials.Sähköposti : email,
-      ID: selected.ID
+
+    if (password === confirm) {
+      // Tiedot  tulevat hookeista
+      const data = {
+        Etunimi: firstName === null ? initials.Etunimi : firstName,
+        Sukunimi: lastName === null ? initials.Sukunimi : lastName,
+        Sähköposti: email === null ? initials.Sähköposti : email,
+        ID: selected.ID
+      }
+      if (password !== "") {
+        data.Salasana = password;
+      }
+
+      // Käyttäjän muokkaamisen api-kutsu
+      const fetchEditUser = async () => {
+        const response = await fetch('api/user/'+selected.ID,
+        {
+          method: "PUT",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: "Bearer " + props.token
+          },
+          body: JSON.stringify(data),
+        });
+        const res = await response.json();
+        console.log(res);
+      };
+      fetchEditUser();
+      
+      // Käyttäjät haetaan uudelleen muutoksien jälkeen
+      fetchUsers();
+      
+      setAnchorElMenu(null);
+      closeEdit();
+    } else {
+      setMismatch(true);
     }
-    console.log(data);
-
-    // Käyttäjän muokkaamisen api-kutsu
-    const fetchEditUser = async () => {
-      const response = await fetch('api/user/'+selected.ID,
-      {
-        method: "PUT",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: "Bearer " + props.token
-        },
-        body: JSON.stringify(data),
-      });
-      const res = await response.json();
-      console.log(res);
-    };
-    fetchEditUser();
-
-    
-    fetchUsers();
-    setAnchorElMenu(null);
-    closeEdit();
   };
-
 
   // Avataan muokkausdialogi
   const openEdit = (item) => {
@@ -230,6 +230,9 @@ function UserManage(props) {
     setAnchorElMenu(null);
     setEditOpen(false);
     setSelected(null);
+    setPassword("");
+    setConfirm("");
+    setMismatch(false);
   }
 
   // etunimen päivitys
@@ -259,12 +262,28 @@ function UserManage(props) {
     }
   }
 
-  // TODO: salasanan vaihto, ainakin käyttäjän oman salasanan vaihtamiseen
+  // Vaihtaa salasanakentän näkyvyyden (päälle/pois)
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  // Päivitetään salasanaa, kun sen arvo muuttuu
   const updatePassword = (event) => {
     setPassword(event.target.value);
   }
 
+  // Päivitetään varmennetta, kun sitä muutetaan
+  const updateConfirm = (event) => {
+    setConfirm(event.target.value);
+  }
+
   // Renderöinti
+  
+  // Vain admin-käyttäjä näkee muokkaustoiminnot
   if (props.role === "admin") {
     return (  
       <div>
@@ -329,8 +348,7 @@ function UserManage(props) {
                         </Typography>
   
                       </CardContent>
-                    </Card>
-                    
+                    </Card>                 
                   </Grid>
                 );
               })
@@ -347,7 +365,7 @@ function UserManage(props) {
           <Typography>Poistetaan käyttäjä ja kaikki käyttäjään liittyvät tiedot. Poista?</Typography>
         <DialogActions>
           <Divider />
-          <Button id={"deleteClose"} onClick={closeDelete}>Sulje</Button>
+          <Button id={"deleteClose"} onClick={closeDelete}>Peruuta</Button>
           <Button variant="contained" color="primary" id={"delete"} onClick={handleDelete}>Poista</Button>
         </DialogActions>
       
@@ -359,6 +377,8 @@ function UserManage(props) {
           open={editOpen}
         >
           <DialogTitle id="edit_user">Muokkaa käyttäjää</DialogTitle>
+          <Typography variant="caption">Jätä tyhjäksi kentät, joita ei muuteta</Typography>
+          <Typography variant="caption">Uuden salasanan tulee olla vähintään 7 merkkiä pitkä</Typography>
           <FormControl>  
             <InputLabel htmlFor="firstname" >Muuta etunimeä</InputLabel>
             <Input
@@ -383,20 +403,53 @@ function UserManage(props) {
               id="email"
               type='text'
               onChange={updateEmail}
-              placeholder={selected !== null ? selected.Email : ""}
+              placeholder={selected !== null ? selected.Sähköposti : ""}
+            />
+          </FormControl>
+          <FormControl error={mismatch}>
+            <InputLabel htmlFor="standard-adornment-password">Uusi salasana</InputLabel>
+            <Input
+              id="standard-adornment-password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={updatePassword}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+          {mismatch ? <FormHelperText>Salasana ja vahvistus eivät täsmää</FormHelperText> : <div />}
+          
+          <FormControl error={mismatch}>
+            <InputLabel htmlFor="confirm">Vahvista uusi salasana</InputLabel>
+            <Input
+              id="confirm"
+              type='password'
+              value={confirm}
+              onChange={updateConfirm}
             />
           </FormControl>
   
           <DialogActions>
             <Divider />
-            <Button id={"editClose"} onClick={closeEdit}>Sulje</Button>
-            <Button variant="contained" color="primary" id={"save_edit"} onClick={handleEdit} >Tallenna muutokset</Button>
+            <Button id={"editClose"} onClick={closeEdit}>Peruuta</Button>
+            <Button variant="contained" color="primary" id={"save_edit"} onClick={handleEdit} disabled={!editFormOK}>Tallenna muutokset</Button>
           </DialogActions>
         
         </Dialog>
     </div>
     );
   } else {
+    
+    // Operator-tason käyttäjä ei voi hallita muita käyttäjiä
     return (
       <Typography variant="h6">Käyttäjähallinta vaatii admin-oikeudet</Typography>
     );
