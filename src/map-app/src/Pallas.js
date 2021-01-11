@@ -38,6 +38,7 @@ function App() {
   const [user, setUser] = React.useState(null);
   const [segments, setSegments] = React.useState([]);
   const [segmentColors, setSegmentColors] = React.useState(null);
+  const [woodsSegment, setWoodsSegment] = React.useState(null);
   const [shownSegment, setShownSegment] = React.useState(null);
   const [viewManagement, setViewManagement] = React.useState(false);
 
@@ -79,7 +80,8 @@ function App() {
         });
       });
       
-      data.forEach(segment => {
+      setWoodsSegment(null);
+      data.forEach(segment => {       
         segment.update = null;
         updateData.forEach(update => {
           if (update.Segmentti === segment.ID) {
@@ -93,6 +95,9 @@ function App() {
               segment.On_Alasegmentti = mahd_yla_segmentti.Nimi;
             }
           });
+        }
+        if (segment.Nimi === "Metsä") {
+          setWoodsSegment(segment);
         }
       });
       console.log(data);
@@ -123,6 +128,10 @@ function App() {
   // Kaikkien segmenttien päivittäminen
   function updateSegments(data) {
     setSegments(data);
+  }
+
+  function updateWoods(data) {
+    setWoodsSegment(data);
   }
 
   // Vaihtaa näkymää hallinnan ja kartan välillä
@@ -159,6 +168,7 @@ function App() {
                   onUpdate={chooseSegment}
                   updateSegments={updateSegments}
                   shownSegment={shownSegment}
+                  updateWoods={updateWoods}
                 />
                 :
                 <Map 
@@ -166,7 +176,8 @@ function App() {
                   segmentColors={segmentColors}
                   segments={segments} 
                   onClick={chooseSegment} 
-                  isMobile={isMobile} 
+                  isMobile={isMobile}
+                  woodsSegment={woodsSegment}
                 />
               )
             }
@@ -184,6 +195,7 @@ function App() {
               updateSegments={updateSegments}
               onUpdate={chooseSegment}
               onClose={chooseSegment}
+              updateWoods={updateWoods}
             />
             :
             <div />

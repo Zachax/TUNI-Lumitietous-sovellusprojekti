@@ -6,6 +6,13 @@ Luonut: Markku Nirkkonen
 
 Päivityshistoria
 
+10.1.2021 Markku Nirkkonen
+Lumivyöryvaara näkyy, kun tarkastellaan segmenttiä, joka on lumivyöryaluetta
+
+9.1.2021 Markku Nirkkonen
+Lumitilanteen päivitysdialogia fiksattu paremmaksi
+Lisäksi pieniä korjauksia
+
 7.1.2021 Markku Nirkkonen
 Lumitilanteen päivitysaika näkyviin käyttöliittymään
 
@@ -50,6 +57,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from "@material-ui/icons/Close";
+import FormHelperText from '@material-ui/core/FormHelperText';
+
 
 const useStyles = makeStyles((theme) => ({
 
@@ -61,24 +70,33 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
   },
   snowLogo: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(3),
     textAlign: "center"
   },
   snowInfoTexts: {
     maxWidth: 300,
     color: "white",
-    padding: theme.spacing(4),
+    padding: theme.spacing(3),
   },
   editButton: {
     color: "white",
     display: "flex",
+  },
+  inputs: {
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
+  helpers: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   }
 }));
- 
+
 function Info(props) {
 
   const [loginOpen, setLoginOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
   const [snowtype, setSnowtype] = React.useState(0);
   const [text, setText] = React.useState("Ei tietoa");
   
@@ -88,7 +106,7 @@ function Info(props) {
   var updateTime;
 
   // Parsitaan päivämäärä ja aika päivityksestä, mikäli päivitys löytyy
-  if (props.segmentdata.update !== null) {
+  if (props.segmentdata.update !== null && props.segmentdata.update !== undefined) {
     
     // Datasta aika tulee muodossa: yyyy-mm-ddThh:mm:ss.000Z
     let timedata = props.segmentdata.update.Aika;
@@ -101,8 +119,20 @@ function Info(props) {
     updateTime = timeString[1].split(".")[0];
   }
 
-  // TODO: Pitää tehdä tyyliltään mustalla sivupalkkipohjalla näkyväksi
-  // TODO: Lomaketta pitää laajentaa. Tietojen lähetykseen mukaan päivittäjän ID ym.
+  var dangerimage;
+  var dangertext;
+
+  // Alustetaan komponentit, mikäli valitulla segmentillä on lumivyöryvaara
+  if (props.segmentdata !== null) {
+    if (props.segmentdata.Lumivyöryvaara) {
+      // Lumivyöryvaaran merkin tiedostonimi on !.png
+      dangerimage = <img src={process.env.PUBLIC_URL + "/lumilogot/!.png"} alt="lumivyöryvaaran logo"/>;
+      dangertext = <Typography variant="subtitle1" color="error">Lumivyöryherkkä alue, tarkista lumivyörytilanne!</Typography>
+    } else {
+      dangerimage = <div />;
+      dangertext = null;
+    }
+  }
 
   /*
    * Event handlers
@@ -110,7 +140,7 @@ function Info(props) {
   
   // Segmentin päivitysdialogin avaus
   const openUpdate = (event) => {
-    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tuoretta tietoa");
+    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei kuvausta");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
     setLoginOpen(true);
   }
@@ -118,7 +148,7 @@ function Info(props) {
   // Segmentin päivitysdialogin sulkeminen
   const closeUpdate = (event) => {
     setLoginOpen(false);
-    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei tuoretta tietoa");
+    setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei kuvausta");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
   }
 
@@ -141,14 +171,14 @@ function Info(props) {
   const sendForm = (event) => {
     
     // Tallennushetken lumilaatu, kuvausteksti. Lisäksi päivitettävän (valitun) segmentin ID
-    // TODO: Päivittäjän ID mukaan? Mitä muita tietoja tarvitaan?
     const data = {
       Segmentti: props.segmentdata.ID,
       Lumilaatu: snowtype,
-      Teksti: text
+      // Kuvauksen syöttökentän ollessa tyhjä (text === ""), päivitetään edellisen päivityksen tekstillä
+      Teksti: text === "" ? props.segmentdata.update.Teksti : text
     }
     const fetchUpdate = async () => {
-      setLoading(true);
+      //setLoading(true);
       const response = await fetch('api/update/' + props.segmentdata.ID,
       {
         method: "POST",
@@ -199,11 +229,15 @@ function Info(props) {
               segment.On_Alasegmentti = mahd_yla_segmentti.Nimi;
             }
           });
-        } 
+        }
+        if (segment.Nimi === "Metsä") {
+          props.updateWoods(segment);
+        }
       });
-      //console.log(data);
+
+      // Päivitetään segmentit, jotta ne piirtyvät uudestaan
       props.updateSegments(data);
-      setLoading(false);
+
     };
     fetchData();
     closeUpdate();  
@@ -225,25 +259,33 @@ function Info(props) {
 
           <Box className={classes.textBox} >
 
+            {/* Segmentin nimi ja lumivyöryvaarasta kertova teksti, mikäli kyseessä lumivyöryherkkä segmentti */}
             <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
+              {props.segmentdata === null ? null : dangertext}
             </Typography>
+
             {/* Pohjamaasto, kommentoi näkyviin jos halutaan näyttää */}
             {/* <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
             </Typography> */}
+
+            {/* Segmentin logon tulee olla nimetty segmentin ID:n kanssa yhtenevästi */}
+
             <Box className={classes.snowLogo}>
               {/* Segmentin logon tulee olla nimetty segmentin ID:n kanssa yhtenevästi */}
-              {props.segmentdata.update !== null ? <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/> : <div />}
+              {props.segmentdata.update === null || props.segmentdata.update.Lumi === undefined ? <div /> : <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/>}
+              {/* Lumivyöryvaarasta ilmoitetaan logolla */}
+              {props.segmendata === null ? null : dangerimage}
             </Box>
             <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
+              {props.segmentdata.update === null || props.segmentdata.update.Lumi === undefined ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
             </Typography>
             <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
+              {props.segmentdata.update === null || props.segmentdata.update === undefined ? "Ei kuvausta" : props.segmentdata.update.Teksti}
             </Typography>
             <Typography variant="caption" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata.update === null ? "" : `${updateDate[2]}.${updateDate[1]}.${updateDate[0]} ${updateTime}`}
+            {props.segmentdata.update === null || props.segmentdata.update === undefined ? "" : `${updateDate[2]}.${updateDate[1]}.${updateDate[0]} ${updateTime}`}
             </Typography>
           </Box>
 
@@ -255,18 +297,28 @@ function Info(props) {
             <Typography variant="button">Päivitä</Typography>
           </IconButton>
           
+          {/* Segmentin päivitysdialogi */}
           <Dialog 
             onClose={closeUpdate} 
             open={loginOpen}
           >
             <DialogTitle id="simple-dialog-title">Päivitä segmenttiä</DialogTitle>
-              <Typography>{props.segmentdata.Nimi}</Typography>
+              
+              {/* Avustetekstit, esim segmentin nimi */}
+              <Box className={classes.helpers}>
+                <Typography>{props.segmentdata.Nimi}</Typography>
+                <Typography variant="caption" >Vihje: jos haluat päivittää vain aikaleiman, päivitä muuttamatta lumityyppiä ja jätä kuvaus tyhjäksi</Typography>
+              </Box>
+              
+              {/* Lumityypin valinta */}
+              <InputLabel id="snowtype" className={classes.inputs}>Lumityyppi</InputLabel>
               <Select
-                labelId="demo-simple-select-placeholder-label-label"
-                id="demo-simple-select-placeholder-label"
+                labelId="snowtype"
+                id="snowtype"
                 value={snowtype}
                 onChange={updateSnowtype}
                 displayEmpty
+                className={classes.inputs}
               >
                 <MenuItem value={0}>Ei tietoa</MenuItem>
                 <MenuItem value={1}>Pehmeä lumi</MenuItem>
@@ -275,8 +327,10 @@ function Info(props) {
                 <MenuItem value={4}>Sohjo</MenuItem>
                 <MenuItem value={5}>Jää</MenuItem>
               </Select>
+              {snowtype === 0 ? <FormHelperText className={classes.inputs}>Muuta lumityyppiä päivittääksesi</FormHelperText> : <div />}
 
-              <FormControl>
+              {/* Kuvausteksti */}
+              <FormControl className={classes.inputs}>
                 <InputLabel htmlFor="text" >Kuvaus</InputLabel>
                 <Input
                   id="text"
@@ -284,13 +338,15 @@ function Info(props) {
                   multiline={true}
                   rows={5}
                   placeholder={text}
-                  onChange={updateText}
+                  onChange={updateText}              
                 />
               </FormControl>
+            
+            {/* Dialogin toimintopainikkeet. Päivitys disabloitu, jos lumityyppi on Ei tietoa (snowtype === 0) */}
             <DialogActions>
               <Divider />
               <Button id={"dialogClose"} onClick={closeUpdate}>Peruuta</Button>
-              <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm}>Päivitä</Button>
+              <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm} disabled={snowtype === 0}>Päivitä</Button>
             </DialogActions>
           
           </Dialog>
@@ -305,30 +361,33 @@ function Info(props) {
             <CloseIcon />
           </IconButton>
 
-          {/* <Avatar aria-label="segment_info" className={classes.avatar}>
-            {props.segmentdata.Nimi.charAt(0).toUpperCase()}
-          </Avatar> */}
-
           <Box className={classes.textBox} >
 
+            {/* Segmentin nimi ja lumivyöryvaarasta kertova teksti, mikäli kyseessä lumivyöryherkkä segmentti */}
             <Typography variant="h5" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei nimitietoa" : props.segmentdata.Nimi}
+              {/* Lumivyöryvaarasta ilmoitetaan logolla */}
+              {props.segmentdata === null ? null : dangertext}
             </Typography>
+
             {/* Pohjamaasto, kommentoi näkyviin jos halutaan näyttää */}
             {/* <Typography variant="subtitle1" className={classes.snowInfoTexts} align="center" component="p">
               {props.segmentdata === null ? "Ei tietoa pohjamaastosta" : props.segmentdata.Maasto}
             </Typography> */}
+
             <Box className={classes.snowLogo}>
-              {props.segmentdata.update !== null ? <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/> : <div />}
+              {/* Segmentin logon tulee olla nimetty segmentin ID:n kanssa yhtenevästi */}
+              {props.segmentdata.update === null || props.segmentdata.update === undefined ? <div /> : <img src={process.env.PUBLIC_URL + "/lumilogot/" + props.segmentdata.update.Lumi.ID + ".png"} alt="lumityypin logo"/>}
+              {props.segmendata === null ? null : dangerimage}
             </Box>
             <Typography variant="body1" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata.update === null ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
+              {props.segmentdata.update === null || props.segmentdata.update === undefined ? "Ei tietoa" : props.segmentdata.update.Lumi.Nimi}
             </Typography>
             <Typography variant="body2" className={classes.snowInfoTexts} align="center" component="p">
-              {props.segmentdata.update === null ? "Ei kuvausta" : props.segmentdata.update.Teksti}
+              {props.segmentdata.update === null || props.segmentdata.update === undefined ? "Ei kuvausta" : props.segmentdata.update.Teksti}
             </Typography>
             <Typography variant="caption" className={classes.snowInfoTexts} align="center" component="p">
-            {props.segmentdata.update === null ? "" : `${updateDate[2]}.${updateDate[1]}.${updateDate[0]} ${updateTime}`}
+            {props.segmentdata.update === null || props.segmentdata.update === undefined ? "" : `${updateDate[2]}.${updateDate[1]}.${updateDate[0]} ${updateTime}`}
             </Typography>
           </Box>
           

@@ -85,6 +85,7 @@ function Manage(props) {
           onUpdate={props.onUpdate}
           updateSegments={props.updateSegments}
           shownSegment={props.shownSegment}
+          updateWoods={props.updateWoods}
         /> 
         : 
         <UserManage token={props.token} role={props.role} />

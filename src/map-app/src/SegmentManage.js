@@ -34,6 +34,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -78,6 +80,7 @@ function SegmentManage(props) {
   const [editOpen, setEditOpen] = React.useState(false);
   const [name, setName] = React.useState(null);
   const [terrain, setTerrain] = React.useState(null);
+  const [danger, setDanger] = React.useState(null);
   const [initials, setInitials] = React.useState(null);
   const [points, setPoints] = React.useState(null);
   
@@ -86,6 +89,37 @@ function SegmentManage(props) {
   /*
    * Event handlers
    */
+
+  // Haetaan ajantasaiset segmenttien tiedot heti päivittämisen jälkeen
+  const fetchData = async () => {
+    const snow = await fetch('api/lumilaadut');
+    const snowdata = await snow.json();
+    const updates = await fetch('api/segments/update');
+    const updateData = await updates.json();
+    const response = await fetch('api/segments');
+    const data = await response.json();
+    
+    
+    await updateData.forEach(update => {
+      snowdata.forEach(snow => {
+        if(snow.ID === update.Lumilaatu){
+          update.Lumi = snow;
+        }
+      });
+    });
+    
+    data.forEach(segment => {
+      segment.update = null;
+      updateData.forEach(update => {
+        if (update.Segmentti === segment.ID) {
+          segment.update = update;           
+        }
+      });
+    });
+
+    props.updateSegments(data);
+
+  };
 
   // Segmentin valikon avaaminen, tarkentaa samalla valitun segmentin 
   const handleMenu = (event, item) => {
@@ -99,6 +133,7 @@ function SegmentManage(props) {
     if (!editOpen) {
       var initialName = item.Nimi;
       var initialTerrain = item.Maasto;
+      var initialDanger = item.Lumivyöryvaara
       var initialPoints = item.Points.map(i => {
         return ({lat: i.lat, lng: i.lng});
       })
@@ -106,6 +141,7 @@ function SegmentManage(props) {
         {
           Nimi: initialName,
           Maasto: initialTerrain,
+          Lumivyöryvaara: initialDanger,
           Points: initialPoints
         }
       );
@@ -134,26 +170,14 @@ function SegmentManage(props) {
           Authorization: "Bearer " + props.token
         }
       });
+      
+      // Tieto metsäsegmentin poistosta huomioidaan
+      if (selected.Nimi === "Metsä") {
+        props.updateWoods(null);
+      }
     };
     fetchDelete();
 
-    // segmentit päivitetään heti
-    const fetchData = async () => {
-      const updates = await fetch('api/segments/update');
-      const updateData = await updates.json();
-      const response = await fetch('api/segments');
-      const data = await response.json();
-      data.forEach(segment => {
-        segment.update = null;
-        updateData.forEach(update => {
-          if (update.Segmentti === segment.ID) {
-            segment.update = update;           
-          }
-        });
-      });
-      props.updateSegments(data);
-
-    };
     fetchData();
 
     closeDelete();
@@ -179,11 +203,10 @@ function SegmentManage(props) {
   const handleEdit = () => {
     
     // Tiedot  tulevat hookeista
-    // TODO: Lumivyöryvaara oletuksena false
     const data = {
       Nimi: name,
       Maasto: terrain,
-      Lumivyöryvaara: false,
+      Lumivyöryvaara: danger,
       Points: points,
       ID: selected.ID
     }
@@ -205,23 +228,6 @@ function SegmentManage(props) {
     };
     fetchEditSegment();
 
-    // Segmentit päivitetään
-    const fetchData = async () => {
-      const updates = await fetch('api/segments/update');
-      const updateData = await updates.json();
-      const response = await fetch('api/segments');
-      const data = await response.json();
-      data.forEach(segment => {
-        segment.update = null;
-        updateData.forEach(update => {
-          if (update.Segmentti === segment.ID) {
-            segment.update = update;           
-          }
-        });
-      });
-      props.updateSegments(data);
-
-    };
     fetchData();
     setAnchorElMenu(null);
     closeEdit();
@@ -257,6 +263,15 @@ function SegmentManage(props) {
     } else {
       setTerrain(event.target.value);
     }
+  }
+
+  // Lumivyöryvaaran vaihtamienn
+  const updateDanger = (event) => {
+    if (danger === null) {
+      setDanger(!initials.Danger)
+    } else {
+      setDanger(!danger);
+    }  
   }
 
   // Koordinaattipisteiden päivittäminen
@@ -299,7 +314,7 @@ function SegmentManage(props) {
 
       {/* Painike, mistä voi lisätä segmentin */}
       <Box>
-        <AddSegment token={props.token} segments={props.segments} updateSegments={props.updateSegments}/>
+        <AddSegment token={props.token} segments={props.segments} updateSegments={props.updateSegments} updateWoods={props.updateWoods}/>
       </Box>
       
       {/* Segmenttikortit */}
@@ -352,6 +367,8 @@ function SegmentManage(props) {
                         {item.On_Alasegmentti !== null ? "Segmentin "+ item.On_Alasegmentti +" alasegmentti" : "Yläsegmentti"}
                       </Typography>
 
+                      {item.Lumivyöryvaara ? <Typography variant="body1" color="textSecondary" align="left" component="p">Lumivyöryherkkä alue</Typography> : null}
+
                     </CardContent>
                   </Card>
                   
@@ -401,6 +418,18 @@ function SegmentManage(props) {
             placeholder={props.shownSegment !== null ? props.shownSegment.Maasto : ""}
           />
         </FormControl>
+        <FormControlLabel
+          control={
+            <Checkbox            
+              checked={danger}
+              onChange={updateDanger}
+              name="danger"
+              color="primary"
+            />
+          }
+          label="Lumivyöryriskialue"
+        />
+
         {
           points !== null 
           ?
