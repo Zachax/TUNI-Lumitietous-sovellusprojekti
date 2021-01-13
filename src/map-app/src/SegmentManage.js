@@ -7,6 +7,9 @@ Luonut: Markku Nirkkonen 26.11.2020
 
 Muutosloki
 
+10.1.2021 Markku Nirkkonen
+Parannettu segmentien hallinnan ominaisuuksia, erityisesti segmentin muokkauksessa
+
 Siirretty: Markku Nirkkonen 18.12.2020
 Siirretty koodi omaan tiedostoonsa, ei toiminnallisia muutoksia
 
@@ -55,7 +58,6 @@ const useStyles = makeStyles((theme) => ({
   segmentCard: {
     padding: theme.spacing(1),
     maxWidth: 400,
-    //maxHeight: 300,
     margin: "auto",
     marginTop: 10
   },
@@ -127,6 +129,7 @@ function SegmentManage(props) {
     setSelected(item);
     setPoints(item.Points);
     setName(item.Nimi);
+    setDanger(item.Lumivyöryvaara);
     setTerrain(item.Maasto);
     
     // Alkuperäisten arvojen alustaminen muutosten perumista varten
@@ -161,7 +164,7 @@ function SegmentManage(props) {
   // Segmentin poiston api-kutsu
   const handleDelete = () => {
     const fetchDelete = async () => {
-      const response = await fetch('api/segment/' + selected.ID,
+      await fetch('api/segment/' + selected.ID,
       {
         method: "DELETE",
         headers: {
@@ -268,7 +271,7 @@ function SegmentManage(props) {
   // Lumivyöryvaaran vaihtamienn
   const updateDanger = (event) => {
     if (danger === null) {
-      setDanger(!initials.Danger)
+      setDanger(!initials.Lumivyöryvaara)
     } else {
       setDanger(!danger);
     }  
@@ -400,6 +403,7 @@ function SegmentManage(props) {
         open={editOpen}
       >
         <DialogTitle id="edit_segment">Muokkaa segmenttiä</DialogTitle>
+        <Typography id="edit_segment_info" variant="caption">Jätä muuttamattomaksi kohdat, joita et aio muokata</Typography>
         <FormControl>  
           <InputLabel htmlFor="name" >Muuta nimeä</InputLabel>
           <Input

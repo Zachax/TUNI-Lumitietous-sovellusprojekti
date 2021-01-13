@@ -150,8 +150,10 @@ function TopBar(props) {
               {/* Havaintoaseman nimi */}
               <Typography variant="subtitle1">Laukukero Huippu</Typography>
               
-              <Typography variant="h6">{weather !== null ? weather.Lampotila + " °C | " + weather.Tuuli_nopeus + " m/s" : "Lämpötilatietoa ei saatu"}</Typography>
-              <Typography variant="body2">{weather !== null ? "(puuskissa " + weather.Tuuli_puuska + " m/s)" : "Puuskannopeustietoa ei saatu"}</Typography>
+              <Typography variant="h6">
+                {weather !== null && weather.Lampotila !== undefined && weather.Tuuli_nopeus !== undefined ? weather.Lampotila + " °C | " + weather.Tuuli_nopeus + " m/s" : "Säätieto lataa"}
+              </Typography>
+              <Typography variant="body2">{weather !== null && weather.Tuuli_puuska !== undefined? "(puuskissa " + weather.Tuuli_puuska + " m/s)" : "Säätieto lataa"}</Typography>
               <Typography variant="body2">Tuulen suunta {windicon}</Typography>
             </Box>      
       
@@ -202,10 +204,11 @@ function TopBar(props) {
           {/* Säätiedot */}
           <Box className={styledClasses.baritems}>
             {/* Havaintoaseman nimi */}
-            <Typography variant="subtitle1">Laukukero Huippu</Typography>
+            <Typography variant="subtitle1">Laukukero</Typography>
             
-            {/* TODO: järjestä paremmin näkyväksi pienellä näytöllä, esimerkiksi eri riveille */}
-            <Typography variant="h6">{weather !== null ? weather.Lampotila + " °C | " + weather.Tuuli_nopeus + " m/s" : "Säätietoa ei saatu"}</Typography>
+            {/* Säätiedot mobiilissa tiiviimmin, puuskatietoa ei näytetä */}
+            <Typography variant="h6">{weather !== null && weather.Lampotila !== undefined ? weather.Lampotila + " °C" : "Säätieto lataa"}</Typography>
+            <Typography variant="h6">{weather !== null && weather.Tuuli_nopeus !== undefined ? weather.Tuuli_nopeus + " m/s" : "Säätieto lataa"}</Typography>
             <Box display="inline">{windicon}</Box>
           </Box>
 

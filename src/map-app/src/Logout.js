@@ -33,7 +33,6 @@ function Logout(props) {
   return (
     <div className="login">
       <Button 
-        //edge="start" 
         color="inherit" 
         onClick={Logout}
       >

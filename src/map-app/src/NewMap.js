@@ -57,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
   },
   infoboxContainer: {
     padding: theme.spacing(1),
-    //height: "250px",
     width: "120px",
     backgroundColor: "white",
     position: "absolute",
@@ -72,11 +71,9 @@ const useStyles = makeStyles((theme) => ({
   },
   infoboxHeader: {
     display: "flex",
-    //padding: theme.spacing(1),
   },
   colorbox: {
     height: "15px",
-    //width: "40px",
     zIndex: 1,
   },
   snowLogo: {
@@ -102,6 +99,7 @@ function Map(props) {
   const [ center, setCenter ] = React.useState({ lat: 68.067334, lng: 24.062813 });
   const [ subsOnly, setSubsOnly ] = React.useState(false);
   const [ expanded, setExpanded ] = React.useState(props.isMobile ? false : true);
+  const [ highlighted, setHighlighted] = React.useState(null);
 
   // zoom rippuu näytön koosta
   const zoom = (props.isMobile ? 11 : 12);
@@ -148,6 +146,22 @@ function Map(props) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+
+  // Päivittää korostettavan lumityypin kursorin liikkuessa segmentti-infojen päällä
+  // Arvo on 0, jos kyseessä on päivittämätön segmentti (lumilaadun nimi "Ei tietoa", kts. Pallas.js)
+  // Arvo on index + 1, mikä vastaa lumityypin ID:tä (tämän avulla oikean lumityypin segmentit korostuvat kartassa)
+  // Arvo on null, jos funktio ei saa tietoa parametrina (hiiren poistuessa selitteen yläpuolelta)
+  const updateHighlighted = (item, index) => {
+    if (item) {
+      if (item.name === "Ei tietoa") {
+        setHighlighted(0);
+      } else {
+        setHighlighted(index+1);
+      }
+    } else {
+      setHighlighted(null);
+    }  
+  }
   
   // Use styles
   const styledClasses = useStyles();
@@ -157,6 +171,7 @@ function Map(props) {
      * Karttaan piirretään checkbox yläsegmenttien piilottamiselle,
      * Infolaatikko selittämään kartan värejä
      * Segmentit monikulmioina
+     * Custom markereita metsän ja mahdollisen lumivyöryvaaran merkkaamiseksi
      * Kartta piirretään '@react-google-maps/api' -kirjaston komponenteilla
      */
     <div className="map">
@@ -197,14 +212,15 @@ function Map(props) {
               
               return (
                 // Seliteboksi, sisältää lumilogot ja selitteet
-                <Box className={styledClasses.infobox}>
-                  {/* TODO: kun ei-tietoa-logo saatavilla, ehdon voi poistaa */}
+                <Box className={styledClasses.infobox} onMouseOver={() => updateHighlighted(item, index)} onMouseOut={() => updateHighlighted(null)} onClick={() => updateHighlighted(item, index)}>
+                  {/* Lumityypin ikonin tiedostonimen tulee olla luku, joka vastaa lukua,
+                  joka on sama kuin lumityypin indeksi segmenttiväritaulukossa + 1 */}
                   {
-                    index === 0 
+                    index === props.segmentColors.length - 1 
                     ? 
                     <Typography className={styledClasses.snowLogo}>?</Typography> 
                     : 
-                    <Box className={styledClasses.snowLogo}><img src={process.env.PUBLIC_URL + "/pienetlogot/" + index + ".png"} alt="lumityypin logo" align="center"/></Box>      
+                    <Box className={styledClasses.snowLogo}><img src={process.env.PUBLIC_URL + "/pienetlogot/" + (index + 1) + ".png"} alt="lumityypin logo" align="center"/></Box>      
                   }
                   {/* <Paper className={styledClasses.colorbox} style={{backgroundColor: item.color}} /> */}
                   <Box className={styledClasses.snowLogo}>
@@ -222,7 +238,7 @@ function Map(props) {
       
       {/* Tässä tarvitaan toimiva APIkey Googlelta */}
       <LoadScript
-        googleMapsApiKey='AIzaSyBVBvBd1YQDLygYNpwRlbmzosX52Y3l0X0'
+        googleMapsApiKey='AIzaSyBM4opOBruzdZCQ3VnQe6ehyCYMp2wvGXQ'
       >
         <GoogleMap
           mapContainerStyle={mapStyles}
@@ -234,22 +250,13 @@ function Map(props) {
             props.segments.map(item => {
            
               var drawColor="#000000"
+              var snowID=0;
               if(item.update !== null){
                 if (item.update.Lumi !== undefined) {
                   drawColor = item.update.Lumi.Vari;
-                }        
+                  snowID = item.update.Lumi.ID;
+                }
               }
-              
-              // Metsäsegmentti tulee tallentaa erikseen hookeihin, jotta markereihin saadaan yhdistettyä oikea segmentti
-              // if (item.Nimi === "Metsä") {
-              //   if (woodsSegment === null) {
-              //     setWoodsSegment(item);
-              //   } else if (woodsSegment.update !== null && item.update !== null) {
-              //     if (woodsSegment.update.Teksti !== item.update.Teksti) {
-              //       setWoodsSegment(item);
-              //     }
-              //   }           
-              // }
 
               /* Piirretään segmentit monikulmioina
                * 
@@ -265,7 +272,8 @@ function Map(props) {
                       strokeOpacity: 0.8,
                       strokeWeight: 2,
                       fillColor: drawColor,
-                      fillOpacity: (mouseover.ID === item.ID || (selectedSegment.ID === item.ID && props.shownSegment !== null)) ? 0.8 : 0.15,
+                      fillOpacity: 
+                        (mouseover.ID === item.ID || (selectedSegment.ID === item.ID && props.shownSegment !== null) || highlighted === snowID) ? 0.8 : 0.15,
                       polygonKey: item.ID,
                       zIndex: item.On_Alasegmentti !== null ? 2 : 1,
                       visible: subsOnly && item.On_Alasegmentti === null ? false : true
@@ -276,6 +284,48 @@ function Map(props) {
                   onMouseOut={() => handleMouseout()}
                 />
               )
+            })
+          }
+
+          {/* Jos segmentillä on lumivyöryvaara, siitä ilmoittava ikoni piirretään Google Maps Custom markerina
+          pisteeseen, joka on laskettu alueen rajojen pituus- ja leveyskoordinaattien keskiarvoista.
+          Markkeri reagoi kursoriin kuten segmentti - ei siis suurta ongelmaa, mikäli ikoni piirtyy hieman
+          alueen ulkopuolelle erikoistapauksissa */}
+          {
+            props.segments.map(item => {
+              var latmax;
+              var latmin;
+              var lngmax;
+              var lngmin;
+              var latpoint;
+              var lngpoint;
+
+              if (item.Lumivyöryvaara) {
+                var latArray = item.Points.map(item => {
+                  return item.lat;
+                });
+                var lngArray = item.Points.map(item => {
+                  return item.lng;
+                });
+                latmax = Math.max(...latArray);
+                latmin = Math.min(...latArray);
+                lngmax = Math.max(...lngArray);
+                lngmin = Math.min(...lngArray);
+                latpoint = (latmin + latmax)/2;
+                lngpoint = (lngmin + lngmax)/2;
+
+                return (
+                  <Marker 
+                    position={{lat: latpoint, lng: lngpoint}}
+                    icon={`${process.env.PUBLIC_URL}/pienetlogot/!.png`}
+                    onClick={() => updateChosen(item)}
+                    onMouseOver={() => updateMouseover(item.ID, item.Nimi)}
+                    onMouseOut={() => handleMouseout()}
+                  />
+                );
+              } else {
+                return null;
+              }           
             })
           }
           

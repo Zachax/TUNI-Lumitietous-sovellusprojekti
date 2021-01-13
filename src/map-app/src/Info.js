@@ -302,7 +302,7 @@ function Info(props) {
             onClose={closeUpdate} 
             open={loginOpen}
           >
-            <DialogTitle id="simple-dialog-title">Päivitä segmenttiä</DialogTitle>
+            <DialogTitle id="update-segment">Päivitä segmenttiä</DialogTitle>
               
               {/* Avustetekstit, esim segmentin nimi */}
               <Box className={classes.helpers}>

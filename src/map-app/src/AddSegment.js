@@ -208,7 +208,7 @@ function AddSegment(props) {
         onClose={closeAdd} 
         open={addOpen}
       >
-        <DialogTitle id="simple-dialog-title">Lisää segmentti</DialogTitle>
+        <DialogTitle id="add_segment_dialog">Lisää segmentti</DialogTitle>
         <Typography variant="caption">Anna segmentille nimi, maastopohjakuvaus ja rajaavat koordinaatit.</Typography>
         <Typography variant="caption">Vähintään kolme (3) koordinaattipistettä vaaditaan.</Typography>
         <FormControl>
