@@ -9,6 +9,7 @@ Arttu Lakkala 1.12  Rollback lisätty segmentin muutokseen
 Arttu Lakkala 5.12 Rollback lisätty segmentin lisäykseen
 Arttu Lakkala 5.12 uudelleennimettiin api.js
 Arttu Lakkala 4.01 Poistettiin mahdollisuus poistaa admin
+Arttu Lakkala 12.01 Siirrettiin käyttäjän teko tänne salasanatarkistuksen taakse
 -----------------------------------------
 Arttu Lakkala 6.12 Refactoroitiin API:sta
 
@@ -48,8 +49,49 @@ router.get('/', function(req, res) {
 });
 
 //käyttäjän teko
-
-
+router.post('/',
+  [
+  // tarkista sähköposti
+  body('Sähköposti').isEmail().withMessage("Ei toimiva shäköposti"),
+  
+  body('Etunimi').exists().withMessage("Puuttuva etunimi"),
+  body('Sukunimi').exists().withMessage("Puuttuva sukunimi"),
+ 
+  // tarkista salasanan pituus
+  body('Salasana').isLength({ min: 7 }).withMessage("Salasanan oltava vähintään 7 merkkiä")
+  ]
+  ,function(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.json({ errors: errors.array() });
+    res.status(400);
+  }
+  
+  else{
+    //salataan salasana
+    database.beginTransaction(function(err){
+      if (err) throw err;
+      bcrypt.hash(req.body.Salasana, saltRounds, function(err, hash) {
+        database.query('INSERT INTO Kayttajat(Etunimi, Sukunimi, Sähköposti, Salasana, Rooli) VALUES(?, ?, ?, ?, ?)',
+        [
+          req.body.Etunimi,
+          req.body.Sukunimi,
+          req.body.Sähköposti,
+          hash,
+          req.body.Rooli ? req.body.Rooli : "operator"
+        ],
+        function (err, points, fields) {
+          if (err){database.rollback(function(){throw err;})}
+          database.commit(function(err){
+            if(err){database.rollback(function(){throw err;});}
+            res.json("Insert was succesfull");
+            res.status(204);
+           });
+        });
+      });
+    });
+  }
+});
 
 router.put('/:id', function(req, res) {
   if (req.body.Salasana) {
