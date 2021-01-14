@@ -238,7 +238,7 @@ function Map(props) {
       
       {/* Tässä tarvitaan toimiva APIkey Googlelta */}
       <LoadScript
-        googleMapsApiKey='AIzaSyBM4opOBruzdZCQ3VnQe6ehyCYMp2wvGXQ'
+        googleMapsApiKey={process.env.REACT_APP_GOOGLE_API_KEY}
       >
         <GoogleMap
           mapContainerStyle={mapStyles}
