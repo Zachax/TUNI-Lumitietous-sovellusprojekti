@@ -31,6 +31,8 @@ import { useMediaQuery } from 'react-responsive';
 //   toolbar: theme.mixins.toolbar,
 // }));
 
+var refreshInterval = setInterval(window.location.reload.bind(window.location), (30*60000));
+
 function App() {
 
   // Use state hookit
@@ -49,7 +51,8 @@ function App() {
   const manageOrMap = (viewManagement ? "Kartta" : "Hallitse");
 
   // const styledClasses = useStyles();
-
+  
+  //timeout for refreshing every 5 min
   /*
    * Haetaan renderöinnin jälkeen aina tiedot lumilaaduista, päivityksistä ja segmenteistä
    * Tallennetaan ne hookkeihin
@@ -100,7 +103,6 @@ function App() {
           setWoodsSegment(segment);
         }
       });
-      console.log(data);
       updateSegments(data);
     };
     fetchData();
@@ -117,6 +119,9 @@ function App() {
 
   // Token tallennetaan reactin stateen
   function updateToken(token) {
+    if (typeof token !== 'undefined'){
+      clearInterval(refreshInterval);
+    }
     setToken(token);
   }
 
