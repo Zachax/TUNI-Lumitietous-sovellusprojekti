@@ -55,7 +55,6 @@ function MobileMenu(props) {
 			
 			{/* Painike, joka avaa menun */}
 			<IconButton 
-				//edge="start" 
 				color="inherit" 
 				onClick={handleMenu}
 			>

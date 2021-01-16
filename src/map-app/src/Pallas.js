@@ -25,11 +25,6 @@ import Manage from './Manage';
 import Info from './Info';
 import TopBar from './TopBar';
 import { useMediaQuery } from 'react-responsive';
-//import { makeStyles } from '@material-ui/core/styles';
-
-// const useStyles = makeStyles((theme) => ({
-//   toolbar: theme.mixins.toolbar,
-// }));
 
 var refreshInterval = setInterval(window.location.reload.bind(window.location), (30*60000));
 
@@ -68,12 +63,15 @@ function App() {
       const data = await response.json();
 
       // Taulukko käytettäville väreille kartassa. Musta väri oletuksena, jos tietoa ei ole
-      // Muut värit suoraan kannasta
+      // Muut värit suoraan kannasta. Taulukko on olennainen NewMap.js:n toiminnan kannalta (kartan värit)
+      // emptyColor.name kirjoitusmuoto on olennainen myös NewMap.js:n updateHighlighted -funktiossa
+      // Mikäli muutetaan, muutettava myös siellä.
       const emptyColor = [{color: "#000000", name: "Ei tietoa"}];
       const snowcolors = snowdata.map((item) => {
         return {color: item.Vari, name: item.Nimi};
       });
-      setSegmentColors(emptyColor.concat(snowcolors));
+      // Yhdistetään olemassa olevat värit ja "ei tietoa" (viimeiseksi)
+      setSegmentColors(snowcolors.concat(emptyColor));
       
       await updateData.forEach(update => {
         snowdata.forEach(snow => {

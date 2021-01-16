@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
   userCard: {
     padding: theme.spacing(1),
     maxWidth: 400,
-    //maxHeight: 300,
     margin: "auto",
     marginTop: 10
   },
@@ -56,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     marginTop: 10,
   },
-
   coordinateInputs: {
     display: 'flex'
   },
@@ -114,7 +112,7 @@ function UserManage(props) {
   // Käyttäjän valikon avaaminen, tarkentaa samalla valitun käyttäjän 
   const handleMenu = (event, item) => {
     setSelected(item);
-    console.log(item);
+
     // Alkuperäisten arvojen alustaminen muutosten perumista varten
     if (!editOpen) {
       var initialName = item.Etunimi;
@@ -142,7 +140,7 @@ function UserManage(props) {
   // Käyttäjän poiston api-kutsu
   const handleDelete = () => {
     const fetchDelete = async () => {
-      const response = await fetch('api/user/' + selected.ID,
+      await fetch('api/user/' + selected.ID,
       {
         method: "DELETE",
         headers: {
@@ -217,7 +215,6 @@ function UserManage(props) {
 
   // Avataan muokkausdialogi
   const openEdit = (item) => {
-    console.log(initials);
     setEditOpen(true);
   }
 
