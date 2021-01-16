@@ -12,7 +12,7 @@ VALUES('Metsä', 'Metsä', FALSE, null),
       ('Pyhä-Lehmäkero itäseinä', 'Raakakivikko', FALSE, null),
       ('Pyhäkero eteläseinä', 'Raakakivikko ja tuulikangas', FALSE, null),
       ('Paratiisikuru', 'Vakio', FALSE, 5),
-      ('Pyhäkuru', 'Vakio', FALSE, 11),
+      ('Pyhäkuru', 'Vakio', TRUE, 11),
       ('Soilenrinne', 'Vakio', FALSE, 8),
       ('Veitikka', 'Vakio', FALSE, 10),
       ('Viivakuru', 'Vakio', FALSE, 6);
