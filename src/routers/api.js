@@ -36,7 +36,6 @@ router.post('/user/login', function(req, res) {
         bcrypt.compare(req.body.Salasana, user.Salasana, function(err, login) {
           if (login) {
           jwt.sign({ id: user.ID, Sahkoposti: user.Sähköposti }, secret, { algorithm: 'HS256' }, function(err, token) {
-            console.log(token);
             res.json(
               { 
                 token: token, 
@@ -54,7 +53,6 @@ router.post('/user/login', function(req, res) {
           });
           }
           else{
-            console.log("incorrect password");
             res.json("incorrect password");
             res.status(401);
           }
@@ -62,7 +60,6 @@ router.post('/user/login', function(req, res) {
       }
       else
       {
-        console.log("user not found");
         res.json("No User Found");
         res.status(401);
       }
@@ -125,7 +122,6 @@ router.get('/segments/update/:id', function(req, res) {
   ],
   function (err, result, fields) {
       if (err) throw err;
-      console.log(result)
       res.json(result);
       res.status(200);
   });
@@ -147,7 +143,6 @@ router.get('/segments/update', function(req, res) {
    ORDER BY(Segmentti)`,
   function (err, result, fields) {
       if (err) throw err;
-      console.log(result)
       res.json(result);
       res.status(200);
   });
@@ -159,7 +154,6 @@ router.get('/lumilaadut', function(req, res) {
     database.query('Select * FROM Lumilaadut', 
     function(err, result, fields) {
       if (err) throw err;
-      console.log(result)
       res.json(result);
       res.status(200);
     });
