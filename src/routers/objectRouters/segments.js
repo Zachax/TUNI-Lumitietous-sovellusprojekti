@@ -135,11 +135,12 @@ router.put('/:id', function(req, res) {
 //segmentin teko
 router.post('/', function(req, res) {
   database.beginTransaction(function(err){ 
-    database.query('INSERT INTO Segmentit(Nimi, Maasto, Lumivyöryvaara) VALUES(?,?,?)',
+    database.query('INSERT INTO Segmentit(Nimi, Maasto, Lumivyöryvaara, On_Alasegmentti) VALUES(?,?,?,?)',
     [
       req.body.Nimi,
       req.body.Maasto,
       req.body.Lumivyöryvaara,
+      req.body.On_Alasegmentti
     ],
     function (err, result, fields) {
            if(err){database.rollback(function(){throw err;});}
