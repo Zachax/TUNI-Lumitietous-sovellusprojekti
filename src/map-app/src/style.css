@@ -52,6 +52,7 @@ body {
   min-width: 300px;
   z-index: 1;
   height: calc(100vh - 120px);
+  overflow: auto;
   margin: auto;
   position: absolute;
   top: 120px;

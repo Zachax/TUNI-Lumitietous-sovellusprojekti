@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
   infobox: {
     display: "block",
-    padding: theme.spacing(1),
+    padding: theme.spacing(0.2),
   },
   infoboxHeader: {
     display: "flex",

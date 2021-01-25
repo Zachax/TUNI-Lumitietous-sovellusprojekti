@@ -90,6 +90,7 @@ function AddSegment(props) {
       Nimi: segmentName,
       Maasto: terrain,
       Lumivyöryvaara: danger,
+      On_Alasegmentti: props.id !== null ? props.id : null,
       Points: points
     }
 
@@ -194,21 +195,33 @@ function AddSegment(props) {
   return (
     <div className="add">
       
-      {/* Painike, joka avaa segmentin lisäysdialogin */}
-      <Box className={classes.add}>
-        <Button>
-          <AddCircleOutlineIcon />
-          <Typography variant="button" onClick={openAdd}>Lisää segmentti</Typography>
-          
-        </Button>
-      </Box>
+      {/* Painike, joka avaa segmentin lisäysdialogin 
+          ulkoasu muuttuu hieman riippuen siitä onko kyseessä
+          ala- vai yläsegmentin lisäys*/}
+
+        {
+          props.addSubSegment
+          ?
+          <Button>
+            <Typography variant="button" onClick={openAdd}>Lisää alasegmentti</Typography>
+          </Button>
+          :
+          <Box className={classes.add}>
+            <Button>
+              <AddCircleOutlineIcon />
+              <Typography variant="button" onClick={openAdd}>Lisää uusi yläsegmentti</Typography>
+            </Button>
+          </Box> 
+        }
+            
 
       {/* Segmentin lisäysdialogi */}
       <Dialog 
         onClose={closeAdd} 
         open={addOpen}
       >
-        <DialogTitle id="add_segment_dialog">Lisää segmentti</DialogTitle>
+        {/* Otsikko muuttuu tilanteen mukaan */}
+        {props.addSubSegment ? <DialogTitle id="add_segment_dialog">Lisää alasegmentti</DialogTitle> : <DialogTitle id="add_segment_dialog">Lisää segmentti</DialogTitle>}
         <Typography variant="caption">Anna segmentille nimi, maastopohjakuvaus ja rajaavat koordinaatit.</Typography>
         <Typography variant="caption">Vähintään kolme (3) koordinaattipistettä vaaditaan.</Typography>
         <FormControl>

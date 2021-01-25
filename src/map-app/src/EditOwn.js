@@ -119,7 +119,7 @@ function EditOwn(props) {
     if (password === confirm) {
       
       // Salasanan pituuden minimi 7 merkkiä
-      if (password.length >= 7) {
+      if (password.length >= 7 || password === "") {
         
         // Tiedot  tulevat hookeista
         const data = {

@@ -317,7 +317,14 @@ function SegmentManage(props) {
 
       {/* Painike, mistä voi lisätä segmentin */}
       <Box>
-        <AddSegment token={props.token} segments={props.segments} updateSegments={props.updateSegments} updateWoods={props.updateWoods}/>
+        <AddSegment 
+          id={null} 
+          addSubSegment={false} 
+          token={props.token} 
+          segments={props.segments} 
+          updateSegments={props.updateSegments} 
+          updateWoods={props.updateWoods}
+        />
       </Box>
       
       {/* Segmenttikortit */}
@@ -339,6 +346,8 @@ function SegmentManage(props) {
                         </IconButton>
                       }
                     />
+
+                    
                     
                     {/* Valikko kortin lisätoiminnoille */}
                     <Menu           
@@ -355,6 +364,8 @@ function SegmentManage(props) {
                       open={menuOpen}
                       onClose={handleMenuClose}
                     > 
+                      
+                      
                       <MenuItem onClick={() => openEdit(item)}>
                         Muokkaa
                       </MenuItem>
@@ -362,15 +373,34 @@ function SegmentManage(props) {
                       <MenuItem onClick={() => openDelete()}>
                         Poista
                       </MenuItem>
+                      
                     </Menu>
 
+                    {/* Segmenttikortti sisältää mahdollisen teidon lumivyöryvaarasta,
+                    mahdollisen segmentin lisäysnapin tai tiedon siitä, että kyseessä on alasegmentti */}
                     <CardContent>
 
+                      {item.Lumivyöryvaara ? <Typography variant="body1" color="textSecondary" align="left" component="p">Lumivyöryherkkä alue</Typography> : null}
+
                       <Typography variant="body1" color="textSecondary" align="left" component="p">
-                        {item.On_Alasegmentti !== null ? "Segmentin "+ item.On_Alasegmentti +" alasegmentti" : "Yläsegmentti"}
+                        {item.On_Alasegmentti !== null ? "Segmentin "+ item.On_Alasegmentti +" alasegmentti" : ""}
                       </Typography>
 
-                      {item.Lumivyöryvaara ? <Typography variant="body1" color="textSecondary" align="left" component="p">Lumivyöryherkkä alue</Typography> : null}
+                      {/* Alasegmentin lisäys mahdollinen, jos kyseessä yläsegmentti */}
+                      {
+                        item.On_Alasegmentti === null 
+                        ?                    
+                          <AddSegment 
+                            id={item.ID} 
+                            addSubSegment={true} 
+                            token={props.token} 
+                            segments={props.segments} 
+                            updateSegments={props.updateSegments} 
+                            updateWoods={props.updateWoods}
+                          />
+                        :
+                        <div />
+                      }
 
                     </CardContent>
                   </Card>
