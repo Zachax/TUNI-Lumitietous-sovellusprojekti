@@ -1,3 +1,7 @@
+/*
+**Backendin pohja.
+**Avaa expressin ja lähettää kutsut, joko käyttöliittymälle tai API:lle
+*/
 const express = require('express');
 const app = express();
 const api = require('./routers/api');
