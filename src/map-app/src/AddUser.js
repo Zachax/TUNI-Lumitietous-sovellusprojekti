@@ -91,7 +91,7 @@ function AddUser(props) {
 
     // Käyttäjän lisäämisen api-kutsu
     const fetchAddUser = async () => {
-      const response = await fetch('api/',
+      const response = await fetch('api/user',
       {
         method: "POST",
         headers: {
