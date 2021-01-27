@@ -1,3 +1,8 @@
 Sivulla näkyvät säätiedot haetaan ilmatieteen laitoksen avoimen datan latausrajapinnasta (https://www.ilmatieteenlaitos.fi/avoin-data)
 Säädata on vain käyttöliittymän puolella, mikäli tietoja halutaan tallentaa tietokantaan se vaatii tietokannan laajennusta.
+
 Säätietojen laajennukseen kannattaa hyödyntää (https://www.ilmatieteenlaitos.fi/tallennetut-kyselyt) asiakkaan tarpeiden mukaan.
+Mikäli säätietoja halutaan muokata tai sääasemaa halutaan vaihtaa, voidaan muutokset tehdä (src\map-app\src\TopBar.js [rivi 76]).
+
+Asiakkaan esittelemän säähavaintoaseman API löytyy kohteesta
+https://ambientweather.docs.apiary.io/#
