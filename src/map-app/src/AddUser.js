@@ -165,7 +165,7 @@ function AddUser(props) {
         onClose={closeAdd} 
         open={addOpen}
       >
-        <DialogTitle id="add_segment">Lisää segmentti</DialogTitle>
+        <DialogTitle id="add_segment">Lisää käyttäjä</DialogTitle>
         <Typography variant="caption">Kaikki tekstikentät ovat pakollisia</Typography>
         <Typography variant="caption">Salasanan tulee olla 7 merkkiä</Typography>
         <FormControl>
