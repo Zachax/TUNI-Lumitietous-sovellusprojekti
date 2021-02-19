@@ -63,7 +63,7 @@ router.delete('/:id', function(req, res) {
     WHERE Segmentti = ?
     ORDER BY(Aika)
    )
-   AND Aika > NOW() - INTERVAL 1 WEEK
+   AND Aika > NOW() - INTERVAL 1 DAY
    `,
   [
     req.params.id,
