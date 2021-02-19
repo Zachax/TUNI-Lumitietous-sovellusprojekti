@@ -42,10 +42,38 @@ router.post('/:id', function(req, res) {
   function (err, points, fields) {
     if (err) throw err;
     res.json("Insert was succesfull");
-    res.status(204);
+    res.status(200);
   });
 });
 
+//deletes the most recent update of given segment
+router.delete('/:id', function(req, res) {
+  
+  if(req.body.Segmentti != req.params.id)
+  {
+    res.json("Segmentti numerot eivät täsmää");
+    res.status(400);
+  }
+  database.query(
+  `DELETE FROM Paivitykset
+   WHERE (Segmentti, Aika)
+   IN
+  (SELECT Segmentti, MAX(Aika)
+    FROM (SELECT Aika, Segmentti FROM Paivitykset) AS copy
+    WHERE Segmentti = ?
+    ORDER BY(Aika)
+   )
+   AND Aika > NOW() - INTERVAL 1 WEEK
+   `,
+  [
+    req.params.id,
+  ],
+  function (err, result, fields) {
+      if (err) throw err;
+      res.json(result);
+      res.status(200);
+  });
+});
 
 
 module.exports = router;
