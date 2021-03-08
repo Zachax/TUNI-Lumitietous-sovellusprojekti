@@ -6,6 +6,9 @@ Luonut: Markku Nirkkonen
 
 Päivityshistoria
 
+8.3.2021 Markku Nirkkonen
+Lisätty mahdollisuus poistaa alle vuorokauden vanha lumitietopäivitys
+
 10.1.2021 Markku Nirkkonen
 Lumivyöryvaara näkyy, kun tarkastellaan segmenttiä, joka on lumivyöryaluetta
 
@@ -42,6 +45,7 @@ Ensimmäinen versio segmenttien päivittämisestä
 
 import * as React from "react";
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -96,7 +100,8 @@ const useStyles = makeStyles((theme) => ({
 
 function Info(props) {
 
-  const [loginOpen, setLoginOpen] = React.useState(false);
+  const [updateOpen, setUpdateOpen] = React.useState(false);
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [snowtype, setSnowtype] = React.useState(0);
   const [text, setText] = React.useState("Ei tietoa");
   
@@ -104,6 +109,7 @@ function Info(props) {
 
   var updateDate;
   var updateTime;
+  var dateDifference;
 
   // Parsitaan päivämäärä ja aika päivityksestä, mikäli päivitys löytyy
   if (props.segmentdata.update !== null && props.segmentdata.update !== undefined) {
@@ -117,6 +123,11 @@ function Info(props) {
 
     // Kellonaika muodossa hh:mm:ss
     updateTime = timeString[1].split(".")[0];
+
+    // Lasketaan, onko uusin päivitys alle vuorokauden vanha
+    let timeNow = new Date();
+    let updateTimeStamp = new Date(props.segmentdata.update.Aika);
+    dateDifference = (timeNow.getTime() - updateTimeStamp.getTime())/(24*3600*1000);
   }
 
   var dangerimage;
@@ -142,14 +153,24 @@ function Info(props) {
   const openUpdate = (event) => {
     setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei kuvausta");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
-    setLoginOpen(true);
+    setUpdateOpen(true);
   }
 
   // Segmentin päivitysdialogin sulkeminen
   const closeUpdate = (event) => {
-    setLoginOpen(false);
+    setUpdateOpen(false);
     setText(props.segmentdata.update !== null ? props.segmentdata.update.Teksti : "Ei kuvausta");
     setSnowtype(props.segmentdata.update !== null ? props.segmentdata.update.Lumilaatu : 0);
+  }
+
+  // Segmentin poistodialogin avaus
+  const openDelete = (event) => {
+    setDeleteOpen(true);
+  }
+
+  // Segmentin poistodialogin avaus
+  const closeDelete = (event) => {
+    setDeleteOpen(false);
   }
 
   // Lumitilanteen kuvaustekstin päivittäminen
@@ -243,7 +264,78 @@ function Info(props) {
     closeUpdate();  
   }
 
-  
+  // Kun päivitys poistetaan, tehdään DELETE methodin api-kutsu polkuun /api/update/:id
+  const deleteUpdate = (event) => {
+    
+    // Poistettavan (valitun) segmentin ID
+    const data = {
+      Segmentti: props.segmentdata.ID,
+    }
+    const fetchDelete = async () => {
+      //setLoading(true);
+      const response = await fetch('api/update/' + props.segmentdata.ID,
+      {
+        method: "DELETE",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: "Bearer " + props.token
+        },
+        body: JSON.stringify(data),
+      });
+      await response.json();
+    };
+    fetchDelete();
+    
+    // Haetaan ajantasaiset segmenttien tiedot heti päivittämisen jälkeen
+    const fetchData = async () => {
+      const snow = await fetch('api/lumilaadut');
+      const snowdata = await snow.json();
+      const updates = await fetch('api/segments/update');
+      const updateData = await updates.json();
+      const response = await fetch('api/segments');
+      const data = await response.json();
+      
+      
+      await updateData.forEach(update => {
+        snowdata.forEach(snow => {
+          if(snow.ID === update.Lumilaatu){
+            update.Lumi = snow;
+          }
+        });
+      });
+      
+      data.forEach(segment => {
+        segment.update = null;
+        updateData.forEach(update => {
+          if (update.Segmentti === segment.ID) {
+            segment.update = update;           
+          }
+          // päivitetään näytettävä segmentti
+          if (segment.ID === props.segmentdata.ID) {
+            props.onUpdate(segment);
+          }
+        });
+        if(segment.On_Alasegmentti != null)
+        {
+          data.forEach(mahd_yla_segmentti => {
+            if(mahd_yla_segmentti.ID === segment.On_Alasegmentti){
+              segment.On_Alasegmentti = mahd_yla_segmentti.Nimi;
+            }
+          });
+        }
+        if (segment.Nimi === "Metsä") {
+          props.updateWoods(segment);
+        }
+      });
+
+      // Päivitetään segmentit, jotta ne piirtyvät uudestaan
+      props.updateSegments(data);
+
+    };
+    fetchData();
+    closeDelete();  
+  }
 
   // Segmenttidataa tulee olla, jotta renderöidään mitään näkyvää
   if (props.segmentdata !== undefined) {
@@ -296,11 +388,26 @@ function Info(props) {
             <EditIcon />
             <Typography variant="button">Päivitä</Typography>
           </IconButton>
+
+         {/* Päivityksen poistopainike näytetään vain, jos valitun segmentin päivitys on alle vuorokauden vanha */}
+         {dateDifference < 1 ?
+          (
+            <IconButton 
+              className={classes.editButton}
+              onClick={openDelete}
+            >
+              <DeleteOutlinedIcon />
+              <Typography variant="button">Poista viimeisin</Typography>
+            </IconButton>
+          ) : 
+          (
+            <div />
+          )}
           
           {/* Segmentin päivitysdialogi */}
           <Dialog 
             onClose={closeUpdate} 
-            open={loginOpen}
+            open={updateOpen}
           >
             <DialogTitle id="update-segment">Päivitä segmenttiä</DialogTitle>
               
@@ -347,6 +454,28 @@ function Info(props) {
               <Divider />
               <Button id={"dialogClose"} onClick={closeUpdate}>Peruuta</Button>
               <Button variant="contained" color="primary" id={"dialogOK"} onClick={sendForm} disabled={snowtype === 0}>Päivitä</Button>
+            </DialogActions>
+          
+          </Dialog>
+
+          {/* Päivityksen poistodialogi */}
+          <Dialog 
+            onClose={closeDelete} 
+            open={deleteOpen}
+          >
+            <DialogTitle id="delete-segment">Poista viimeisin päivitys</DialogTitle>
+              
+              {/* Avustetekstit */}
+              <Box className={classes.helpers}>
+                <Typography>{props.segmentdata.Nimi}</Typography>
+                <Typography variant="caption" >Olet poistamassa viimeisintä päivitystä. Haluatko varmasti poistaa?</Typography>
+              </Box>
+            
+            {/* Dialogin toimintopainikkeet. */}
+            <DialogActions>
+              <Divider />
+              <Button id={"deleteClose"} onClick={closeDelete}>Peruuta</Button>
+              <Button variant="contained" color="primary" id={"deleteOK"} onClick={deleteUpdate} >Poista</Button>
             </DialogActions>
           
           </Dialog>
