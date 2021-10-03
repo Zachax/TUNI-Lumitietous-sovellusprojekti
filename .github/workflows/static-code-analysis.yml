@@ -20,6 +20,7 @@ jobs:
 
       # Install dependencies
       - run: npm ci --prefix src/
+      - run: npm ci --no-optional --prefix src/map-app/
 
       # Run ESLint
       - run: npm run lint --prefix src/
