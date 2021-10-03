@@ -1,18 +1,18 @@
-# TUNI-Lumitietous-sovellusprojekti
-Snow information application for Software Project course in University of Tampere.
+## Snowledge project
+Web application for showing snow information. The application is produced in Software Project course at Tampere University.
 
-# Serverin käynnistys ja yhteydenotto
-1.Lataa ja asenna Vagrant ja Virtual Box(tai jokin muu virtualisaatio ohjelma)
-2.Siirry TUNI-Lumitietous-sovellusprojekti kansioon, siirry siellä vagrant -kansioon ja anna komento "vagrant up"
-3.Kun virtuaalikone on käynnistynyt kirjaudu siihen sisälle "vagrant ssh"
-4.navigoi jaettuun kansioo. (kaksi kansiotasoa sisääntuloa ylempänä sijaitseva vagrant kansio)
-5.Navigoi src kansioon
-6.Asenna pakkaukset komennolla "npm install"
-SUOSITUS: npm:n asentaminen omalle koneelle ja kohtien 7-8 tekeminen toisessa konsolissa ilman yhteyttä virtuaalikoneeseen saattaa toimia paremmin
-7. Navigoi kansioon TUNI-Lumitietous-sovellusprojekti\src\map-app
-8. Suorita "npm install" sekä "npm run build" 
+## Creating an environment for development of the application
+1. Download and install Vagrant and Virtual Box, or some other virtualization program
+2. Navigate to the vagrant folder under the cloned project folder and enter the command "vagrant up"
+3. After the virtual machine has booted, log in with the command "vagrant ssh"
+4. Navigate to the shared folder, which is the vagrant folder two folder levels above the entry
+5. Navigate to the src folder under the vagrant folder on virtual machine
+6. Install the packages with the command "npm install" on virtual machine
 
-9. Käynnistä serveri komennolla "node app.js"
-10. Mikäli ruudulla lukee "listening to 3000" voit ottaa yhteyden serveriin selaimella( http://localhost:3000/)
+(RECOMMENDATION: Install following npm packages on your own machine by doing steps 7-8 on another console without connecting to a virtual machine. This may work better.) 
 
-Olkaa ongelmien tapauksessa yhteydessä virtualisaatio on joskus mutkikasta
+7. Navigate to the src/map-app path in project folder on local machine or to /vagrant/src/map-app inside virtual machine 
+8. Run "npm install" and "npm run build" 
+9. Start the server with the command "node app.js" in path /vagrant/src on virtual machine
+
+If the screen shows "listening to port 3000" you can connect to the server with a browser (http://localhost:3000/) 

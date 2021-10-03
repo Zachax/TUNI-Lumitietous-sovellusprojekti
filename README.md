@@ -1,17 +1,15 @@
-# TUNI-Lumitietous-sovellusprojekti
-Snow information application for Software Project course in University of Tampere.
+## Snowledge project
+Web application for showing snow information. The application is produced in Software Project course at Tampere University.
 
-Verkkosivusto suunniteltu lumitietojen näyttämiseen Pallatunturin alueella.<br/>
-Verkkosivuston osiot<br/>
-  Mysql tieokanta<br/>
-  Node.js Backend API<br/>
-  React frontend<br/>
+This web page presents snow information by segments in Pallas fell area. Users with admin and operator privileges are able to edit segments and add snow information. This information will be saved into the database.
 
-Sivu näyttää kaikille käyttäjille tuoreimmat lumitiedot alueittain(segmenteittäin), kunhan ne eivät ole viikkoa vanhempia.<br/>
-Mikäli käyttäjä kirjautuu sivulle voi hän muokata aalueita/segmenttejä, käyttäjiä tai lisätä lumitietoja.<br/>
-Muutokset ja lisäykset tallentuvat tietokantaan.<br/>
+### Application components
+- MySQL database<br/>
+- Node.js backend API<br/>
+- React frontend<br/>
 
-Alakansioiden lyhyt selitys<br/>
-  /documentation  --- Dokumentaatio ja selitys tarkemmasta toiminnasta<br/>
-  /src  --- Varsinainen lähdekoodi kaikille verkkosivuston osioille<br/>
-  /vagrant --- Vagrant tiedosto paikallisen testaamisen mahdollistamiseksi (sisältää erilliset ohjeet)
+### Directory structure
+  /documentation - Technical documentation, project plans and reports <br/>
+  /src - Source code for the application<br/>
+  /vagrant - Files and instructions for creating a development environment with Vagrant and VirtualBox
+  
