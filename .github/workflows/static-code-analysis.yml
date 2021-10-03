@@ -1,0 +1,25 @@
+name: Static Code Analysis
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    name: Run ESLint
+    runs-on: ubuntu-18.04
+    steps:
+    
+      # Check out the repository
+      - uses: actions/checkout@v1
+
+      # Install Node.js
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      # Install dependencies
+      - run: npm ci
+
+      # Run ESLint
+      - uses: eslint/github-action@v0
