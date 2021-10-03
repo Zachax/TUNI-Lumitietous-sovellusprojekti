@@ -13,22 +13,22 @@ Korjattu niin, että uloskirjautuessa näkymä palaa karttaan
 **/
 
 import * as React from "react";
-import Button from '@material-ui/core/IconButton';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import Typography from '@material-ui/core/Typography';
+import Button from "@material-ui/core/IconButton";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import Typography from "@material-ui/core/Typography";
 
 function Logout(props) {
 
   // Event handlers
    
   //  Uloskirjautuminen nollaa tokenin ja kirjautuneen käyttäjän
-  const Logout = (event) => {
+  const Logout = () => {
     props.updateToken(null);
     props.updateUser(null);
     if (props.viewManagement) {
       props.updateView();
     }   
-  }
+  };
 
   return (
     <div className="login">
@@ -42,6 +42,6 @@ function Logout(props) {
     </div>
   );
 
-};
+}
  
 export default Logout;

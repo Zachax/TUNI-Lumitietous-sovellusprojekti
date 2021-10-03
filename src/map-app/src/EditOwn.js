@@ -22,20 +22,20 @@ Suomennoksia, ei siis käytännön muutoksia
 **/
 
 import * as React from "react";
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import Button from "@material-ui/core/Button";
+import Divider from "@material-ui/core/Divider";
+import Typography from "@material-ui/core/Typography";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControl from "@material-ui/core/FormControl";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
 import { DialogContent } from "@material-ui/core";
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import IconButton from "@material-ui/core/IconButton";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
  
 function EditOwn(props) {
@@ -64,7 +64,7 @@ function EditOwn(props) {
     } else {
       setFirstName(event.target.value);
     }
-  }
+  };
 
   // sukunimen päivitys
   const updateLastName = (event) => {
@@ -73,7 +73,7 @@ function EditOwn(props) {
     } else {
       setLastName(event.target.value);
     }
-  }
+  };
 
   // sähköpostin päivittäminen
   const updateEmail = (event) => {
@@ -82,7 +82,7 @@ function EditOwn(props) {
     } else {
       setEmail(event.target.value);
     }
-  }
+  };
 
   // Vaihtaa salasanakentän näkyvyyden (päälle/pois)
   const handleClickShowPassword = () => {
@@ -95,11 +95,11 @@ function EditOwn(props) {
 
   const updatePassword = (event) => {
     setPassword(event.target.value);
-  }
+  };
 
   const updateConfirm = (event) => {
     setConfirm(event.target.value);
-  }
+  };
 
   // lomakkeen sulkeminen nollaa muutokset seuraavaa muokkauskertaa varten
   const handleClose = () => {
@@ -110,7 +110,7 @@ function EditOwn(props) {
     setConfirm("");
     setPassword("");
     setMismatch(false);
-  }
+  };
 
   // Käsitellään käyttäjän muokkaus
   const handleEdit = () => {
@@ -127,23 +127,23 @@ function EditOwn(props) {
           Sukunimi: lastName === null ? props.user.Sukunimi : lastName,
           Sähköposti: email === null ? props.user.Sähköposti : email,
           ID: props.user.ID
-        }
+        };
         if (password !== "") {
           data.Salasana = password;
         }
 
         // Käyttäjän muokkaamisen api-kutsu
         const fetchEditUser = async () => {
-          const response = await fetch('api/user/'+props.user.ID,
-          {
-            method: "PUT",
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              Authorization: "Bearer " + props.token
-            },
-            body: JSON.stringify(data),
-          });
+          const response = await fetch("api/user/"+props.user.ID,
+            {
+              method: "PUT",
+              headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + props.token
+              },
+              body: JSON.stringify(data),
+            });
           const res = await response.json();
           console.log(res);
         };
@@ -151,15 +151,15 @@ function EditOwn(props) {
 
         // Käyttäjät päivitetään
         const fetchUsers = async () => {
-          const user = await fetch('api/user/',
-          {
-            method: "GET",
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              Authorization: "Bearer " + props.token
-            }
-          });
+          const user = await fetch("api/user/",
+            {
+              method: "GET",
+              headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + props.token
+              }
+            });
           const userdata = await user.json();
 
           props.updateUser(userdata[0]);
@@ -171,7 +171,7 @@ function EditOwn(props) {
         setMessage("");
       } else {
         setMismatch(true);
-        setMessage("Salasanan oltava 7 merkkiä")
+        setMessage("Salasanan oltava 7 merkkiä");
       } 
     } else {
       setMismatch(true);
@@ -183,82 +183,82 @@ function EditOwn(props) {
     <div>
       {/* Dialogi näyttää nykyiset tiedot ja sisältää muokkauskentät, sekä toimintopainikkeet muokkaamista varten */}
       <DialogTitle id="edit_user">Muokkaa tietojasi</DialogTitle>
-        <DialogContent>
+      <DialogContent>
         <Typography variant="subtitle2">Tiedot nyt:</Typography>
         <Typography>{props.user.Etunimi + " " + props.user.Sukunimi}</Typography>
         <Typography>{props.user.Sähköposti}</Typography>
-          <FormControl>  
-            <InputLabel htmlFor="firstname" >Muuta etunimeä</InputLabel>
-            <Input
-              id="firstname"
-              type='text'
-              onChange={updateFirstName}
-              placeholder={props.user !== null ? props.user.Etunimi : ""}
-            />
-          </FormControl>
-          <br/>
-          <FormControl>  
-            <InputLabel htmlFor="lastname" >Muuta sukunimeä</InputLabel>
-            <Input
-              id="lastname"
-              type='text'
-              onChange={updateLastName}
-              placeholder={props.user !== null ? props.user.Sukunimi : ""}
-            />
-          </FormControl>
-          <br/>
-          <FormControl>  
-            <InputLabel htmlFor="email" >Muuta sähköpostia</InputLabel>
-            <Input
-              id="email"
-              type='text'
-              onChange={updateEmail}
-              placeholder={props.user !== null ? props.user.Sähköposti : ""}
-            />
-          </FormControl>
-          <br/>
-          <FormControl error={mismatch}>
-            <InputLabel htmlFor="standard-adornment-password">Uusi salasana</InputLabel>
-            <Input
-              id="standard-adornment-password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={updatePassword}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-          </FormControl>
-          {mismatch ? <FormHelperText>{message}</FormHelperText> : <div />}
+        <FormControl>  
+          <InputLabel htmlFor="firstname" >Muuta etunimeä</InputLabel>
+          <Input
+            id="firstname"
+            type='text'
+            onChange={updateFirstName}
+            placeholder={props.user !== null ? props.user.Etunimi : ""}
+          />
+        </FormControl>
+        <br/>
+        <FormControl>  
+          <InputLabel htmlFor="lastname" >Muuta sukunimeä</InputLabel>
+          <Input
+            id="lastname"
+            type='text'
+            onChange={updateLastName}
+            placeholder={props.user !== null ? props.user.Sukunimi : ""}
+          />
+        </FormControl>
+        <br/>
+        <FormControl>  
+          <InputLabel htmlFor="email" >Muuta sähköpostia</InputLabel>
+          <Input
+            id="email"
+            type='text'
+            onChange={updateEmail}
+            placeholder={props.user !== null ? props.user.Sähköposti : ""}
+          />
+        </FormControl>
+        <br/>
+        <FormControl error={mismatch}>
+          <InputLabel htmlFor="standard-adornment-password">Uusi salasana</InputLabel>
+          <Input
+            id="standard-adornment-password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={updatePassword}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                >
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+        </FormControl>
+        {mismatch ? <FormHelperText>{message}</FormHelperText> : <div />}
           
-          <FormControl error={mismatch}>
-            <InputLabel htmlFor="confirm">Vahvista uusi salasana</InputLabel>
-            <Input
-              id="confirm"
-              type='password'
-              value={confirm}
-              onChange={updateConfirm}
-            />
-          </FormControl>
+        <FormControl error={mismatch}>
+          <InputLabel htmlFor="confirm">Vahvista uusi salasana</InputLabel>
+          <Input
+            id="confirm"
+            type='password'
+            value={confirm}
+            onChange={updateConfirm}
+          />
+        </FormControl>
 
-        </DialogContent>
+      </DialogContent>
 
-        <DialogActions>
-          <Divider />
-          <Button id={"editClose"} onClick={handleClose}>Sulje</Button>
-          <Button variant="contained" color="primary" id={"save_edit"} onClick={handleEdit} disabled={saveDisabled}>Tallenna muutokset</Button>
-        </DialogActions>
+      <DialogActions>
+        <Divider />
+        <Button id={"editClose"} onClick={handleClose}>Sulje</Button>
+        <Button variant="contained" color="primary" id={"save_edit"} onClick={handleEdit} disabled={saveDisabled}>Tallenna muutokset</Button>
+      </DialogActions>
         
     </div>
   );
-};
+}
  
 export default EditOwn;

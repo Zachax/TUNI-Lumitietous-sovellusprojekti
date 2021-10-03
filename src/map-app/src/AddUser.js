@@ -6,24 +6,24 @@ Luonut: Markku Nirkkonen 9.1.2021
 **/
 
 import * as React from "react";
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import Typography from '@material-ui/core/Typography';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import Divider from '@material-ui/core/Divider';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { makeStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import IconButton from '@material-ui/core/IconButton';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
+import Typography from "@material-ui/core/Typography";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import Divider from "@material-ui/core/Divider";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import { makeStyles } from "@material-ui/core/styles";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import IconButton from "@material-ui/core/IconButton";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const useStyles = makeStyles((theme) => ({
   add: {
@@ -33,10 +33,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     border: 1,
     borderRadius: 3,
-    boxShadow: '0 2px 2px 2px rgba(0, 0, 0, .3)',
+    boxShadow: "0 2px 2px 2px rgba(0, 0, 0, .3)",
   },
   coordinateInputs: {
-    display: 'flex'
+    display: "flex"
   },
   addNewLine: {
     // Koordinaattirivin lisäysnapin tyylit
@@ -65,7 +65,7 @@ function AddUser(props) {
   // Avaa käyttäjänlisäysdialogin
   const openAdd = () => {
     setAddOpen(true);
-  }
+  };
 
   // Sulkee dialogin
   const closeAdd = () => {
@@ -75,7 +75,7 @@ function AddUser(props) {
     setEmail("");
     setPassword("");
     setAdmin(false);
-  }
+  };
 
   // Käyttäjän lisääminen (vahvistusdialogin jälkeen)
   const handleAdd = () => {
@@ -87,52 +87,52 @@ function AddUser(props) {
       Sähköposti: email,
       Salasana: password,
       Rooli: admin ? "admin" : "operator",
-    }
+    };
 
     // Käyttäjän lisäämisen api-kutsu
     const fetchAddUser = async () => {
-      const response = await fetch('api/user',
-      {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: "Bearer " + props.token
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch("api/user",
+        {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + props.token
+          },
+          body: JSON.stringify(data),
+        });
       const res = await response.json();
       console.log(res);
       await props.fetchUsers();
     };
     fetchAddUser();
     closeAdd();
-  }
+  };
 
   // Etunimen päivittäminen
   const updateFirstName = (event) => {
     setFirstName(event.target.value);
-  }
+  };
 
   // Sukunimen päivittäminen
   const updateLastName = (event) => {
     setLastName(event.target.value);
-  }
+  };
 
   // Sähköpostin päivittäminen
   const updateEmail = (event) => {
     setEmail(event.target.value);
-  }
+  };
 
   // Sähköpostin päivittäminen
   const updatePassword = (event) => {
     setPassword(event.target.value);
-  }
+  };
 
   // Roolin vaihtamienn
-  const updateAdmin = (event) => {
+  const updateAdmin = () => {
     setAdmin(!admin);
-  }
+  };
 
   // Vaihtaa salasanakentän näkyvyyden (päälle/pois)
   const handleClickShowPassword = () => {
@@ -196,7 +196,7 @@ function AddUser(props) {
           <InputLabel htmlFor="standard-adornment-password">Salasana</InputLabel>
           <Input
             id="standard-adornment-password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             value={password}
             onChange={updatePassword}
             endAdornment={
@@ -235,6 +235,6 @@ function AddUser(props) {
     </div>
   );
 
-};
+}
  
 export default AddUser;
