@@ -41,60 +41,63 @@ function segmentDataToArray(data) {
 
 // Segmenttien tiedot json-muodossa kannasta
 function getSegments() {
-    return fetch(window.location.href + 'db/segments')
-        .then((response) => { 
-            return response.json().then((data) => {
-                return data;
-            }).catch((err) => {
-                console.log(err);
-            }) 
-        });
+  return fetch(window.location.href + "db/segments")
+    .then((response) => { 
+      return response.json().then((data) => {
+        return data;
+      }).catch((err) => {
+        console.log(err);
+      }); 
+    });
 }
 
 function initMap() {
-    // Pallakesen keskuksen koordinaatit
-    const pallas = { lat: 68.045721, lng: 24.062813 };
-    // Kartta, keskitetty pallakselle
-    const map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 13,
-      center: pallas,
-      mapTypeId: "terrain",
-    });
+  // Pallakesen keskuksen koordinaatit
+  const pallas = { lat: 68.045721, lng: 24.062813 };
+  // Kartta, keskitetty pallakselle
+  // eslint-disable-next-line no-undef
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 13,
+    center: pallas,
+    mapTypeId: "terrain",
+  });
 
-    // Piirtää segmentin kannasta haettujen koordinaattien mukaisesti.
-    function drawSegmentsFromData(map) {
-        let coordsJson;
-        getSegments().then((data) => {
-            const segmentArray = data;
+  // Piirtää segmentin kannasta haettujen koordinaattien mukaisesti.
+  function drawSegmentsFromData(map) {
+    let coordsJson;
+    getSegments().then((data) => {
+      const segmentArray = data;
 
-            console.log(segmentArray);
-            for (let i = 0; i < segmentArray.length; i++) {
-                let segment;
-                segment = new google.maps.Polygon({
-                    paths: segmentArray[i].Points,
-                    strokeColor: "#0000FF",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: "#0000FF",
-                    fillOpacity: 0.15,
-                });
+      console.log(segmentArray);
+      for (let i = 0; i < segmentArray.length; i++) {
+        let segment;
+        // eslint-disable-next-line no-undef
+        segment = new google.maps.Polygon({
+          paths: segmentArray[i].Points,
+          strokeColor: "#0000FF",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#0000FF",
+          fillOpacity: 0.15,
+        });
 
-                segment.setMap(map);
+        segment.setMap(map);
     
-                segment.addListener("mouseover", () => {
-                    segment.setOptions({fillOpacity: 0.8});
-                });
+        segment.addListener("mouseover", () => {
+          segment.setOptions({fillOpacity: 0.8});
+        });
             
-                segment.addListener("mouseout", () => {
-                    segment.setOptions({fillOpacity: 0.15});
-                });
+        segment.addListener("mouseout", () => {
+          segment.setOptions({fillOpacity: 0.15});
+        });
             
-                segment.addListener("click", () => {
-                    infoDiv = document.getElementById("segment_info");
-                    infoDiv.innerHTML = "<p>Segmentin " + dataArray[i][0].segment + " tietoja</p>";
-                });
-            }     
-        });   
-    };
-    drawSegmentsFromData(map);
+        segment.addListener("click", () => {
+          let infoDiv = document.getElementById("segment_info");
+          // eslint-disable-next-line no-undef
+          infoDiv.innerHTML = "<p>Segmentin " + dataArray[i][0].segment + " tietoja</p>";
+        });
+      }     
+    });   
+  }
+  drawSegmentsFromData(map);
 }
