@@ -23,4 +23,5 @@ jobs:
       - run: npm ci --prefix src/map-app/
 
       # Run ESLint
-      - uses: eslint/github-action@v0
+      - run: npm run lint --prefix src/
+      - run: npm run lint --prefix src/map-app/
