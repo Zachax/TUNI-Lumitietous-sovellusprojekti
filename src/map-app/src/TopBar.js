@@ -20,17 +20,17 @@ Suomennoksia, ei siis käytännön muutoksia
 **/
 
 import * as React from "react";
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Toolbar from '@material-ui/core/Toolbar';
-import Box from '@material-ui/core/Box';
-import Dialog from '@material-ui/core/Dialog';
-import Login from './Login';
-import Logout from './Logout';
-import EditOwn from './EditOwn';
-import MobileMenu from './MobileMenu';
-import NavigationIcon from '@material-ui/icons/Navigation';
-import { makeStyles } from '@material-ui/core/styles';
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import Toolbar from "@material-ui/core/Toolbar";
+import Box from "@material-ui/core/Box";
+import Dialog from "@material-ui/core/Dialog";
+import Login from "./Login";
+import Logout from "./Logout";
+import EditOwn from "./EditOwn";
+import MobileMenu from "./MobileMenu";
+import NavigationIcon from "@material-ui/icons/Navigation";
+import { makeStyles } from "@material-ui/core/styles";
 
 // Yläpalkin osien tyylejä
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   direction: {
     marginLeft: theme.spacing(1),
-    transform: props => 'rotate(' + props.degrees + 'deg)',
+    transform: props => "rotate(" + props.degrees + "deg)",
   }
 }));
  
@@ -74,9 +74,9 @@ function TopBar(props) {
   }
 
   const fetchWeather = async () => {
-      //riittä jos haet kaikki tulokset relevantti tieto niissä
-     var Sää = {};
-     fetch('http://opendata.fmi.fi/wfs/fin?service=WFS&version=2.0.0&request=GetFeature&storedquery_id=fmi::observations::weather::timevaluepair&fmisid=101982&')
+    //riittä jos haet kaikki tulokset relevantti tieto niissä
+    var Sää = {};
+    fetch("http://opendata.fmi.fi/wfs/fin?service=WFS&version=2.0.0&request=GetFeature&storedquery_id=fmi::observations::weather::timevaluepair&fmisid=101982&")
       .then((response) => response.text())
       .then((response) => {
         const parser = new DOMParser();
@@ -84,39 +84,39 @@ function TopBar(props) {
         const tulokset = xmlDoc.getElementsByTagName("om:result");
         
         for(let tulos of tulokset) {
-          switch (tulos.firstElementChild.getAttribute('gml:id')) {
+          switch (tulos.firstElementChild.getAttribute("gml:id")) {
             
-            // Lämpötila-attribuutin data
-            case 'obs-obs-1-1-t2m':
-              Sää.Lampotila = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
-              break;
+          // Lämpötila-attribuutin data
+          case "obs-obs-1-1-t2m":
+            Sää.Lampotila = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+            break;
             
             // Tuulen nopeuden attribuutin data
-            case 'obs-obs-1-1-ws_10min':
-              Sää.Tuuli_nopeus = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
-              break;
+          case "obs-obs-1-1-ws_10min":
+            Sää.Tuuli_nopeus = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+            break;
             
             // Tuulen suunna attribuutin data (asteina, tuulen tulosuunta, 360 = pohjoinen)
-            case 'obs-obs-1-1-wd_10min':
-              Sää.Tuuli_suunta = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
-              break;
+          case "obs-obs-1-1-wd_10min":
+            Sää.Tuuli_suunta = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+            break;
             
             // Tuulen puuskien nopeuden attribuutin data
-            case 'obs-obs-1-1-wg_10min':
-              Sää.Tuuli_puuska = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
-              break;
-            default: 
-              // Jos ei osumia, ei tehdä mitään
-              break;
+          case "obs-obs-1-1-wg_10min":
+            Sää.Tuuli_puuska = tulos.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerHTML;
+            break;
+          default: 
+            // Jos ei osumia, ei tehdä mitään
+            break;
           }
         }
       });
       
-      // Jos säätietoa ei vielä ole, se tallennetaan hook stateen
-      if (weather === null) {
-        setWeather(Sää);
-      }
-   };
+    // Jos säätietoa ei vielä ole, se tallennetaan hook stateen
+    if (weather === null) {
+      setWeather(Sää);
+    }
+  };
   
   fetchWeather();
   
@@ -126,11 +126,11 @@ function TopBar(props) {
 
   const openEditOwn = () => {
     setEditOwnOpen(true);
-  }
+  };
 
   const closeEditOwn = () => {
     setEditOwnOpen(false);
-  }
+  };
   
   // Näkymät riippuvat näyttöportin koosta ja siitä, onko käyttäjä kirjautunut vai ei
   if (!props.isMobile) {
@@ -171,10 +171,10 @@ function TopBar(props) {
             <Box className={styledClasses.baritems}>
               {(
                 props.token === null || props.token === undefined 
-                ? 
-                <Login updateToken={props.updateToken} updateUser={props.updateUser}/> 
-                : 
-                <Logout updateToken={props.updateToken} updateUser={props.updateUser} viewManagement={props.viewManagement} updateView={updateView}/>      
+                  ? 
+                  <Login updateToken={props.updateToken} updateUser={props.updateUser}/> 
+                  : 
+                  <Logout updateToken={props.updateToken} updateUser={props.updateUser} viewManagement={props.viewManagement} updateView={updateView}/>      
               )}
             </Box>
 
@@ -217,18 +217,18 @@ function TopBar(props) {
             {
               (
                 props.token === null || props.token === undefined 
-                ? 
-                <Login updateToken={props.updateToken} updateUser={props.updateUser} /> 
-                : 
-                <MobileMenu 
-                  token={props.token}
-                  user={props.user} 
-                  updateToken={props.updateToken}
-                  updateUser={props.updateUser} 
-                  updateView={updateView} 
-                  viewManagement={props.viewManagement} 
-                  manageOrMap={props.manageOrMap} 
-                />
+                  ? 
+                  <Login updateToken={props.updateToken} updateUser={props.updateUser} /> 
+                  : 
+                  <MobileMenu 
+                    token={props.token}
+                    user={props.user} 
+                    updateToken={props.updateToken}
+                    updateUser={props.updateUser} 
+                    updateView={updateView} 
+                    viewManagement={props.viewManagement} 
+                    manageOrMap={props.manageOrMap} 
+                  />
               )
             }
           </Box>
@@ -236,6 +236,6 @@ function TopBar(props) {
       </Box>
     );
   }
-};
+}
  
 export default TopBar;

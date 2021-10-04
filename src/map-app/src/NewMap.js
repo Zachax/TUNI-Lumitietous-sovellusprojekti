@@ -28,18 +28,18 @@ Lisätty päivitys värin valintaan
 
 **/
 
-import { GoogleMap, LoadScript, Polygon, Marker } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Polygon, Marker } from "@react-google-maps/api";
 import * as React from "react";
-import clsx from 'clsx';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
-import Divider from '@material-ui/core/Divider';
-import Collapse from '@material-ui/core/Collapse';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import IconButton from '@material-ui/core/IconButton';
+import clsx from "clsx";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Box from "@material-ui/core/Box";
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
+import Divider from "@material-ui/core/Divider";
+import Collapse from "@material-ui/core/Collapse";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import IconButton from "@material-ui/core/IconButton";
 
 // Tyylimäärittelyt kartan päälle piirrettäville laatikoille
 const useStyles = makeStyles((theme) => ({
@@ -80,14 +80,14 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center"
   },
   expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
       duration: theme.transitions.duration.shortest,
     }),
   },
   expandOpen: {
-    transform: 'rotate(180deg)',
+    transform: "rotate(180deg)",
   },
 }));
 
@@ -96,6 +96,7 @@ function Map(props) {
   // Use state hooks
   const [ selectedSegment, setSelectedSegment ] = React.useState({});
   const [ mouseover, setMouseover ] = React.useState({ID: null, name: null});
+  // eslint-disable-next-line no-unused-vars
   const [ center, setCenter ] = React.useState({ lat: 68.067334, lng: 24.062813 });
   const [ subsOnly, setSubsOnly ] = React.useState(false);
   const [ expanded, setExpanded ] = React.useState(props.isMobile ? false : true);
@@ -109,7 +110,7 @@ function Map(props) {
     {lat: 68.035073, lng: 24.044421},
     {lat: 68.085595, lng: 24.005129},
     {lat: 68.082975, lng: 24.116956}
-  ]
+  ];
 
   // kartan tyylit 
   const mapStyles = {        
@@ -161,7 +162,7 @@ function Map(props) {
     } else {
       setHighlighted(null);
     }  
-  }
+  };
   
   // Use styles
   const styledClasses = useStyles();
@@ -191,47 +192,47 @@ function Map(props) {
       </Box>
       <Box className={styledClasses.infoboxContainer}>
         <Box className={styledClasses.infoboxHeader}>
-        <Typography>Selitteet</Typography>
-        <IconButton
-          className={clsx(styledClasses.expand, {
-            [styledClasses.expandOpen]: expanded,
-          })}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </IconButton>
+          <Typography>Selitteet</Typography>
+          <IconButton
+            className={clsx(styledClasses.expand, {
+              [styledClasses.expandOpen]: expanded,
+            })}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon />
+          </IconButton>
         </Box>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           {/* Selitteet renderöidään, jos tiedot segmenttien nimistä ovat saatavilla (props.segmentColors.name) */}
           {
             props.segmentColors !== null 
-            ?
-            props.segmentColors.map((item, index) => {
+              ?
+              props.segmentColors.map((item, index) => {
               
-              return (
+                return (
                 // Seliteboksi, sisältää lumilogot ja selitteet
-                <Box className={styledClasses.infobox} onMouseOver={() => updateHighlighted(item, index)} onMouseOut={() => updateHighlighted(null)} onClick={() => updateHighlighted(item, index)}>
-                  {/* Lumityypin ikonin tiedostonimen tulee olla luku, joka vastaa lukua,
+                  <Box key={index} className={styledClasses.infobox} onMouseOver={() => updateHighlighted(item, index)} onMouseOut={() => updateHighlighted(null)} onClick={() => updateHighlighted(item, index)}>
+                    {/* Lumityypin ikonin tiedostonimen tulee olla luku, joka vastaa lukua,
                   joka on sama kuin lumityypin indeksi segmenttiväritaulukossa + 1 */}
-                  {
-                    index === props.segmentColors.length - 1 
-                    ? 
-                    <Typography className={styledClasses.snowLogo}>?</Typography> 
-                    : 
-                    <Box className={styledClasses.snowLogo}><img src={process.env.PUBLIC_URL + "/pienetlogot/" + (index + 1) + ".png"} alt="lumityypin logo" align="center"/></Box>      
-                  }
-                  {/* <Paper className={styledClasses.colorbox} style={{backgroundColor: item.color}} /> */}
-                  <Box className={styledClasses.snowLogo}>
-                    <Typography variant='caption' align='justify'>{item.name}</Typography>
-                  </Box>       
-                  <Divider />
-                </Box>
-              );
-            })
-            :
-            <div />
+                    {
+                      index === props.segmentColors.length - 1 
+                        ? 
+                        <Typography className={styledClasses.snowLogo}>?</Typography> 
+                        : 
+                        <Box className={styledClasses.snowLogo}><img src={process.env.PUBLIC_URL + "/pienetlogot/" + (index + 1) + ".png"} alt="lumityypin logo" align="center"/></Box>      
+                    }
+                    {/* <Paper className={styledClasses.colorbox} style={{backgroundColor: item.color}} /> */}
+                    <Box className={styledClasses.snowLogo}>
+                      <Typography variant='caption' align='justify'>{item.name}</Typography>
+                    </Box>       
+                    <Divider />
+                  </Box>
+                );
+              })
+              :
+              <div />
           }
         </Collapse>
       </Box>     
@@ -249,7 +250,7 @@ function Map(props) {
           {
             props.segments.map(item => {
            
-              var drawColor="#000000"
+              var drawColor="#000000";
               var snowID=0;
               if(item.update !== null){
                 if (item.update.Lumi !== undefined) {
@@ -283,7 +284,7 @@ function Map(props) {
                   onMouseOver={() => updateMouseover(item.ID, item.Nimi)}
                   onMouseOut={() => handleMouseout()}
                 />
-              )
+              );
             })
           }
 
@@ -332,25 +333,26 @@ function Map(props) {
           {/* Kun metsäsegmentti on tiedossa, piirretään markerit, joista metsäsegmentin voi myös valita (muuten ei piirretä) */}
           { 
             props.woodsSegment !== null ?
-            markerPoints.map((points) => {
-              return (
-                <Marker 
-                  position={points}
-                  icon={`${process.env.PUBLIC_URL}/pienetlogot/0.png`}
-                  onClick={() => updateChosen(props.woodsSegment)}
-                  onMouseOver={() => updateMouseover(props.woodsSegment.ID, props.woodsSegment.Nimi)}
-                  onMouseOut={() => handleMouseout()}
-                />
-              );
+              markerPoints.map((points, index) => {
+                return (
+                  <Marker
+                    key={index}
+                    position={points}
+                    icon={`${process.env.PUBLIC_URL}/pienetlogot/0.png`}
+                    onClick={() => updateChosen(props.woodsSegment)}
+                    onMouseOver={() => updateMouseover(props.woodsSegment.ID, props.woodsSegment.Nimi)}
+                    onMouseOut={() => handleMouseout()}
+                  />
+                );
               
-            })
-            :
-            null
+              })
+              :
+              null
           }
         </GoogleMap>
       </LoadScript>   
     </div>
-  )
+  );
 }
 
 export default Map;

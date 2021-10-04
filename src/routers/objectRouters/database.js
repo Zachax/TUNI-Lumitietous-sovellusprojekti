@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require("mysql2");
 
 //modify if database changes
 const con = mysql.createConnection({

@@ -26,20 +26,20 @@ Segmentin muokkaus ja niiden lisääminen puuttuu vielä
 **/
 
 import * as React from "react";
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import SegmentManage from './SegmentManage';
-import UserManage from './UserManage';
+import Box from "@material-ui/core/Box";
+import { makeStyles } from "@material-ui/core/styles";
+import Divider from "@material-ui/core/Divider";
+import Button from "@material-ui/core/Button";
+import SegmentManage from "./SegmentManage";
+import UserManage from "./UserManage";
 
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   tabs: {
-    display: 'flex',
+    display: "flex",
   },
   tabLinks: {
-    margin: 'auto'
+    margin: "auto"
   }
 }));
 
@@ -56,14 +56,14 @@ function Manage(props) {
    */
 
   // Näkymän vaihto käyttäjähallintaan
-   const handleUser = () => {
+  const handleUser = () => {
     setShowSegments(false);
-  }
+  };
 
   // Näkymän vaihto segmenttihallintaan
   const handleSegment = () => {
     setShowSegments(true);
-  }
+  };
 
   // Renderöinti
   return (  
@@ -78,19 +78,19 @@ function Manage(props) {
       {/* Näytetään muuttujan showSegments (boolean) mukaan joko segmenttienhallinta tai käyttäjienhallinta */}
       {
         showSegments 
-        ? 
-        <SegmentManage 
-          segments={props.segments}
-          token={props.token}
-          onUpdate={props.onUpdate}
-          updateSegments={props.updateSegments}
-          shownSegment={props.shownSegment}
-          updateWoods={props.updateWoods}
-        /> 
-        : 
-        <UserManage token={props.token} role={props.role} />
+          ? 
+          <SegmentManage 
+            segments={props.segments}
+            token={props.token}
+            onUpdate={props.onUpdate}
+            updateSegments={props.updateSegments}
+            shownSegment={props.shownSegment}
+            updateWoods={props.updateWoods}
+          /> 
+          : 
+          <UserManage token={props.token} role={props.role} />
       }
-  </div>
+    </div>
   );
 }
 

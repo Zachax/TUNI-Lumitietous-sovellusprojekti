@@ -14,22 +14,22 @@ Segmentin lisääminen toimii, mutta lomake ei tarkista vielä kaikkia syötteit
 **/
 
 import * as React from "react";
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import Checkbox from '@material-ui/core/Checkbox';
-import Divider from '@material-ui/core/Divider';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { makeStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import IconButton from '@material-ui/core/IconButton';
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import Checkbox from "@material-ui/core/Checkbox";
+import Divider from "@material-ui/core/Divider";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import { makeStyles } from "@material-ui/core/styles";
+import FormControl from "@material-ui/core/FormControl";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import IconButton from "@material-ui/core/IconButton";
+import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const useStyles = makeStyles((theme) => ({
   add: {
@@ -39,10 +39,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     border: 1,
     borderRadius: 3,
-    boxShadow: '0 2px 2px 2px rgba(0, 0, 0, .3)',
+    boxShadow: "0 2px 2px 2px rgba(0, 0, 0, .3)",
   },
   coordinateInputs: {
-    display: 'flex'
+    display: "flex"
   },
   addNewLine: {
     // Koordinaattirivin lisäysnapin tyylit
@@ -73,14 +73,14 @@ function AddSegment(props) {
   // Avaa segmentin lisäysdialogin
   const openAdd = () => {
     setAddOpen(true);
-  }
+  };
 
   // Sulkee dialogin
   const closeAdd = () => {
     setAddOpen(false);
     setSegmentName("");
     setTerrain("");
-  }
+  };
 
   // Segmentin lisääminen (vahvistusdialogin jälkeen)
   const handleAdd = () => {
@@ -92,20 +92,20 @@ function AddSegment(props) {
       Lumivyöryvaara: danger,
       On_Alasegmentti: props.id !== null ? props.id : null,
       Points: points
-    }
+    };
 
     // Segmentin lisäämisen api-kutsu
     const fetchAddSegment = async () => {
-      const response = await fetch('api/segment/',
-      {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: "Bearer " + props.token
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch("api/segment/",
+        {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + props.token
+          },
+          body: JSON.stringify(data),
+        });
       const res = await response.json();
       console.log(res);
     };
@@ -113,11 +113,11 @@ function AddSegment(props) {
 
     // Haetaan ajantasaiset segmenttien tiedot heti päivittämisen jälkeen
     const fetchData = async () => {
-      const snow = await fetch('api/lumilaadut');
+      const snow = await fetch("api/lumilaadut");
       const snowdata = await snow.json();
-      const updates = await fetch('api/segments/update');
+      const updates = await fetch("api/segments/update");
       const updateData = await updates.json();
-      const response = await fetch('api/segments');
+      const response = await fetch("api/segments");
       const data = await response.json();
       
       
@@ -143,26 +143,26 @@ function AddSegment(props) {
 
       props.updateSegments(data);
 
-      };
+    };
     fetchData();
 
     closeAdd();
-  }
+  };
 
   // Segmentin nimen päivittäminen
   const updateName = (event) => {
     setSegmentName(event.target.value);
-  }
+  };
 
   // Segmentin maastopohjan kuvauksen päivittäminen
   const updateTerrain = (event) => {
     setTerrain(event.target.value);
-  }
+  };
 
   // Lumivyöryvaaran vaihtamienn
-  const updateDanger = (event) => {
+  const updateDanger = () => {
     setDanger(!danger);
-  }
+  };
 
   // Koordinaattipisteiden päivittäminen
   const updatePoints = (index, latOrLng, event) => {
@@ -175,17 +175,17 @@ function AddSegment(props) {
       pointsNow[index].lng = parseFloat(event.target.value);
     }
     setPoints(pointsNow);
-  }
+  };
 
   // Rivin lisääminen lomakkeelle (lisäpiste koordinaateille)
   const addNewRow = () => {
-    setPoints([...points].concat({lat: null, lng: null}))
-  }
+    setPoints([...points].concat({lat: null, lng: null}));
+  };
 
   // Koordinaattipisterivin poistaminen
   const removeNewRow = () => {
     setPoints([...points].slice(0, points.length - 1));
-  }
+  };
 
   const classes = useStyles();
 
@@ -199,8 +199,8 @@ function AddSegment(props) {
           ulkoasu muuttuu hieman riippuen siitä onko kyseessä
           ala- vai yläsegmentin lisäys*/}
 
-        {
-          props.addSubSegment
+      {
+        props.addSubSegment
           ?
           <Button>
             <Typography variant="button" onClick={openAdd}>Lisää alasegmentti</Typography>
@@ -212,7 +212,7 @@ function AddSegment(props) {
               <Typography variant="button" onClick={openAdd}>Lisää uusi yläsegmentti</Typography>
             </Button>
           </Box> 
-        }
+      }
             
 
       {/* Segmentin lisäysdialogi */}
@@ -256,7 +256,7 @@ function AddSegment(props) {
         Neljännestä rivistä eteenpäin on mahdollisuus poistaa rivi */}
         {points.map((item, index) => {
           return (
-            <Box className={classes.coordinateInputs}>
+            <Box key={index} className={classes.coordinateInputs}>
               <FormControl>  
                 <InputLabel htmlFor={"lat"+index} >Lat:</InputLabel>
                 <Input
@@ -277,15 +277,15 @@ function AddSegment(props) {
               {/* Neljännestä rivistä alkaen viimeinen rivi on mahdollista poistaa */}
               {
                 fourthRow && index === points.length - 1 
-                ? 
-                <IconButton id="remove_new_points" aria-label="remove_new_points" onClick={removeNewRow}>
-                  <RemoveCircleOutlineIcon />
-                </IconButton>
-                : 
-                <div />
+                  ? 
+                  <IconButton id="remove_new_points" aria-label="remove_new_points" onClick={removeNewRow}>
+                    <RemoveCircleOutlineIcon />
+                  </IconButton>
+                  : 
+                  <div />
               }
             </Box>
-          )
+          );
         })}
         
         {/* Koordinaattipisterivin lisääminen */}
@@ -307,6 +307,6 @@ function AddSegment(props) {
     </div>
   );
 
-};
+}
  
 export default AddSegment;

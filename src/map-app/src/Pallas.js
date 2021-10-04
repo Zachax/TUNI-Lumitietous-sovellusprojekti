@@ -17,14 +17,14 @@ Arttu Lakkala 15.11 Lisätty päivityksen lisäys segmenttiin.
 **/
 
 import * as React from "react";
-import { useEffect } from 'react';
-import './App.css';
-import './style.css';
-import Map from './NewMap';
-import Manage from './Manage';
-import Info from './Info';
-import TopBar from './TopBar';
-import { useMediaQuery } from 'react-responsive';
+import { useEffect } from "react";
+import "./App.css";
+import "./style.css";
+import Map from "./NewMap";
+import Manage from "./Manage";
+import Info from "./Info";
+import TopBar from "./TopBar";
+import { useMediaQuery } from "react-responsive";
 
 var refreshInterval = setInterval(window.location.reload.bind(window.location), (30*60000));
 
@@ -40,7 +40,7 @@ function App() {
   const [viewManagement, setViewManagement] = React.useState(false);
 
   //imported hook. Kysely näyttöportin koosta
-  const isMobile = useMediaQuery({query: '(max-width:760px)'});
+  const isMobile = useMediaQuery({query: "(max-width:760px)"});
   
   // Valikoissa näkyvä teksti riippuu näytettävästä tilasta
   const manageOrMap = (viewManagement ? "Kartta" : "Hallitse");
@@ -55,11 +55,11 @@ function App() {
    */
   useEffect(() => {
     const fetchData = async () => {
-      const snow = await fetch('api/lumilaadut');
+      const snow = await fetch("api/lumilaadut");
       const snowdata = await snow.json();
-      const updates = await fetch('api/segments/update');
+      const updates = await fetch("api/segments/update");
       const updateData = await updates.json();
-      const response = await fetch('api/segments');
+      const response = await fetch("api/segments");
       const data = await response.json();
 
       // Taulukko käytettäville väreille kartassa. Musta väri oletuksena, jos tietoa ei ole
@@ -111,13 +111,13 @@ function App() {
    */
 
   // Segmentin valinta
-   function chooseSegment(choice) {
+  function chooseSegment(choice) {
     setShownSegment(choice);
   }
 
   // Token tallennetaan reactin stateen
   function updateToken(token) {
-    if (typeof token !== 'undefined'){
+    if (typeof token !== "undefined"){
       clearInterval(refreshInterval);
     }
     setToken(token);
@@ -145,65 +145,65 @@ function App() {
   // TODO: Komponenttien tyylejä ja asetteluja voi vielä parannella
   return (
     <div className="app">
-        {/* Sovelluksen yläpalkki */}
-        <div className="top_bar">
-          <TopBar 
-            isMobile={isMobile} 
-            updateUser={updateUser}
-            user={user}
-            token={token} 
-            updateToken={updateToken} 
-            updateView={updateView}
-            viewManagement={viewManagement} 
-            manageOrMap={manageOrMap} 
-          />   
-        </div>
-        <div className="map_container">
-          {/* Hallintanäkymä tai kartta tilanteen mukaan */}
-            {
-              (
-                viewManagement 
-                ?
-                <Manage 
-                  segments={segments}
-                  role={user.Rooli}
-                  token={token}
-                  onUpdate={chooseSegment}
-                  updateSegments={updateSegments}
-                  shownSegment={shownSegment}
-                  updateWoods={updateWoods}
-                />
-                :
-                <Map 
-                  shownSegment={shownSegment}
-                  segmentColors={segmentColors}
-                  segments={segments} 
-                  onClick={chooseSegment} 
-                  isMobile={isMobile}
-                  woodsSegment={woodsSegment}
-                />
-              )
-            }
-        </div>
-        {/* <div className="guide"></div> */}
+      {/* Sovelluksen yläpalkki */}
+      <div className="top_bar">
+        <TopBar 
+          isMobile={isMobile} 
+          updateUser={updateUser}
+          user={user}
+          token={token} 
+          updateToken={updateToken} 
+          updateView={updateView}
+          viewManagement={viewManagement} 
+          manageOrMap={manageOrMap} 
+        />   
+      </div>
+      <div className="map_container">
+        {/* Hallintanäkymä tai kartta tilanteen mukaan */}
+        {
+          (
+            viewManagement 
+              ?
+              <Manage 
+                segments={segments}
+                role={user.Rooli}
+                token={token}
+                onUpdate={chooseSegment}
+                updateSegments={updateSegments}
+                shownSegment={shownSegment}
+                updateWoods={updateWoods}
+              />
+              :
+              <Map 
+                shownSegment={shownSegment}
+                segmentColors={segmentColors}
+                segments={segments} 
+                onClick={chooseSegment} 
+                isMobile={isMobile}
+                woodsSegment={woodsSegment}
+              />
+          )
+        }
+      </div>
+      {/* <div className="guide"></div> */}
         
-        {/* Sovelluksen sivupalkki, jossa näytetään kartalta valitun segmentin tietoja
+      {/* Sovelluksen sivupalkki, jossa näytetään kartalta valitun segmentin tietoja
           Näytetään, kun jokin segmentti valittuna, eikä olla hallintanäkymässä */}
-        <div className="segment_info">
-          {(shownSegment !== null && !viewManagement ? 
-            <Info
-              //segments={segments}
-              segmentdata={shownSegment} 
-              token={token}
-              updateSegments={updateSegments}
-              onUpdate={chooseSegment}
-              onClose={chooseSegment}
-              updateWoods={updateWoods}
-            />
-            :
-            <div />
-          )} 
-        </div>
+      <div className="segment_info">
+        {(shownSegment !== null && !viewManagement ? 
+          <Info
+            //segments={segments}
+            segmentdata={shownSegment} 
+            token={token}
+            updateSegments={updateSegments}
+            onUpdate={chooseSegment}
+            onClose={chooseSegment}
+            updateWoods={updateWoods}
+          />
+          :
+          <div />
+        )} 
+      </div>
     </div>
   );
 }
