@@ -46,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "chokidar": "^3.5.2",
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.26.1"
   }
