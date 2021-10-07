@@ -1,12 +1,15 @@
 #variables
 DBHOST=localhost
-DBNAME=Pallas
-DBUSER=testi
+DBNAME=pallas
+DBUSER=pallas
 DBPASSWD=testpass
 
 
 # Update packages
 sudo apt-get update
+
+# The certificate for deb.nodesource seems to be expired
+sudo apt install ca-certificates
 
 # Install Node.js and NPM
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
@@ -26,12 +29,7 @@ mysql -uroot -p$DBPASSWD -e "CREATE USER '$DBUSER'@'localhost' IDENTIFIED BY '$D
 mysql -uroot -p$DBPASSWD -e "GRANT ALL PRIVILEGES ON $DBNAME.* TO '$DBUSER'@'localhost'"
 mysql -uroot -p$DBPASSWD -e "CREATE USER '$DBUSER'@'10.0.2.2' IDENTIFIED BY '$DBPASSWD'"
 mysql -uroot -p$DBPASSWD -e "GRANT ALL PRIVILEGES ON $DBNAME.* TO '$DBUSER'@'10.0.2.2'"
-mysql Pallas< ../../vagrant/src/sql/luonnit.sql -uroot -p$DBPASSWD
-mysql Pallas< ../../vagrant/src/sql/Lumilaadut.sql -uroot -p$DBPASSWD
-mysql Pallas< ../../vagrant/src/sql/Segmentit.sql -uroot -p$DBPASSWD
-mysql Pallas< ../../vagrant/src/sql/Koordinaatit.sql -uroot -p$DBPASSWD
-
-
-
-
-#Temppeorary commads here
+mysql $DBNAME< ../../vagrant/src/sql/luonnit.sql -uroot -p$DBPASSWD
+mysql $DBNAME< ../../vagrant/src/sql/Lumilaadut.sql -uroot -p$DBPASSWD
+mysql $DBNAME< ../../vagrant/src/sql/Segmentit.sql -uroot -p$DBPASSWD
+mysql $DBNAME< ../../vagrant/src/sql/Koordinaatit.sql -uroot -p$DBPASSWD
