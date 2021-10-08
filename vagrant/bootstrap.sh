@@ -16,7 +16,7 @@ curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Install npm
-sudo npm install -g npm@7.24.2
+sudo npm install -g npm@6.14.6
 
 #install mysql
 debconf-set-selections <<< "mysql-server mysql-server/root_password password $DBPASSWD"
